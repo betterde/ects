@@ -17,8 +17,11 @@ package cmd
 import (
 	"ects/config"
 	"fmt"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/middleware/logger"
+	"github.com/kataras/iris/middleware/recover"
 	"github.com/spf13/cobra"
-	"net/http"
+	"log"
 )
 
 var conf = config.Init()
@@ -29,10 +32,7 @@ var masterCmd = &cobra.Command{
 	Short: "Run a master node service",
 	Long:  "Run a master node service on this server",
 	Run: func(cmd *cobra.Command, args []string) {
-		addr := fmt.Sprintf("%s:%d", conf.Service.Host, conf.Service.Port)
-		if err := http.ListenAndServe(addr, nil); err != nil {
-
-		}
+		start(fmt.Sprintf("%s:%d", conf.Service.Host, conf.Service.Port))
 	},
 }
 
@@ -45,4 +45,18 @@ func init() {
 	masterCmd.PersistentFlags().StringVar(&conf.Database.Name, "db_name", "ects", "Set mysql service db name")
 	masterCmd.PersistentFlags().StringVar(&conf.Database.User, "db_user", "root", "Set mysql service user")
 	masterCmd.PersistentFlags().StringVar(&conf.Database.Host, "db_pass", "", "Set mysql service pass")
+}
+
+func start(addr string)  {
+	app := iris.New()
+	app.Use(recover.New())
+	app.Use(logger.New())
+	app.Get("/", func(ctx iris.Context){
+		if _, err := ctx.JSON(iris.Map{"name": "George"}); err != nil {
+			log.Println(err)
+		}
+	})
+	if err := app.Run(iris.Addr(addr), iris.WithoutServerError(iris.ErrServerClosed)); err != nil {
+		log.Println(err)
+	}
 }
