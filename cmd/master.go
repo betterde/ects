@@ -16,10 +16,9 @@ package cmd
 
 import (
 	"ects/config"
+	"ects/internal/server"
 	"fmt"
 	"github.com/kataras/iris"
-	"github.com/kataras/iris/middleware/logger"
-	"github.com/kataras/iris/middleware/recover"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -48,15 +47,8 @@ func init() {
 }
 
 func start(addr string)  {
-	app := iris.New()
-	app.Use(recover.New())
-	app.Use(logger.New())
-	app.Get("/", func(ctx iris.Context){
-		if _, err := ctx.JSON(iris.Map{"name": "George"}); err != nil {
-			log.Println(err)
-		}
-	})
-	if err := app.Run(iris.Addr(addr), iris.WithoutServerError(iris.ErrServerClosed)); err != nil {
+	app := server.Start()
+	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler); err != nil {
 		log.Println(err)
 	}
 }
