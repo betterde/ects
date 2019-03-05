@@ -1,4 +1,4 @@
-package api
+package auth
 
 import (
 	"github.com/kataras/iris"
@@ -19,6 +19,7 @@ type (
 
 func (instance * AuthenticationController) BeforeActivation(request mvc.BeforeActivation)  {
 	request.Handle("POST", "/signin", "SignInHandler")
+	request.Handle("POST", "/signout", "SignOutHandler")
 }
 
 // 用户登录逻辑
@@ -28,7 +29,11 @@ func (instance * AuthenticationController) SignInHandler(ctx iris.Context) {
 		
 	}
 	log.Println(params)
-	if _, err := ctx.JSON(ctx.FormValues()); err != nil {
+	if _, err := ctx.JSON(params); err != nil {
 		log.Println(err)
 	}
+}
+
+func (instance * AuthenticationController) SignOutHandler(ctx iris.Context) {
+
 }
