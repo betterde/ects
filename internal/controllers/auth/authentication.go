@@ -28,6 +28,11 @@ func (instance * AuthenticationController) SignInHandler(ctx iris.Context) {
 	if err := ctx.ReadJSON(&params); err != nil {
 		
 	}
+
+	if params.Username == "" || params.Password == "" {
+		//return ctx.JSON()
+	}
+
 	log.Println(params)
 	if _, err := ctx.JSON(params); err != nil {
 		log.Println(err)

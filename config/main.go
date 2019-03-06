@@ -1,17 +1,28 @@
 package config
 
+import "time"
+
 type Config struct {
-	Service struct{
+	Service struct {
 		Host string
 		Port int
 	}
-	Database struct{
+	Database struct {
 		Host string
 		Port int
 		Name string
 		User string
 		Pass string
 	}
+	Auth struct{
+		Secret string
+		TTL int64
+	}
+}
+
+type Auth struct {
+	Secret string
+	TTL time.Duration
 }
 
 func Init() *Config {
