@@ -61,7 +61,13 @@ func (r *userMemoryRepository) Exec(query Query, action Query, limit int, mode i
 
 // 根据用户凭证获取用户模型
 func (r *userMemoryRepository) RetrieveByCredentials(username, password string) (user *models.User, err error) {
-	return &models.User{}, nil
+
+	return &models.User{
+		ID: 1,
+		Name: "George",
+		Email: "george@betterde.com",
+		Password: "George@1994",
+	}, nil
 }
 
 func (r *userMemoryRepository) Select(query Query) (user models.User, found bool) {
@@ -77,6 +83,7 @@ func (r *userMemoryRepository) Select(query Query) (user models.User, found bool
 
 	return
 }
+
 
 func (r *userMemoryRepository) SelectMany(query Query, limit int) (results []models.User) {
 	r.Exec(query, func(m models.User) bool {

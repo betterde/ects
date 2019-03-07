@@ -13,12 +13,15 @@ type Config struct {
 		Name string
 		User string
 		Pass string
+		Char string
 	}
 	Auth struct{
 		Secret string
-		TTL int64
+		TTL time.Duration
 	}
 }
+
+var Conf *Config
 
 type Auth struct {
 	Secret string
