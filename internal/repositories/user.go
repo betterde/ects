@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"ects/internal/models"
 	"errors"
+	"github.com/betterde/ects/internal/models"
 	"sync"
 )
 
@@ -77,7 +77,6 @@ func (r *userMemoryRepository) Select(query Query) (user models.User, found bool
 
 	return
 }
-
 
 func (r *userMemoryRepository) SelectMany(query Query, limit int) (results []models.User) {
 	r.Exec(query, func(m models.User) bool {

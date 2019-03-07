@@ -1,7 +1,7 @@
 package models
 
 import (
-	"ects/internal/server"
+	"github.com/betterde/ects/internal/server"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )

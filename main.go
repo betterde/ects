@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ects/cmd"
+	"github.com/betterde/ects/cmd"
 )
 
 func main()  {

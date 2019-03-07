@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"ects/config"
-	"ects/internal/server"
 	"fmt"
+	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/server"
 	"github.com/kataras/iris"
 	"github.com/spf13/cobra"
 	"log"

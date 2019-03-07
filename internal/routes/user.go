@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"ects/internal/controllers/organization"
-	"ects/internal/datasource"
-	"ects/internal/repositories"
-	"ects/internal/services"
+	"github.com/betterde/ects/internal/controllers/organization"
+	"github.com/betterde/ects/internal/datasource"
+	"github.com/betterde/ects/internal/repositories"
+	"github.com/betterde/ects/internal/services"
 	"github.com/kataras/iris/mvc"
 )
 

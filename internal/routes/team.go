@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"ects/internal/controllers/organization"
+	"github.com/betterde/ects/internal/controllers/organization"
 	"github.com/kataras/iris/mvc"
 )
 

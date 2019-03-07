@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"ects/internal/middleware"
-	"ects/web"
+	"github.com/betterde/ects/internal/middleware"
+	"github.com/betterde/ects/web"
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
