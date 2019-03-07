@@ -1,8 +1,8 @@
 package services
 
 import (
-	"ects/internal/models"
-	"ects/internal/repositories"
+	"github.com/betterde/ects/internal/models"
+	"github.com/betterde/ects/internal/repositories"
 )
 
 type UserService interface {

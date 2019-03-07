@@ -1,8 +1,8 @@
 package organization
 
 import (
-	"ects/internal/models"
-	"ects/internal/services"
+	"github.com/betterde/ects/internal/models"
+	"github.com/betterde/ects/internal/services"
 	"github.com/kataras/iris"
 )
 

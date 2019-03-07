@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"ects/config"
-	"ects/internal/server"
 	"fmt"
+	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/server"
 	"github.com/kataras/iris"
 	"github.com/spf13/cobra"
 	"log"
@@ -32,7 +32,7 @@ func init() {
 	masterCmd.PersistentFlags().StringVar(&conf.Database.Host, "db_pass", "", "Set mysql service pass")
 }
 
-func start(addr string)  {
+func start(addr string) {
 	app := server.Start()
 	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler); err != nil {
 		log.Println(err)

@@ -1,4 +1,4 @@
-module ects
+module github.com/betterde/ects
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect

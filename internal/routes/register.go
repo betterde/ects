@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"ects/web"
+	"github.com/betterde/ects/web"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"log"

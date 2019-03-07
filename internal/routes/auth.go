@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"ects/internal/controllers/auth"
+	"github.com/betterde/ects/internal/controllers/auth"
 	"github.com/kataras/iris/mvc"
 )
 

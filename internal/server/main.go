@@ -1,7 +1,7 @@
 package server
 
 import (
-	"ects/internal/routes"
+	"github.com/betterde/ects/internal/routes"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"

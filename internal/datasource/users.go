@@ -1,6 +1,6 @@
 package datasource
 
-import "ects/internal/models"
+import "github.com/betterde/ects/internal/models"
 
 var Users =  map[int64]models.User {
 	1: {
