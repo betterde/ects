@@ -1,12 +1,17 @@
 package services
 
 import (
+	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/models"
 	"github.com/betterde/ects/internal/repositories"
+	"github.com/dgrijalva/jwt-go"
+	"log"
+	"time"
 )
 
 type UserService interface {
 	Users() []models.User
+	Attempt(username, password string) string
 }
 
 func NewUserService(repo repositories.UserRepository) UserService {
@@ -23,4 +28,40 @@ func (s *userService) Users() []models.User {
 	return s.repo.SelectMany(func(_ models.User) bool {
 		return true
 	}, -1)
+}
+
+// 验证用户凭证
+func (s *userService) Attempt(username, passwod string) string {
+	log.Println(username, passwod)
+	if username == "" || passwod == "" {
+		return ""
+	}
+
+	user, err := s.repo.RetrieveByCredentials(username, passwod)
+
+	if err != nil {
+
+	}
+
+	token, err := issueToken(user)
+
+	if err != nil {
+
+	}
+
+	return token
+}
+
+// 为用户颁发Access Token
+func issueToken(user *models.User) (string, error) {
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"iss": "ects",
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(config.Conf.Auth.TTL * time.Second).Unix(),
+		"nbf": time.Now().Unix(),
+		"sub": user.ID,
+	})
+
+	return token.SignedString([]byte(config.Conf.Auth.Secret))
 }

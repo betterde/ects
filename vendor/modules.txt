@@ -9,6 +9,8 @@ github.com/aymerick/raymond
 github.com/aymerick/raymond/ast
 github.com/aymerick/raymond/parser
 github.com/aymerick/raymond/lexer
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+github.com/dgrijalva/jwt-go
 # github.com/eknkc/amber v0.0.0-20171010120322-cdade1c07385
 github.com/eknkc/amber
 github.com/eknkc/amber/parser
@@ -16,6 +18,19 @@ github.com/eknkc/amber/parser
 github.com/fatih/structs
 # github.com/flosch/pongo2 v0.0.0-20181225140029-79872a7b2769
 github.com/flosch/pongo2
+# github.com/go-playground/locales v0.12.1
+github.com/go-playground/locales
+github.com/go-playground/locales/currency
+# github.com/go-playground/universal-translator v0.16.0
+github.com/go-playground/universal-translator
+# github.com/go-sql-driver/mysql v1.4.1
+github.com/go-sql-driver/mysql
+# github.com/go-xorm/builder v0.3.2
+github.com/go-xorm/builder
+# github.com/go-xorm/core v0.6.0
+github.com/go-xorm/core
+# github.com/go-xorm/xorm v0.7.1
+github.com/go-xorm/xorm
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
 # github.com/iris-contrib/blackfriday v2.0.0+incompatible
@@ -24,6 +39,8 @@ github.com/iris-contrib/blackfriday
 github.com/iris-contrib/formBinder
 # github.com/iris-contrib/go.uuid v2.0.0+incompatible
 github.com/iris-contrib/go.uuid
+# github.com/iris-contrib/middleware v0.0.0-20181021162728-8bd5d51b3c2e
+github.com/iris-contrib/middleware/jwt
 # github.com/json-iterator/go v1.1.5
 github.com/json-iterator/go
 # github.com/juju/errors v0.0.0-20181118221551-089d3ea4e4d5
@@ -32,12 +49,12 @@ github.com/juju/errors
 github.com/kataras/golog
 # github.com/kataras/iris v11.1.1+incompatible
 github.com/kataras/iris
-github.com/kataras/iris/mvc
 github.com/kataras/iris/middleware/logger
 github.com/kataras/iris/middleware/recover
+github.com/kataras/iris/mvc
+github.com/kataras/iris/core/errors
 github.com/kataras/iris/cache
 github.com/kataras/iris/context
-github.com/kataras/iris/core/errors
 github.com/kataras/iris/core/handlerconv
 github.com/kataras/iris/core/host
 github.com/kataras/iris/core/netutil
@@ -67,6 +84,8 @@ github.com/klauspost/compress/gzip
 github.com/klauspost/compress/flate
 # github.com/klauspost/cpuid v1.2.0
 github.com/klauspost/cpuid
+# github.com/leodido/go-urn v1.1.0
+github.com/leodido/go-urn
 # github.com/microcosm-cc/bluemonday v1.0.2
 github.com/microcosm-cc/bluemonday
 # github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd
@@ -88,5 +107,7 @@ golang.org/x/crypto/acme
 golang.org/x/net/publicsuffix
 golang.org/x/net/html
 golang.org/x/net/html/atom
+# gopkg.in/go-playground/validator.v9 v9.27.0
+gopkg.in/go-playground/validator.v9
 # gopkg.in/yaml.v2 v2.2.2
 gopkg.in/yaml.v2

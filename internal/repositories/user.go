@@ -14,6 +14,7 @@ type UserRepository interface {
 	SelectMany(query Query, limit int) (results []models.User)
 	InsertOrUpdate(user models.User) (updated models.User, err error)
 	Delete(query Query, limit int) (deleted bool)
+	RetrieveByCredentials(username, password string) (user *models.User, err error)
 }
 
 type userMemoryRepository struct {
@@ -58,6 +59,17 @@ func (r *userMemoryRepository) Exec(query Query, action Query, limit int, mode i
 	return
 }
 
+// 根据用户凭证获取用户模型
+func (r *userMemoryRepository) RetrieveByCredentials(username, password string) (user *models.User, err error) {
+
+	return &models.User{
+		ID: 1,
+		Name: "George",
+		Email: "george@betterde.com",
+		Password: "George@1994",
+	}, nil
+}
+
 func (r *userMemoryRepository) Select(query Query) (user models.User, found bool) {
 	found = r.Exec(query, func(m models.User) bool {
 		user = m
@@ -71,6 +83,7 @@ func (r *userMemoryRepository) Select(query Query) (user models.User, found bool
 
 	return
 }
+
 
 func (r *userMemoryRepository) SelectMany(query Query, limit int) (results []models.User) {
 	r.Exec(query, func(m models.User) bool {
