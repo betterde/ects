@@ -30,19 +30,24 @@ func Register(app *iris.Application) {
 	assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
 	app.SPA(assetHandler).AddIndexName("index.html")
 
-	// 注册鉴权路由
-	mvc.Configure(app.Party("/auth"), authentication)
+	// 接口路由
+	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
+		// 安装路由
+		mvc.Configure(api.Party("/install"), installation)
+		// 鉴权路由
+		mvc.Configure(api.Party("/auth"), authentication)
 
-	app.Use(middleware.JWTHandler.Serve)
-	app.Get("/ping", myHandler)
-
-	// 组织路由
-	mvc.Configure(app.PartyFunc("/organization", func(org iris.Party) {
-		// 用户路由
-		mvc.Configure(org.Party("/user"), users)
-		// 团队路由
-		mvc.Configure(org.Party("/team"), teams)
+		api.Use(middleware.JWTHandler.Serve)
+		// 组织路由
+		mvc.Configure(api.PartyFunc("/organization", func(org iris.Party) {
+			// 用户路由
+			mvc.Configure(org.Party("/user"), users)
+			// 团队路由
+			mvc.Configure(org.Party("/team"), teams)
+		}))
 	}))
+
+	app.Get("/ping", myHandler)
 }
 
 func myHandler(ctx iris.Context) {

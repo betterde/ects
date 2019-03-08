@@ -5,7 +5,6 @@ import (
 	"github.com/betterde/ects/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/core/errors"
 	"log"
 	"time"
 )
@@ -61,7 +60,7 @@ func Migrate() error {
 	for _, table := range tables {
 		exist, err := Engine.IsTableExist(table)
 		if exist {
-			return errors.New("数据表已存在")
+			continue
 		}
 
 		if err != nil {

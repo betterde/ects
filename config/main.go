@@ -1,6 +1,9 @@
 package config
 
-import "time"
+import (
+	"os"
+	"time"
+)
 
 type Config struct {
 	Service struct {
@@ -21,7 +24,10 @@ type Config struct {
 	}
 }
 
-var Conf *Config
+var (
+	Conf *Config
+	Path string
+)
 
 type Auth struct {
 	Secret string
@@ -31,4 +37,16 @@ type Auth struct {
 func Init() *Config {
 	conf := &Config{}
 	return conf
+}
+
+// 检查配置文件是否存在
+func CheckConfigFile(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
