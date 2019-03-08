@@ -1,13 +1,16 @@
 <template>
-    <h1>Install</h1>
+  <h1>Install</h1>
 </template>
 
 <script>
-    export default {
-        name: "Install"
+  export default {
+    name: "Install",
+    created() {
+
     }
+  }
 </script>
 
-<style scoped>
+<style>
 
 </style>

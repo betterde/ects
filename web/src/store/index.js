@@ -1,16 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import system from './modules/system'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {
-
+  modules: {
+    system: system
   },
-  mutations: {
-
-  },
-  actions: {
-
-  }
+  strict: process.env.MIX_NODE_ENV !== 'production'
 })
