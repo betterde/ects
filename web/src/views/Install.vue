@@ -6,7 +6,6 @@
   export default {
     name: "Install",
     created() {
-
     }
   }
 </script>

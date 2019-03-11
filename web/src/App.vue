@@ -14,7 +14,6 @@
 </template>
 
 <script>
-  import {mapState} from 'vuex'
   import HelloWorld from './components/HelloWorld.vue'
 
   export default {
@@ -26,19 +25,6 @@
       return {}
     },
     mounted() {
-      this.$store.dispatch('fetchSystem').then(() => {
-        window.console.log("fetchSystem Success")
-      });
-      if (this.system.installed) {
-
-      } else {
-        this.$router.push('/install')
-      }
-    },
-    computed: {
-      ...mapState({
-        system: state => state.system
-      })
     }
   }
 </script>

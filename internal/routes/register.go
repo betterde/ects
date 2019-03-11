@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/betterde/ects/internal/middleware"
+	"github.com/betterde/ects/internal/utils/system"
 	"github.com/betterde/ects/web"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris"
@@ -22,7 +23,17 @@ func Register(app *iris.Application) {
 
 	// 页面路由
 	app.Get("/", func(ctx iris.Context) {
+		if system.Installed == false {
+			ctx.Redirect("/install")
+		}
 		if err := ctx.View("index.html"); err != nil {
+			log.Println(err)
+		}
+	})
+
+	// 页面路由
+	app.Get("/install", func(ctx iris.Context) {
+		if err := ctx.View("install.html"); err != nil {
 			log.Println(err)
 		}
 	})
