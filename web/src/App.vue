@@ -1,80 +1,47 @@
 <template>
   <div id="app">
-    <el-container style="height: 100%; border: 1px solid #eee">
-      <el-aside width="240px" style="background-color: rgb(238, 241, 246)">
-        <el-menu :default-openeds="['1', '3']">
-          <el-submenu index="1">
-            <template slot="title"><i class="el-icon-message"></i>导航一</template>
-            <el-menu-item-group>
-              <template slot="title">分组一</template>
-              <el-menu-item index="1-1">选项1</el-menu-item>
-              <el-menu-item index="1-2">选项2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="1-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="1-4">
-              <template slot="title">选项4</template>
-              <el-menu-item index="1-4-1">选项4-1</el-menu-item>
-            </el-submenu>
-          </el-submenu>
-          <el-submenu index="2">
-            <template slot="title"><i class="el-icon-menu"></i>导航二</template>
-            <el-menu-item-group>
-              <template slot="title">分组一</template>
-              <el-menu-item index="2-1">选项1</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="2-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="2-4">
-              <template slot="title">选项4</template>
-              <el-menu-item index="2-4-1">选项4-1</el-menu-item>
-            </el-submenu>
-          </el-submenu>
-          <el-submenu index="3">
-            <template slot="title"><i class="el-icon-setting"></i>导航三</template>
-            <el-menu-item-group>
-              <template slot="title">分组一</template>
-              <el-menu-item index="3-1">选项1</el-menu-item>
-              <el-menu-item index="3-2">选项2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-              <el-menu-item index="3-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="3-4">
-              <template slot="title">选项4</template>
-              <el-menu-item index="3-4-1">选项4-1</el-menu-item>
-            </el-submenu>
-          </el-submenu>
-        </el-menu>
-      </el-aside>
-
-      <el-container>
-        <el-header style="text-align: right; font-size: 12px">
-          <el-dropdown>
-            <i class="el-icon-setting" style="margin-right: 15px"></i>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>查看</el-dropdown-item>
-              <el-dropdown-item>新增</el-dropdown-item>
-              <el-dropdown-item>删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <span>王小虎</span>
-        </el-header>
-
-        <el-main>
-          <el-table :data="tableData">
-            <el-table-column prop="date" label="日期" width="140">
-            </el-table-column>
-            <el-table-column prop="name" label="姓名" width="120">
-            </el-table-column>
-            <el-table-column prop="address" label="地址">
-            </el-table-column>
-          </el-table>
-        </el-main>
-      </el-container>
+    <el-container>
+      <el-header>
+        <el-row :gutter="20">
+          <el-col :span="4">
+            <div class="grid-content">
+              <h2 style="line-height: 36px; color: #8c939d">ECTS</h2>
+            </div>
+          </el-col>
+          <el-col :span="16">
+            <el-menu :default-active="activeIndex" class="el-menu-nav" mode="horizontal" @select="handleSelect">
+              <el-menu-item index="1">系统概览</el-menu-item>
+              <el-menu-item index="2">任务管理</el-menu-item>
+              <el-menu-item index="3">节点管理</el-menu-item>
+              <el-menu-item index="4">团队管理</el-menu-item>
+              <el-menu-item index="5">人员管理</el-menu-item>
+              <el-submenu index="6">
+                <template slot="title">系统管理</template>
+                <el-menu-item index="6-1">系统日志</el-menu-item>
+                <el-menu-item index="6-2">任务日志</el-menu-item>
+                <el-menu-item index="6-3">通知管理</el-menu-item>
+              </el-submenu>
+            </el-menu>
+          </el-col>
+          <el-col :span="4">
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                <div class="avatar grid-content"></div>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>消息通知</el-dropdown-item>
+                <el-dropdown-item>个人信息</el-dropdown-item>
+                <el-dropdown-item>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-col>
+        </el-row>
+      </el-header>
+      <el-main>
+        <el-row :gutter="20">
+          <el-col :span="18" :offset="3"><div class="main-content"></div></el-col>
+        </el-row>
+      </el-main>
     </el-container>
   </div>
 </template>
@@ -83,53 +50,78 @@
   export default {
     name: 'app',
     data() {
-      return {}
+      return {
+        activeIndex: '1',
+      }
     },
-    mounted() {
+    methods: {
+      handleSelect(key, keyPath) {
+        console.log(key, keyPath);
+      }
     }
   }
 </script>
 
-<style>
+<style lang="scss">
   #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
     height: 100%;
-  }
-  .el-header, .el-footer {
-    background-color: #B3C0D1;
-    color: #333;
     text-align: center;
-    line-height: 60px;
+    background-color: #f0f2f5;
+    .el-header {
+      background-color: #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+      .el-dropdown {
+        float: right;
+      }
+      .avatar {
+        height: 36px;
+        width: 36px;
+        background-color: #8c939d;
+        float: right;
+      }
+    }
+
+    .el-menu-nav {
+      display: table;
+      margin: auto;
+      align-items: center;
+      text-align: center;
+
+      &.el-menu--horizontal {
+        border: none;
+      }
+    }
+
+    .el-container {
+      height: 100%;
+      min-height: 100%;
+      .grid-content {
+        margin: 12px 0;
+        border-radius: 4px;
+        min-height: 36px;
+      }
+    }
+
+    .el-main {
+      height: auto;
+      display: block;
+      .el-row {
+        height: 100%;
+      }
+      .el-col {
+        height: 100%;
+      }
+    }
   }
 
-  .el-aside {
-    background-color: #D3DCE6;
-    color: #333;
-    text-align: center;
-    line-height: 200px;
+  .el-col {
+    border-radius: 4px;
   }
 
-  .el-main {
-    background-color: #E9EEF3;
-    color: #333;
-    text-align: center;
-    line-height: 160px;
-  }
-
-  body > .el-container {
-    margin-bottom: 40px;
-  }
-
-  .el-container:nth-child(5) .el-aside,
-  .el-container:nth-child(6) .el-aside {
-    line-height: 260px;
-  }
-
-  .el-container:nth-child(7) .el-aside {
-    line-height: 320px;
+  .main-content {
+    height: 100%;
+    border-radius: 4px;
+    background-color: #FFFFFF;
+    box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);
   }
 </style>
