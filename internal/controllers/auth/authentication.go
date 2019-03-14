@@ -22,7 +22,8 @@ type (
 	}
 
 	SignUp struct {
-		Email    string `json:"email" validate:"required"`
+		Name     string `json:"name" validate:"required"`
+		Username string `json:"username" validate:"required"`
 		Password string `json:"password" validate:"required"`
 		Confirm  string `json:"confirm" validate:"required"`
 	}
@@ -34,7 +35,6 @@ type (
 	}
 )
 
-var validate *validator.Validate
 
 func (instance *AuthenticationController) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signin", "SignInHandler")
@@ -44,7 +44,7 @@ func (instance *AuthenticationController) BeforeActivation(request mvc.BeforeAct
 // 用户登录逻辑
 func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 	var params SignIn
-	validate = validator.New()
+	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
 		// TODO Add logger
 	}
@@ -58,7 +58,7 @@ func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 		return
 	}
 
-	deadline := time.Now().Add(config.Conf.Auth.TTL).Unix()
+	deadline := time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix()
 
 	token := instance.Service.Attempt(params.Username, params.Password)
 
@@ -79,7 +79,7 @@ func (instance *AuthenticationController) SignOutHandler(ctx iris.Context) {
 // 用户注册
 func (instance *AuthenticationController) SignUpHandler(ctx iris.Context) {
 	var params SignUp
-	validate = validator.New()
+	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
 		// TODO Add logger
 	}
@@ -92,7 +92,7 @@ func (instance *AuthenticationController) SignUpHandler(ctx iris.Context) {
 	}
 
 	user := &models.User{
-
+		Name: params.Name,
 	}
 
 	user.PasswordGenerator(params.Password)

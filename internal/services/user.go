@@ -58,7 +58,7 @@ func issueToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss": "ects",
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(config.Conf.Auth.TTL * time.Second).Unix(),
+		"exp": time.Now().Add(100 * time.Second).Unix(),
 		"nbf": time.Now().Unix(),
 		"sub": user.ID,
 	})

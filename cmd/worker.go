@@ -12,8 +12,8 @@ var workerCmd = &cobra.Command{
 	Short: "Run a master node service",
 	Long: "Run a master node service on this server",
 	Run: func(cmd *cobra.Command, args []string) {
-		exist, err := config.CheckConfigFile("/etc/ects/ects.conf")
-		log.Println(exist, err)
+		exist, permission, err := config.CheckConfigFile("/etc/ects/ects.conf")
+		log.Println(exist, permission, err)
 	},
 }
 

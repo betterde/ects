@@ -1,26 +1,28 @@
 package config
 
 import (
+	"github.com/betterde/ects/internal/utils/system"
+	"io/ioutil"
+	"log"
 	"os"
-	"time"
 )
 
 type Config struct {
 	Service struct {
-		Host string
-		Port int
+		Host string `json:"host" yaml:"host"`
+		Port int    `json:"port" yaml:"port"`
 	}
 	Database struct {
-		Host string
-		Port int
-		Name string
-		User string
-		Pass string
-		Char string
+		Host string `json:"host" yaml:"host"`
+		Port int    `json:"port" yaml:"port"`
+		Name string `json:"name" yaml:"name"`
+		User string `json:"user" yaml:"user"`
+		Pass string `json:"pass" yaml:"pass"`
+		Char string `json:"char" yaml:"char"`
 	}
-	Auth struct{
-		Secret string
-		TTL time.Duration
+	Auth struct {
+		Secret string `json:"secret" yaml:"secret"`
+		TTL    int    `json:"ttl" yaml:"ttl"`
 	}
 }
 
@@ -29,24 +31,27 @@ var (
 	Path string
 )
 
-type Auth struct {
-	Secret string
-	TTL time.Duration
-}
-
 func Init() *Config {
 	conf := &Config{}
 	return conf
 }
 
 // 检查配置文件是否存在
-func CheckConfigFile(path string) (bool, error) {
+func CheckConfigFile(path string) (bool, bool, error) {
 	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
+	permission := os.IsPermission(err)
+	exist := os.IsExist(err)
+	return exist, permission, err
+}
+
+// 写入配置文件
+func WriteConfigToFile(path string, content []byte) bool {
+	if system.Info.Permission {
+		if err := ioutil.WriteFile(path, content, 0755); err != nil {
+			panic(err)
+		}
+	} else {
+		log.Printf("Write %s Permission denied \n", path)
 	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
+	return true
 }

@@ -18,11 +18,11 @@ type UserRepository interface {
 }
 
 type userMemoryRepository struct {
-	source map[int64]models.User
+	source map[string]models.User
 	mu     sync.RWMutex
 }
 
-func NewUserRepository(source map[int64]models.User) UserRepository {
+func NewUserRepository(source map[string]models.User) UserRepository {
 	return &userMemoryRepository{source: source}
 }
 
@@ -63,7 +63,7 @@ func (r *userMemoryRepository) Exec(query Query, action Query, limit int, mode i
 func (r *userMemoryRepository) RetrieveByCredentials(username, password string) (user *models.User, err error) {
 
 	return &models.User{
-		ID: 1,
+		ID: "9527",
 		Name: "George",
 		Email: "george@betterde.com",
 		Password: "George@1994",
@@ -97,23 +97,8 @@ func (r *userMemoryRepository) SelectMany(query Query, limit int) (results []mod
 func (r *userMemoryRepository) InsertOrUpdate(user models.User) (models.User, error) {
 	id := user.ID
 
-	if id == 0 { // Create new action
-		var lastID int64
-		// find the biggest ID in order to not have duplications
-		// in productions apps you can use a third-party
-		// library to generate a UUID as string.
-		r.mu.RLock()
-		for _, item := range r.source {
-			if item.ID > lastID {
-				lastID = item.ID
-			}
-		}
-		r.mu.RUnlock()
-
-		id = lastID + 1
+	if id == "" {
 		user.ID = id
-
-		// map-specific thing
 		r.mu.Lock()
 		r.source[id] = user
 		r.mu.Unlock()

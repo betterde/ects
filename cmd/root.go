@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/betterde/ects/internal/utils/system"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -11,7 +10,7 @@ var rootCmd = &cobra.Command{
 	Use:     "ects",
 	Short:   "Elastic Crontab System",
 	Long:    "Elastic Crontab System",
-	Version: system.Version,
+	Version: "0.1.0",
 }
 
 func Execute() {

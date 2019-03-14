@@ -23,7 +23,8 @@ func Register(app *iris.Application) {
 
 	// 页面路由
 	app.Get("/", func(ctx iris.Context) {
-		if system.Installed == false {
+		// 如果系统未安装则跳转到安装页面
+		if system.Info.Installed == false {
 			ctx.Redirect("/install")
 		}
 		if err := ctx.View("index.html"); err != nil {

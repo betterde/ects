@@ -1,6 +1,11 @@
 package system
 
+type Information struct {
+	Version    string `json:"version"`
+	Installed  bool   `json:"installed"`
+	Permission bool   `json:"permission"`
+}
+
 var (
-	Version = "0.1.0"
-	Installed bool
+	Info *Information
 )

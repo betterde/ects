@@ -35,4 +35,5 @@ require (
 	github.com/spf13/pflag v1.0.3 // indirect
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67 // indirect
 	gopkg.in/go-playground/validator.v9 v9.27.0
+	gopkg.in/yaml.v2 v2.2.2
 )

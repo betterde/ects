@@ -26,7 +26,7 @@ var masterCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(masterCmd)
 	config.Conf = config.Init()
-	masterCmd.PersistentFlags().StringVarP(&config.Path, "config", "c", "/etc/ects/ects.conf", "Set configuration file")
+	masterCmd.PersistentFlags().StringVarP(&config.Path, "config", "c", "/etc/ects/ects.yaml", "Set configuration file")
 	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
 }
@@ -34,7 +34,10 @@ func init() {
 func bootstrap() {
 	var err error
 	// 判断是否已经安装
-	system.Installed, err = config.CheckConfigFile(config.Path)
+	system.Info = &system.Information{
+		Version: rootCmd.Version,
+	}
+	system.Info.Installed, system.Info.Permission, err = config.CheckConfigFile(config.Path)
 
 	if err != nil {
 		// TODO
