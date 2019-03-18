@@ -95,6 +95,10 @@ func (instance *AuthenticationController) SignUpHandler(ctx iris.Context) {
 		Name: params.Name,
 	}
 
-	user.PasswordGenerator(params.Password)
+	hash, err := models.GeneratePassword(params.Password)
+	if err != nil {
+		// TODO
+	}
+	user.Password = string(hash)
 	user.Store()
 }

@@ -50,7 +50,7 @@ require (
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 	github.com/yudai/pp v2.0.1+incompatible // indirect
-	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67 // indirect
+	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
 	golang.org/x/sys v0.0.0-20190312061237-fead79001313 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v9 v9.27.0
