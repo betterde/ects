@@ -33,3 +33,19 @@ func ValidationError(message string) *Response {
 		Data: make(map[string]interface{}),
 	}
 }
+
+func InternalServerError(message string, data interface{}) *Response {
+	return &Response{
+		Code: iris.StatusInternalServerError,
+		Message: message,
+		Data: data,
+	}
+}
+
+func Send(code int, message string, data interface{}) *Response {
+	return &Response{
+		Code: code,
+		Message: message,
+		Data: data,
+	}
+}
