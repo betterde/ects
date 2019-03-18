@@ -79,7 +79,7 @@
                 </el-col>
                 <el-col :span="24">
                   <el-form-item prop="pass">
-                    <el-input v-model="config.database.pass" placeholder="数据库密码"></el-input>
+                    <el-input v-model="config.database.pass" placeholder="数据库密码" show-password></el-input>
                   </el-form-item>
                 </el-col>
               </el-form>
@@ -97,10 +97,10 @@
                   <el-input v-model="config.user.email" placeholder="邮箱"></el-input>
                 </el-form-item>
                 <el-form-item prop="pass">
-                  <el-input v-model="config.user.pass" placeholder="密码"></el-input>
+                  <el-input v-model="config.user.pass" placeholder="密码" show-password></el-input>
                 </el-form-item>
                 <el-form-item prop="confirm">
-                  <el-input v-model="config.user.confirm" placeholder="确认密码"></el-input>
+                  <el-input v-model="config.user.confirm" placeholder="确认密码" show-password></el-input>
                 </el-form-item>
               </el-form>
               <div class="footer">
@@ -114,7 +114,7 @@
               </el-progress>
               <h2 style="color: #8c939d; margin: 40px 0;">系统初始化完成</h2>
               <div class="footer">
-                <el-button type="primary" @click="confirm">进入后台</el-button>
+                <el-button type="primary" @click="confirm('index')">进入后台</el-button>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@
             host: "localhost",
             port: 3306,
             user: "root",
-            pass: "chopin",
+            pass: "George@1994",
             name: "ects",
             char: "utf8mb4"
           },
@@ -231,16 +231,23 @@
       }
     },
     methods: {
+      /**
+       * 后退
+       */
       back() {
         if (this.step >= 1) {
           this.step -= 1;
         }
       },
+      /**
+       * 表单验证
+       */
       confirm(form) {
         if (form === 'permission') {
           this.next();
+        } else if (form === 'index') {
+          window.location.href = '/';
         } else {
-          window.console.log(this.step);
           this.$refs[form].validate((valid) => {
             if (valid) {
               this.next();
@@ -251,6 +258,9 @@
           });
         }
       },
+      /**
+       * 进入下一步
+       */
       next() {
         if (this.step < 3) {
           this.step += 1;
@@ -258,14 +268,29 @@
           this.submit();
         }
       },
+      /**
+       * 提交配置信息
+       */
       submit() {
         api.system.install(this.config).then(res => {
-          this.step += 1;
-        }).catch(err => {
-          window.console.log(err);
-        })
+          if (res.code !== 200) {
+            this.$notify.error({
+              title: "错误",
+              message: res.message,
+            });
+          } else {
+            this.$message({
+              message: '恭喜你，系统安装成功',
+              type: 'success'
+            });
+            this.step += 1;
+          }
+        });
       }
     },
+    /**
+     * 获取权限信息
+     */
     mounted() {
       api.system.fetch().then(res => {
         this.info.version = res.data.version;
