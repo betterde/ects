@@ -1,10 +1,10 @@
 package config
 
 import (
-	"github.com/betterde/ects/internal/utils/system"
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
 )
 
 type Config struct {
@@ -39,19 +39,39 @@ func Init() *Config {
 // 检查配置文件是否存在
 func CheckConfigFile(path string) (bool, bool, error) {
 	_, err := os.Stat(path)
-	permission := os.IsPermission(err)
-	exist := os.IsExist(err)
+	permission := true
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, 0666)
+
+	if err != nil {
+		if os.IsPermission(err) {
+			permission = false
+			log.Printf("Write %s Permission denied \n", path)
+			//os.Exit(1)
+		}
+	}
+
+	defer func() {
+		if err := file.Close(); err != nil {
+			// TODO
+		}
+	}()
+
+	exist := !os.IsNotExist(err)
 	return exist, permission, err
 }
 
 // 写入配置文件
-func WriteConfigToFile(path string, content []byte) bool {
-	if system.Info.Permission {
-		if err := ioutil.WriteFile(path, content, 0755); err != nil {
-			panic(err)
+func WriteConfigToFile(file string, content []byte) bool {
+	dir := path.Dir(file)
+	_, err := os.Stat(dir)
+	if err != nil {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			log.Panicln(err)
 		}
-	} else {
-		log.Printf("Write %s Permission denied \n", path)
+	}
+	if err := ioutil.WriteFile(file, content, 0666); err != nil {
+		log.Println(os.IsNotExist(err))
+		log.Println(err)
 	}
 	return true
 }
