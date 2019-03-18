@@ -4,7 +4,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 )
 
 type Config struct {
@@ -32,23 +31,13 @@ var (
 )
 
 func Init() *Config {
-	conf := &Config{}
-	return conf
+	return &Config{}
 }
 
 // 检查配置文件是否存在
-func CheckConfigFile(path string) (bool, bool, error) {
+func CheckConfigFile(path string) (bool, error) {
 	_, err := os.Stat(path)
-	permission := true
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, 0666)
-
-	if err != nil {
-		if os.IsPermission(err) {
-			permission = false
-			log.Printf("Write %s Permission denied \n", path)
-			//os.Exit(1)
-		}
-	}
 
 	defer func() {
 		if err := file.Close(); err != nil {
@@ -57,19 +46,40 @@ func CheckConfigFile(path string) (bool, bool, error) {
 	}()
 
 	exist := !os.IsNotExist(err)
-	return exist, permission, err
+	return exist, err
+}
+
+// 创建配置文件目录
+func CreateConfigDir(dir string) {
+	_, err := os.Stat(dir)
+
+	if err != nil && os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+	}
+}
+
+// 检查配置文件目录是否有权限
+func CheckConfigDirPermisson(dir string) bool {
+	info, err := os.Stat(dir)
+	if err != nil {
+		log.Println(err)
+	}
+	mode := info.Mode()
+	perm := mode.Perm()
+	flag := perm & os.FileMode(493)
+	if flag == 493 {
+		return true
+	}
+
+	return false
 }
 
 // 写入配置文件
 func WriteConfigToFile(file string, content []byte) bool {
-	dir := path.Dir(file)
-	_, err := os.Stat(dir)
-	if err != nil {
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			log.Panicln(err)
-		}
-	}
-	if err := ioutil.WriteFile(file, content, 0666); err != nil {
+	if err := ioutil.WriteFile(file, content, 0644); err != nil {
 		log.Println(os.IsNotExist(err))
 		log.Println(err)
 	}

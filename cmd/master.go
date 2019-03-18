@@ -10,6 +10,7 @@ import (
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/spf13/cobra"
 	"log"
+	"path"
 )
 
 // masterCmd represents the master command
@@ -37,11 +38,13 @@ func bootstrap() {
 	system.Info = &system.Information{
 		Version: rootCmd.Version,
 	}
-	system.Info.Installed, system.Info.Permission, err = config.CheckConfigFile(config.Path)
-
+	system.Info.Installed, err = config.CheckConfigFile(config.Path)
 	if err != nil {
 		// TODO
 	}
+	dir := path.Dir(config.Path)
+	config.CreateConfigDir(dir)
+	system.Info.Permission = config.CheckConfigDirPermisson(dir)
 }
 
 func start(addr string) {
