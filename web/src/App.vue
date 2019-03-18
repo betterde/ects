@@ -5,7 +5,7 @@
         <el-row :gutter="20">
           <el-col :span="4">
             <div class="grid-content">
-              <h2 style="line-height: 36px; color: #8c939d">Elastic Crontab System</h2>
+              <h2 style="line-height: 36px; color: #8c939d">ECTS</h2>
             </div>
           </el-col>
           <el-col :span="16">
