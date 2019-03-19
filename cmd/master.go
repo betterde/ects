@@ -49,7 +49,6 @@ func bootstrap() {
 
 func start(addr string) {
 	app := iris.New()
-	app.Use(iris.Gzip)
 	app.Use(recover.New())
 	app.Use(logger.New())
 
