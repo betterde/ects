@@ -37,7 +37,7 @@ func Connection() (*xorm.Engine, error) {
 
 // 定时Ping，保证连接不被服务器断开
 func keepAlived() {
-	t := time.Tick(180 * time.Second)
+	t := time.Tick(60 * time.Second)
 	for {
 		<-t
 		if err := Engine.Ping(); err != nil {
