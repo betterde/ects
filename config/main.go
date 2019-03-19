@@ -19,9 +19,15 @@ type Config struct {
 		Pass string `json:"pass" yaml:"pass"`
 		Char string `json:"char" yaml:"char"`
 	}
+	User struct{
+		Name    string `json:"name" validate:"required" yaml:"-"`
+		Email   string `json:"email" validate:"required" yaml:"-"`
+		Pass    string `json:"pass" validate:"required" yaml:"-"`
+		Confirm string `json:"confirm" validate:"required" yaml:"-"`
+	} `yaml:"-"`
 	Auth struct {
 		Secret string `json:"secret" yaml:"secret"`
-		TTL    int    `json:"ttl" yaml:"ttl"`
+		TTL    int64    `json:"ttl" yaml:"ttl"`
 	}
 }
 

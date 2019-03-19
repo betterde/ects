@@ -5,14 +5,16 @@ import (
 )
 
 type User struct {
-	ID        string `json:"id" xorm:"char(32) notnull unique 'id'"`
+	ID        string `json:"id" xorm:"char(36) notnull unique 'id'"`
 	Name      string `json:"name" xorm:"varchar(32) notnull"`
 	Email     string `json:"email" xorm:"varchar(64) notnull unique"`
 	Password  string `json:"-" xorm:"varchar(128) notnull"`
-	Avatar    string `json:"avatar" xorm:"varchar(255) null"`
-	GroupId   int64  `json:"group_id" xorm:"varchar(32) int index"`
+	Avatar    string `json:"avatar" xorm:"varchar(255) notnull default ''"`
+	GroupId   int64  `json:"group_id" xorm:"varchar(36) int index"`
+	Manager   bool	`json:"manager" xorm:"tinyint notnull default 0"`
 	CreatedAt string `json:"created_at" xorm:"datetime notnull created"`
 	UpdatedAt string `json:"updated_at" xorm:"datetime null updated"`
+	DeletedAt string `json:"deleted_at" xorm:"datetime null deleted"`
 	Model     `json:"-" xorm:"-"`
 }
 

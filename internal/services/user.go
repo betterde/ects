@@ -43,7 +43,7 @@ func (s *userService) Attempt(username, passwod string) string {
 
 	}
 
-	token, err := issueToken(user)
+	token, err := IssueToken(user)
 
 	if err != nil {
 
@@ -53,12 +53,12 @@ func (s *userService) Attempt(username, passwod string) string {
 }
 
 // 为用户颁发Access Token
-func issueToken(user *models.User) (string, error) {
+func IssueToken(user *models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss": "ects",
 		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(100 * time.Second).Unix(),
+		"exp": time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
 		"nbf": time.Now().Unix(),
 		"sub": user.ID,
 	})
