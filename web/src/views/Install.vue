@@ -252,7 +252,6 @@
             if (valid) {
               this.next();
             } else {
-              window.console.log('error submit!!');
               return false;
             }
           });
@@ -284,6 +283,7 @@
               type: 'success'
             });
             this.step += 1;
+            localStorage.setItem("access_token", res.data.access_token);
           }
         });
       }
