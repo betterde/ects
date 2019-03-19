@@ -8,7 +8,7 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
-	"time"
+	"log"
 )
 
 type (
@@ -52,20 +52,19 @@ func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 	err := validate.Struct(params)
 
 	if err != nil {
+		ctx.StatusCode(iris.StatusUnprocessableEntity)
 		if _, err := ctx.JSON(response.ValidationError("用户名和密码不能为空")); err != nil {
-			// TODO Add logger
+			log.Println(err)
 		}
 		return
 	}
-
-	deadline := time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix()
 
 	token := instance.Service.Attempt(params.Username, params.Password)
 
 	if _, err := ctx.JSON(response.Success("登录成功", SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
-		ExpiresIn:   deadline,
+		ExpiresIn:   config.Conf.Auth.TTL,
 	})); err != nil {
 		// TODO Add logger
 	}
