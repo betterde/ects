@@ -1,1 +1,2 @@
-export const SET_SYSTEM = 'SET_SYSTEM';
+export const SET_PROFILE = 'SET_PROFILE';
+export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';

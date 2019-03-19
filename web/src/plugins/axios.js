@@ -1,7 +1,8 @@
 "use strict";
 
 import Vue from 'vue';
-import axios from "axios";
+import axios from 'axios'
+import store from '../store'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -15,17 +16,16 @@ let config = {
 };
 
 const _axios = axios.create(config);
+const access_token = store.state.account.access_token;
 
-_axios.interceptors.request.use(
-  function(config) {
-    // Do something before request is sent
-    return config;
-  },
-  function(error) {
-    // Do something with request error
-    return Promise.reject(error);
+_axios.interceptors.request.use(config => {
+  if (access_token) {
+    config.headers.Authorization = `Bearer ${access_token}`;
   }
-);
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
 
 // Add a response interceptor
 _axios.interceptors.response.use(

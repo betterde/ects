@@ -5,7 +5,7 @@ export default {
    * 获取系统信息
    * @returns {*}
    */
-  fetch () {
+  fetch() {
     return Vue.axios.get('/api/install');
   },
   /**
