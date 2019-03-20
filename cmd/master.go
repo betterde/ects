@@ -3,12 +3,15 @@ package cmd
 import (
 	"fmt"
 	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/models"
 	"github.com/betterde/ects/internal/routes"
 	"github.com/betterde/ects/internal/utils/system"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"log"
 	"path"
 )
@@ -39,12 +42,25 @@ func bootstrap() {
 		Version: rootCmd.Version,
 	}
 	system.Info.Installed, err = config.CheckConfigFile(config.Path)
-	if err != nil {
-		// TODO
+
+	if system.Info.Installed {
+		file, err := ioutil.ReadFile(config.Path)
+		if err != nil {
+			log.Println(err)
+		}
+		err = yaml.Unmarshal(file, &config.Conf)
+		if err != nil {
+			log.Println(err)
+		}
+		models.Engine, err = models.Connection()
+	} else {
+		if err != nil {
+			// TODO
+		}
+		dir := path.Dir(config.Path)
+		config.CreateConfigDir(dir)
+		system.Info.Permission = config.CheckConfigDirPermisson(dir)
 	}
-	dir := path.Dir(config.Path)
-	config.CreateConfigDir(dir)
-	system.Info.Permission = config.CheckConfigDirPermisson(dir)
 }
 
 func start(addr string) {

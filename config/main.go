@@ -43,14 +43,6 @@ func Init() *Config {
 // 检查配置文件是否存在
 func CheckConfigFile(path string) (bool, error) {
 	_, err := os.Stat(path)
-	file, err := os.OpenFile(path, os.O_WRONLY|os.O_TRUNC, 0666)
-
-	defer func() {
-		if err := file.Close(); err != nil {
-			// TODO
-		}
-	}()
-
 	exist := !os.IsNotExist(err)
 	return exist, err
 }
