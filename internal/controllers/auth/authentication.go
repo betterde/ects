@@ -105,5 +105,5 @@ func (instance *AuthenticationController) SignUpHandler(ctx iris.Context) {
 		// TODO
 	}
 	user.Password = string(hash)
-	user.Store()
+	user.Save()
 }

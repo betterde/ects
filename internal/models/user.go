@@ -29,10 +29,6 @@ func ValidatePassword(password string, hashed []byte) (bool, error) {
 	return true, nil
 }
 
-func (user *User) Store() *User {
-	return user
-}
-
 func (user *User) Save() error {
 	_, err := Engine.Id(user.ID).Update(&user)
 	return err
