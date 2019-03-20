@@ -43,7 +43,7 @@ router.beforeEach((to, from, next) => {
     //通过access_token判断用户是否已经登录
     if (!access_token) {
       next({
-        path: '/login'
+        path: '/signin'
       })
     } else {
       next()

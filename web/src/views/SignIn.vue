@@ -105,23 +105,19 @@
     background-repeat: repeat-x;
     height: 100%;
     .panel-title {
+      font-size: 28px;
       margin: 0 0 40px 0;
     }
     .footer-row {
       height: 100%;
       z-index: 0;
     }
-    .copyright {
-      font-size: 12px;
-      color: #e4e7ed;
-    }
   }
   .login-panel {
     background-color: #FFF;
     padding: 40px;
-    /*height: 400px;*/
     border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .05);
     width: 400px;
     display: inline-block;
     max-width: 100%;
