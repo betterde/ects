@@ -4,7 +4,6 @@ import (
 	"github.com/betterde/ects/internal/middleware"
 	"github.com/betterde/ects/internal/utils/system"
 	"github.com/betterde/ects/web"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"log"
@@ -57,15 +56,11 @@ func Register(app *iris.Application) {
 			// 团队路由
 			mvc.Configure(org.Party("/team"), teams)
 		}))
+
+		// 账户路由
+		mvc.Configure(api.PartyFunc("/account", func(account iris.Party) {
+			// 用户个人信息
+			mvc.Configure(account.Party("/profile"), profile)
+		}))
 	}))
-
-	app.Get("/ping", myHandler)
-}
-
-func myHandler(ctx iris.Context) {
-	user := ctx.Values().Get("jwt").(*jwt.Token)
-
-	claims, _ := user.Claims.(jwt.MapClaims)
-
-	ctx.Writef("%d", int64(claims["sub"].(float64)))
 }
