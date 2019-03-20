@@ -1,55 +1,70 @@
 package services
 
 import (
+	"errors"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/models"
-	"github.com/betterde/ects/internal/repositories"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/go-xorm/builder"
 	"log"
 	"time"
 )
 
 type UserService interface {
 	Users() []models.User
-	Attempt(username, password string) string
+	FindByID(id string) (*models.User, error)
+	Attempt(username, password string) (string, error)
 }
 
-func NewUserService(repo repositories.UserRepository) UserService {
-	return &userService{
-		repo: repo,
-	}
+func NewUserService() UserService {
+	return &userService{}
 }
 
 type userService struct {
-	repo repositories.UserRepository
 }
 
-func (s *userService) Users() []models.User {
-	return s.repo.SelectMany(func(_ models.User) bool {
-		return true
-	}, -1)
+func (service *userService) Users() []models.User {
+	return []models.User{}
 }
 
 // 验证用户凭证
-func (s *userService) Attempt(username, passwod string) string {
-	log.Println(username, passwod)
-	if username == "" || passwod == "" {
-		return ""
+func (service *userService) Attempt(username, passwod string) (token string, err error) {
+	user, err := service.RetrieveByCredentials(username, passwod)
+	token, err = IssueToken(user)
+	return token, err
+}
+
+// 根据用户凭证获取用户模型
+func (service *userService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
+	user, err = service.FindByEmail(username)
+	result, err := models.ValidatePassword(password, []byte(user.Password))
+
+	if result {
+		return user, err
 	}
 
-	user, err := s.repo.RetrieveByCredentials(username, passwod)
+	return nil, errors.New("用户名或密码错误")
+}
 
+// 根据用户邮箱查询用户信息
+func (service *userService) FindByEmail(email string) (user *models.User, err error) {
+	_, err = models.Engine.Where(builder.Eq{"email": email}).Get(user)
+	return
+}
+
+// 根据用户ID获取用户信息
+func (service *userService) FindByID(id string) (*models.User, error) {
+	var user models.User
+	result, err := models.Engine.Id(id).Get(&user)
 	if err != nil {
-
+		log.Println(err)
 	}
 
-	token, err := IssueToken(user)
-
-	if err != nil {
-
+	if result {
+		return &user, nil
 	}
 
-	return token
+	return &user, errors.New("用户不存在")
 }
 
 // 为用户颁发Access Token

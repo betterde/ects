@@ -14,6 +14,7 @@ require (
 	github.com/go-playground/locales v0.12.1 // indirect
 	github.com/go-playground/universal-translator v0.16.0 // indirect
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/go-xorm/builder v0.3.2
 	github.com/go-xorm/xorm v0.7.1
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect

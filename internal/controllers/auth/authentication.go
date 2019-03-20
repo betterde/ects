@@ -59,7 +59,13 @@ func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 		return
 	}
 
-	token := instance.Service.Attempt(params.Username, params.Password)
+	token, err := instance.Service.Attempt(params.Username, params.Password)
+	if err != nil {
+		if _, err := ctx.JSON(response.UnAuthenticated(err.Error())); err != nil {
+			log.Println(err)
+		}
+		return
+	}
 
 	if _, err := ctx.JSON(response.Success("登录成功", SignInSuccess{
 		AccessToken: token,
