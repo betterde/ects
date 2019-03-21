@@ -18,6 +18,8 @@ func Register(app *iris.Application) {
 		}
 	})
 
+	mvc.Configure(app.Party("/metrics"), registerWebSocket)
+
 	// 接口路由
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
 		// 安装路由
