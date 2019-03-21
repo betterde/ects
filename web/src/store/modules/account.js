@@ -55,13 +55,15 @@ export default {
     }
   },
   actions: {
-    signIn({ commit }, params) {
-      return api.account.signin(params).then(res => {
-        commit(types.SET_ACCESS_TOKEN, res.data);
-        return res;
-      }).catch(err => {
-        commit(types.SET_ACCESS_TOKEN, false);
-        return err.response.data;
+    signIn({ dispatch, commit }, params) {
+      return new Promise((resolve, reject) => {
+        api.account.signin(params).then(res => {
+          commit(types.SET_ACCESS_TOKEN, res.data);
+        }).catch(err => {
+          commit(types.SET_ACCESS_TOKEN, false);
+          return err.response.data;
+        });
+        resolve();
       });
     },
     fetchProfile({ commit }) {

@@ -35,9 +35,6 @@
        * 此时调用fetchProfile 这个action 获取用户信息
        */
       access_token() {
-        store.dispatch('fetchProfile').then(res => {
-          window.console.log(res)
-        });
       },
     },
     mounted() {

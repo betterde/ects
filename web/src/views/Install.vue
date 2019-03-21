@@ -174,9 +174,9 @@
           },
           user: {
             name: "George",
-            email: "geroge@betterde.com",
-            pass: "chopin",
-            confirm: "chopin"
+            email: "george@betterde.com",
+            pass: "George@1994",
+            confirm: "George@1994"
           }
         },
         serviceRules: {
