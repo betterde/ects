@@ -22,10 +22,12 @@ func Register(app *iris.Application) {
 
 	// 页面路由
 	app.Get("/", func(ctx iris.Context) {
+		app.Use(iris.Gzip)
 		// 如果系统未安装则跳转到安装页面
 		if system.Info.Installed == false {
 			ctx.Redirect("/install")
 		}
+
 		if err := ctx.View("index.html"); err != nil {
 			log.Println(err)
 		}
@@ -33,6 +35,11 @@ func Register(app *iris.Application) {
 
 	// 页面路由
 	app.Get("/install", func(ctx iris.Context) {
+		// 如果已经安装则跳转到首页
+		if system.Info.Installed {
+			ctx.Redirect("/")
+		}
+
 		if err := ctx.View("install.html"); err != nil {
 			log.Println(err)
 		}
