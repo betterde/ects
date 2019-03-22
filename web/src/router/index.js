@@ -26,7 +26,12 @@ const router = new Router({
     },
     {
       // 会匹配所有路径
-      path: '*'
+      path: '*',
+      name: "notfound",
+      meta: {
+        requiresAuth: false
+      },
+      component: () => import('../views/NotFound.vue')
     }
   ]
 });
@@ -35,6 +40,16 @@ const router = new Router({
  * 路由拦截
  */
 router.beforeEach((to, from, next) => {
+  // 如果跳转到NotFound页面则提前设置视图的Layout 为 guest
+  if (to.name === 'notfound') {
+    store.commit('SET_LAYOUT_CURRENT', 'guest');
+  }
+
+  // 如果从NotFound 页面返回，并且需要认证的话，则设置视图的Layout 为 backend
+  if (from.name === 'notfound' && to.meta.requiresAuth === true) {
+    store.commit('SET_LAYOUT_CURRENT', 'backend')
+  }
+
   /**
    * 判断前往的路由是否需要身份验证
    */

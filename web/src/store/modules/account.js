@@ -2,16 +2,24 @@ import Vue from 'vue'
 import api from '../../apis'
 import * as types from '../types'
 
+let profile = {
+  id: '',
+  name: '',
+  email: '',
+  avatar: '',
+  group_id: 0,
+  manager: false
+};
+
+let str = localStorage.getItem('profile');
+
+if (str) {
+  profile = global.JSON.parse(str);
+}
+
 export default {
   state: {
-    profile: {
-      id: '',
-      name: '',
-      email: global.JSON.parse(localStorage.getItem('profile')),
-      avatar: '',
-      group_id: 0,
-      manager: false
-    },
+    profile: profile,
     access_token: localStorage.getItem('access_token'),
   },
   mutations: {
@@ -55,24 +63,27 @@ export default {
     }
   },
   actions: {
-    signIn({ dispatch, commit }, params) {
+    signIn({ commit }, params) {
       return new Promise((resolve, reject) => {
         api.account.signin(params).then(res => {
           commit(types.SET_ACCESS_TOKEN, res.data);
+          resolve(res);
         }).catch(err => {
           commit(types.SET_ACCESS_TOKEN, false);
-          return err.response.data;
+          reject(err);
         });
-        resolve();
       });
     },
     fetchProfile({ commit }) {
-      api.account.profile().then(res => {
-        commit(types.SET_PROFILE, res.data)
-      }).catch(err => {
-        window.console.log(err);
-        commit(types.SET_PROFILE, false)
-      });
+      return new Promise((resolve, reject) => {
+        api.account.profile().then(res => {
+          commit(types.SET_PROFILE, res.data);
+          resolve(res);
+        }).catch(err => {
+          commit(types.SET_PROFILE, false);
+          reject(err);
+        });
+      })
     }
   }
 }

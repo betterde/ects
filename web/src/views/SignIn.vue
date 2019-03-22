@@ -14,8 +14,7 @@
                       placeholder="密码" show-password></el-input>
           </el-form-item>
           <el-form-item class="login-button">
-            <el-button type="primary" plain class="pull-right" style="width: 100%" @click="submit('signin')"
-                       :loading="loading">登录
+            <el-button type="primary" plain class="pull-right" style="width: 100%" @click="submit('signin')" :loading="loading">登录
             </el-button>
           </el-form-item>
           <div class="tips">
@@ -58,16 +57,16 @@
           if (valid) {
             this.loading = true;
             store.dispatch('signIn', this.credentials).then(() => {
-              store.dispatch("fetchProfile");
-              this.$message.success("登录成功");
-              setTimeout(() => {
-                this.$router.replace("/")
-              }, 800);
-              this.loading = false;
-            }).catch(() => {
-              this.$message.warning("登录失败");
+              store.dispatch("fetchProfile").then(() => {
+                this.$message.success("登录成功");
+                this.$router.replace("/");
+                this.loading = false;
+              });
+            }).catch(err => {
+              this.$message.warning(err.response.data.message);
             });
           } else {
+            this.loading = false;
             return false;
           }
         });

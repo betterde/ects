@@ -16,11 +16,10 @@ let config = {
 };
 
 const _axios = axios.create(config);
-const access_token = store.state.account.access_token;
 
 _axios.interceptors.request.use(config => {
-  if (access_token) {
-    config.headers.Authorization = `Bearer ${access_token}`;
+  if (store.state.account.access_token) {
+    config.headers.Authorization = `Bearer ${store.state.account.access_token}`;
   }
   return config;
 }, error => {

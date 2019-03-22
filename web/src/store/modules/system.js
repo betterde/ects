@@ -4,6 +4,12 @@ import * as types from '../types'
 
 export default {
   state: {
+    layout: {
+      current: "guest"
+    },
+    menu: {
+      active: "/"
+    },
     installed: false,
     version: ""
   },
@@ -11,6 +17,12 @@ export default {
     SET_SYSTEM: (state, data) => {
       Vue.set(state, 'installed', data.installed);
       Vue.set(state, 'version', data.version);
+    },
+    SET_MENU_ACTIVE: (state, data) => {
+      Vue.set(state.menu, 'active', data)
+    },
+    SET_LAYOUT_CURRENT: (state, data) => {
+      Vue.set(state.layout, 'current', data)
     }
   },
   actions: {

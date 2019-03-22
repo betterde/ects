@@ -3,18 +3,18 @@
     <el-header>
       <el-row :gutter="20">
         <el-col :span="4">
-          <div class="grid-content">
-            <h2 style="line-height: 36px; color: #8c939d">ECTS</h2>
+          <div class="grid-content logo">
+            <h3 style="line-height: 36px;"><router-link to="/">ECTS</router-link></h3>
           </div>
         </el-col>
         <el-col :span="16">
-          <el-menu :default-active="activeIndex" class="el-menu-nav" mode="horizontal" @select="handleSelect">
-            <el-menu-item index="1">系统概览</el-menu-item>
-            <el-menu-item index="2">任务管理</el-menu-item>
-            <el-menu-item index="3">节点管理</el-menu-item>
-            <el-menu-item index="4">团队管理</el-menu-item>
-            <el-menu-item index="5">人员管理</el-menu-item>
-            <el-submenu index="6">
+          <el-menu :default-active="menu.active" class="el-menu-nav" mode="horizontal" @select="handleSelect" router>
+            <el-menu-item index="/">系统概览</el-menu-item>
+            <el-menu-item index="/task">任务管理</el-menu-item>
+            <el-menu-item index="/worker">节点管理</el-menu-item>
+            <el-menu-item index="/team">团队管理</el-menu-item>
+            <el-menu-item index="/user">人员管理</el-menu-item>
+            <el-submenu index="/system">
               <template slot="title">系统管理</template>
               <el-menu-item index="6-1">系统日志</el-menu-item>
               <el-menu-item index="6-2">任务日志</el-menu-item>
@@ -23,52 +23,74 @@
           </el-menu>
         </el-col>
         <el-col :span="4">
-          <el-dropdown>
-              <span class="el-dropdown-link">
-                <div class="avatar grid-content"></div>
-              </span>
+          <el-dropdown trigger="click" @command="handleCommand">
+          <span class="el-dropdown-link">
+            <div class="avatar grid-content" v-html="profile.name.slice(0,1)"></div>
+          </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>消息通知</el-dropdown-item>
-              <el-dropdown-item>个人信息</el-dropdown-item>
-              <el-dropdown-item>退出登录</el-dropdown-item>
+              <el-dropdown-item command="a">消息通知</el-dropdown-item>
+              <el-dropdown-item command="a">个人信息</el-dropdown-item>
+              <el-dropdown-item command="signOut">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
       </el-row>
     </el-header>
-    <router-view>
-      <el-main>
-        <el-row :gutter="20">
-          <el-col :span="18" :offset="3"><div class="main-content"></div></el-col>
-        </el-row>
-      </el-main>
-    </router-view>
+    <el-main>
+      <el-row :gutter="20">
+        <el-col :span="18" :offset="3">
+          <router-view></router-view>
+        </el-col>
+      </el-row>
+    </el-main>
   </el-container>
 </template>
 
 <script>
+  import {mapState} from 'vuex'
+
   export default {
     name: 'backend',
     data() {
       return {
-        activeIndex: '1',
       }
     },
     methods: {
-      handleSelect(key, keyPath) {
-        window.console.log(key, keyPath);
+      handleSelect(key){
+        this.$store.commit('SET_MENU_ACTIVE', key);
+      },
+      handleCommand(command) {
+        switch (command) {
+          case 'signOut':
+            this.signOut();
+        }
+      },
+      signOut(){
+        this.$store.commit('SET_PROFILE', false);
+        this.$store.commit('SET_ACCESS_TOKEN', false);
+        this.$message.success("注销成功");
+        this.$router.push("/signin");
       }
-    }
+    },
+    computed: {
+      ...mapState({
+        menu: state => state.system.menu,
+        profile: state => state.account.profile,
+        access_token: state => state.account.access_token
+      })
+    },
   }
 </script>
 
 <style lang="scss">
   #app {
-    font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     height: 100%;
     text-align: center;
     background-color: #f0f2f5;
+
     .el-header {
+      width: 100%;
       background-color: #FFFFFF;
       box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       .el-dropdown {
@@ -96,28 +118,37 @@
     .el-container {
       height: 100%;
       min-height: 100%;
+
       .grid-content {
         margin: 12px 0;
         border-radius: 4px;
         min-height: 36px;
+        line-height: 36px;
+        font-size: 26px;
+        text-align: center;
+        cursor: pointer;
+        color: #e9e9e9;
+      }
+      .logo {
+        a {
+          color: #8c939d;
+        }
         text-align: left;
       }
     }
 
     .el-main {
-      height: auto;
+      height: 100%;
       display: block;
+
       .el-row {
         height: 100%;
       }
+
       .el-col {
         height: 100%;
       }
     }
-  }
-
-  .el-col {
-    border-radius: 4px;
   }
 
   .main-content {
