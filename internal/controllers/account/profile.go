@@ -13,6 +13,7 @@ type (
 		Service services.UserService
 	}
 	Profile struct {
+		ID      string `json:"id"`
 		Name    string `json:"name"`
 		Email   string `json:"email"`
 		Avatar  string `json:"avatar"`
@@ -34,6 +35,7 @@ func (instance *ProfileController) Get(ctx iris.Context) {
 		return
 	}
 	if _, err := ctx.JSON(response.Success("请求成功", &Profile{
+		ID:      user.ID,
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
