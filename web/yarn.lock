@@ -2939,9 +2939,9 @@ electron-to-chromium@^1.3.113:
   integrity sha1-scz2Gd9yla6he8aVHcaJYyYp5Kk=
 
 element-ui@^2.4.5:
-  version "2.6.1"
-  resolved "http://registry.npm.taobao.org/element-ui/download/element-ui-2.6.1.tgz#86db79ff5de9b1bcc3187b65b3772b0c54074718"
-  integrity sha1-htt5/13psbzDGHtls3crDFQHRxg=
+  version "2.6.3"
+  resolved "http://registry.npm.taobao.org/element-ui/download/element-ui-2.6.3.tgz#e5c87ca3cdc988586320c826872720a8cdc7db44"
+  integrity sha1-5ch8o83JiFhjIMgmhycgqM3H20Q=
   dependencies:
     async-validator "~1.8.1"
     babel-helper-vue-jsx-merge-props "^2.0.0"
@@ -8164,9 +8164,9 @@ vue-style-loader@^4.1.0:
     loader-utils "^1.0.2"
 
 vue-template-compiler@^2.5.21:
-  version "2.6.8"
-  resolved "http://registry.npm.taobao.org/vue-template-compiler/download/vue-template-compiler-2.6.8.tgz#750802604595134775b9c53141b9850b35255e1c"
-  integrity sha1-dQgCYEWVE0d1ucUxQbmFCzUlXhw=
+  version "2.6.10"
+  resolved "http://registry.npm.taobao.org/vue-template-compiler/download/vue-template-compiler-2.6.10.tgz#323b4f3495f04faa3503337a82f5d6507799c9cc"
+  integrity sha1-MjtPNJXwT6o1AzN6gvXWUHeZycw=
   dependencies:
     de-indent "^1.0.2"
     he "^1.1.0"
@@ -8177,9 +8177,9 @@ vue-template-es2015-compiler@^1.9.0:
   integrity sha1-HuO8mhbsv1EYvjNLsV+cRvgvWCU=
 
 vue@^2.6.6:
-  version "2.6.8"
-  resolved "http://registry.npm.taobao.org/vue/download/vue-2.6.8.tgz#f21cbc536bfc14f7d1d792a137bb12f69e60ea91"
-  integrity sha1-8hy8U2v8FPfR15KhN7sS9p5g6pE=
+  version "2.6.10"
+  resolved "http://registry.npm.taobao.org/vue/download/vue-2.6.10.tgz#a72b1a42a4d82a721ea438d1b6bf55e66195c637"
+  integrity sha1-pysaQqTYKnIepDjRtr9V5mGVxjc=
 
 vuex@^3.0.1:
   version "3.1.0"
