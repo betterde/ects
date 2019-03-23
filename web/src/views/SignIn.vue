@@ -37,7 +37,7 @@
         loading: false,
         credentials: {
           username: 'george@betterde.com',
-          password: 'chopin'
+          password: 'George@1994'
         },
         rules: {
           username: [
@@ -60,16 +60,15 @@
               store.dispatch("fetchProfile").then(() => {
                 this.$message.success("登录成功");
                 this.$router.replace("/");
-                this.loading = false;
               });
             }).catch(err => {
               this.$message.warning(err.response.data.message);
             });
           } else {
-            this.loading = false;
             return false;
           }
         });
+        this.loading = false;
       }
     },
     computed: {

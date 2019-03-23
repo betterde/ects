@@ -16,9 +16,8 @@
             <el-menu-item index="/user">人员管理</el-menu-item>
             <el-submenu index="/system">
               <template slot="title">系统管理</template>
-              <el-menu-item index="6-1">系统日志</el-menu-item>
-              <el-menu-item index="6-2">任务日志</el-menu-item>
-              <el-menu-item index="6-3">通知管理</el-menu-item>
+              <el-menu-item index="/log">系统日志</el-menu-item>
+              <el-menu-item index="/notification">通知管理</el-menu-item>
             </el-submenu>
           </el-menu>
         </el-col>
@@ -156,5 +155,6 @@
     border-radius: 4px;
     background-color: #FFFFFF;
     box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);
+    padding: 40px;
   }
 </style>

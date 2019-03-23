@@ -42,14 +42,23 @@
        */
       access_token(value) {
         if (value == null) {
-
+          window.console.log(value);
         }
       },
-    },
-    mounted() {
-      // 如果用户
-      if (this.profile.id) {
-        this.$store.commit("SET_LAYOUT_CURRENT", 'backend');
+      '$route' (to, from) {
+        if (from.path === '/' && to.name === 'notfound') {
+          this.$store.commit("SET_LAYOUT_CURRENT", 'guest');
+        }
+
+        if (from.path === '/' && to.name !== 'notfound') {
+          this.$store.commit("SET_LAYOUT_CURRENT", 'backend');
+        }
+
+        if (from.name === 'notfound') {
+          this.$store.commit('SET_MENU_ACTIVE', to.path);
+        }
+
+        this.$store.commit('SET_MENU_ACTIVE', to.path);
       }
     }
   }

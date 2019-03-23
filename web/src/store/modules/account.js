@@ -69,7 +69,6 @@ export default {
           commit(types.SET_ACCESS_TOKEN, res.data);
           resolve(res);
         }).catch(err => {
-          commit(types.SET_ACCESS_TOKEN, false);
           reject(err);
         });
       });

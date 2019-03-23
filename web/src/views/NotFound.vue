@@ -1,5 +1,5 @@
 <template>
-  <div class="page-error page-error-404 layout-full" :style="styles">
+  <div class="page-error page-error-404 layout-full">
     <div class="page animsition vertical-align text-center" data-animsition-in="fade-in" data-animsition-out="fade-out">
       <div class="page-content">
         <header>
@@ -11,19 +11,7 @@
     <el-row type="flex" align="bottom" class="footer-row">
       <el-col :span="24">
         <footer class="copyright page-copyright-inverse text-center">
-          <p>沪ICP备16025491号</p>
-          <p>Copyright 2014-2017,Tech-Retail（Shanghai）Co.,Ltd. All Rights Reserved.</p>
-          <div class="social">
-            <a class="btn btn-icon btn-pure" href="javascript:void(0)">
-              <i class="icon bd-twitter" aria-hidden="true"></i>
-            </a>
-            <a class="btn btn-icon btn-pure" href="javascript:void(0)">
-              <i class="icon bd-facebook" aria-hidden="true"></i>
-            </a>
-            <a class="btn btn-icon btn-pure" href="javascript:void(0)">
-              <i class="icon bd-google-plus" aria-hidden="true"></i>
-            </a>
-          </div>
+          <p>Copyright © 2018 Betterde.Inc. All Rights Reserved.</p>
         </footer>
       </el-col>
     </el-row>
@@ -58,6 +46,7 @@
       }
     },
     mounted () {
+      this.$store.commit("SET_LAYOUT_CURRENT", 'guest');
       /**
        * 设置定时器
        */
@@ -76,6 +65,9 @@
     color: #76838f;
     margin: 0;
     display: block;
+  }
+  .page-error {
+    height: 100%;
   }
   .layout-full {
     .page {

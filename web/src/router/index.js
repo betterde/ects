@@ -14,7 +14,55 @@ const router = new Router({
       meta: {
         requiresAuth: true
       },
-      component: () => import('../views/Dashboard.vue')
+      component: () => import('../views/Dashboard.vue'),
+    },
+    {
+      path: '/task',
+      name: 'task',
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('../views/Task.vue')
+    },
+    {
+      path: '/worker',
+      name: 'worker',
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('../views/Worker.vue')
+    },
+    {
+      path: '/team',
+      name: 'team',
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('../views/Team.vue')
+    },
+    {
+      path: '/user',
+      name: 'user',
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('../views/User.vue')
+    },
+    {
+      path: '/log',
+      name: 'log',
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('../views/Log.vue')
+    },
+    {
+      path: '/notification',
+      name: 'notification',
+      meta: {
+        requiresAuth: true
+      },
+      component: () => import('../views/Notification.vue')
     },
     {
       path: '/signin',
