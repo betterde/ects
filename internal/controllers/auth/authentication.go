@@ -61,6 +61,7 @@ func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 
 	token, err := instance.Service.Attempt(params.Username, params.Password)
 	if err != nil {
+		ctx.StatusCode(iris.StatusUnauthorized)
 		if _, err := ctx.JSON(response.UnAuthenticated(err.Error())); err != nil {
 			log.Println(err)
 		}
