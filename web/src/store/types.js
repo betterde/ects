@@ -1,0 +1,6 @@
+export const SET_SYSTEM = 'SET_SYSTEM';
+export const SET_MENU_ACTIVE = 'SET_MENU_ACTIVE';
+export const SET_LAYOUT_CURRENT = 'SET_LAYOUT_CURRENT';
+
+export const SET_PROFILE = 'SET_PROFILE';
+export const SET_ACCESS_TOKEN = 'SET_ACCESS_TOKEN';

@@ -5,8 +5,6 @@ import (
 	"github.com/betterde/ects/config"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/go-xorm/xorm"
-	"github.com/kataras/iris/core/errors"
-	"log"
 	"time"
 )
 
@@ -19,7 +17,7 @@ var Engine *xorm.Engine
 
 const DefaultTimeFormat = "2006-01-02 15:04:05"
 
-func Connection() *xorm.Engine {
+func Connection() (*xorm.Engine, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s",
 		config.Conf.Database.User,
 		config.Conf.Database.Pass,
@@ -32,22 +30,18 @@ func Connection() *xorm.Engine {
 	engine.SetMaxIdleConns(10)
 	engine.SetMaxOpenConns(30)
 
-	if err != nil {
-		log.Println(err)
-	}
-
 	go keepAlived()
 
-	return engine
+	return engine, err
 }
 
 // 定时Ping，保证连接不被服务器断开
 func keepAlived() {
-	t := time.Tick(180 * time.Second)
+	t := time.Tick(60 * time.Second)
 	for {
 		<-t
 		if err := Engine.Ping(); err != nil {
-			log.Println(err)
+			// TODO
 		}
 	}
 }
@@ -61,7 +55,7 @@ func Migrate() error {
 	for _, table := range tables {
 		exist, err := Engine.IsTableExist(table)
 		if exist {
-			return errors.New("数据表已存在")
+			continue
 		}
 
 		if err != nil {

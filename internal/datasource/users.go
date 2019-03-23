@@ -2,9 +2,9 @@ package datasource
 
 import "github.com/betterde/ects/internal/models"
 
-var Users =  map[int64]models.User {
-	1: {
-		ID: 1,
+var Users =  map[string]models.User {
+	"9527": {
+		ID: "9527",
 		Name: "George",
 		Email: "george@betterde.com",
 		Password: "George@1994",

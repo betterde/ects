@@ -26,10 +26,34 @@ func UnAuthenticated(message string) *Response {
 	}
 }
 
+func NotFound(message string) *Response {
+	return &Response{
+		Code: iris.StatusNotFound,
+		Message: message,
+		Data: make(map[string]interface{}),
+	}
+}
+
 func ValidationError(message string) *Response {
 	return &Response{
 		Code: iris.StatusUnprocessableEntity,
 		Message: message,
 		Data: make(map[string]interface{}),
+	}
+}
+
+func InternalServerError(message string, data interface{}) *Response {
+	return &Response{
+		Code: iris.StatusInternalServerError,
+		Message: message,
+		Data: data,
+	}
+}
+
+func Send(code int, message string, data interface{}) *Response {
+	return &Response{
+		Code: code,
+		Message: message,
+		Data: data,
 	}
 }

@@ -10,7 +10,7 @@ node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
+bindata.go
 # Editor directories and files
 .idea
 .vscode
