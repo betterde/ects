@@ -2,6 +2,12 @@ package websocket
 
 import (
 	"bytes"
+	"errors"
+	"github.com/betterde/ects/internal/services"
+	"github.com/betterde/ects/internal/utils/response"
+	"github.com/kataras/iris"
+	"log"
+	"net"
 	"sync"
 
 	"github.com/kataras/iris/context"
@@ -109,19 +115,31 @@ func (s *Server) Handler() context.Handler {
 	}
 }
 
-// Upgrade upgrades the HTTP Server connection to the WebSocket protocol.
-//
-// The responseHeader is included in the response to the client's upgrade
-// request. Use the responseHeader to specify cookies (Set-Cookie) and the
-// application negotiated subprotocol (Sec--Protocol).
-//
-// If the upgrade fails, then Upgrade replies to the client with an HTTP error
-// response and the return `Connection.Err()` is filled with that error.
-//
-// For a more high-level function use the `Handler()` and `OnConnecton` events.
-// This one does not starts the connection's writer and reader, so after your `On/OnMessage` events registration
-// the caller has to call the `Connection#Wait` function, otherwise the connection will be not handled.
+
 func (s *Server) Upgrade(ctx context.Context) Connection {
+	if ctx.URLParamExists("id") == false || ctx.URLParam("id") == "" {
+		ctx.StatusCode(iris.StatusUnprocessableEntity)
+		if _, err := ctx.JSON(response.ValidationError("缺少必要参数")); err != nil {
+			log.Println(err)
+		}
+		return &connection{err: errors.New("缺少必要参数")}
+	}
+
+	srv := services.NewWorkerService()
+	worker, err := srv.FindByID(ctx.URLParam("id"))
+	if err != nil {
+		if _, err := ctx.JSON(response.NotFound(err.Error())); err != nil {
+
+		}
+	}
+
+	worker.IP = net.ParseIP(ctx.RemoteAddr())
+	if err := worker.Update(); err != nil {
+		if _, err := ctx.JSON(response.NotFound(err.Error())); err != nil {
+
+		}
+	}
+
 	conn, err := s.upgrader.Upgrade(ctx.ResponseWriter(), ctx.Request(), ctx.ResponseWriter().Header())
 	if err != nil {
 		ctx.Application().Logger().Warnf("websocket error: %v\n", err)
@@ -129,7 +147,7 @@ func (s *Server) Upgrade(ctx context.Context) Connection {
 		return &connection{err: err}
 	}
 
-	return s.handleConnection(ctx, conn)
+	return s.handleConnection(ctx, conn, worker.ID)
 }
 
 func (s *Server) addConnection(c *connection) {
@@ -150,11 +168,9 @@ func (s *Server) getConnection(connID string) (*connection, bool) {
 
 // wrapConnection wraps an underline connection to an iris websocket connection.
 // It does NOT starts its writer, reader and event mux, the caller is responsible for that.
-func (s *Server) handleConnection(ctx context.Context, websocketConn UnderlineConnection) *connection {
-	// use the config's id generator (or the default) to create a websocket client/connection id
-	cid := s.config.IDGenerator(ctx)
+func (s *Server) handleConnection(ctx context.Context, websocketConn UnderlineConnection, id string) *connection {
 	// create the new connection
-	c := newConnection(ctx, s, websocketConn, cid)
+	c := newConnection(ctx, s, websocketConn, id)
 	// add the connection to the Server's list
 	s.addConnection(c)
 

@@ -30,16 +30,16 @@ module.exports = {
       }
     }
   },
-  configureWebpack: config => {
-    if (process.env.NODE_ENV === 'production') {
-      config.plugins.push(new CompressionPlugin({
-          algorithm: 'gzip',
-          test: /\.js$|\.css/,
-          threshold: 10240,
-          minRatio: 0.8,
-          deleteOriginalAssets: true
-        })
-      )
-    }
-  }
+  // configureWebpack: config => {
+  //   if (process.env.NODE_ENV === 'production') {
+  //     config.plugins.push(new CompressionPlugin({
+  //         algorithm: 'gzip',
+  //         test: /\.js$|\.css/,
+  //         threshold: 10240,
+  //         minRatio: 0.8,
+  //         deleteOriginalAssets: true
+  //       })
+  //     )
+  //   }
+  // }
 };
