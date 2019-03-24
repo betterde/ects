@@ -50,8 +50,14 @@
           this.$store.commit("SET_LAYOUT_CURRENT", 'guest');
         }
 
-        if (from.path === '/' && to.name !== 'notfound') {
-          this.$store.commit("SET_LAYOUT_CURRENT", 'backend');
+        if (from.path === '/') {
+          if (to.name !== 'notfound') {
+            this.$store.commit("SET_LAYOUT_CURRENT", 'backend');
+          }
+        }
+
+        if (to.name === 'signin') {
+          this.$store.commit("SET_LAYOUT_CURRENT", 'guest');
         }
 
         if (from.name === 'notfound') {

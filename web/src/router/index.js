@@ -98,6 +98,12 @@ router.beforeEach((to, from, next) => {
     store.commit('SET_LAYOUT_CURRENT', 'backend')
   }
 
+  if (store.state.account.access_token && to.path === '/signin') {
+    next({
+      path: "/"
+    })
+  }
+
   /**
    * 判断前往的路由是否需要身份验证
    */
