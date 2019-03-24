@@ -1,9 +1,5 @@
 package models
 
-import (
-	"net"
-)
-
 const (
 	STATUS_CONNECTED = "connected"
 	STATUS_DISCONNECTED = "disconnected"
@@ -13,7 +9,7 @@ type (
 	Worker struct {
 		ID string `json:"id" xorm:"pk char(36) notnull 'id'"`
 		Name string `json:"name" xorm:"varchar(255) notnull 'name'"`
-		IP net.IP `json:"ip" xorm:"int(10) null 'ip'"`
+		IP int64 `json:"ip" xorm:"int(10) null 'ip'"`
 		Status string `json:"status" xorm:"-"`
 		Remark string `json:"remark" xorm:"varchar(255) null 'remark'"`
 		CreatedAt string `json:"created_at" xorm:"datetime notnull created"`

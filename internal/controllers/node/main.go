@@ -5,7 +5,10 @@ import (
 	"github.com/betterde/ects/internal/services"
 	"github.com/betterde/ects/internal/utils/response"
 	"github.com/kataras/iris"
+	"github.com/satori/go.uuid"
 	"log"
+	"math/big"
+	"time"
 )
 
 type (
@@ -31,9 +34,13 @@ func (instance *WorkerController) Post(ctx iris.Context) {
 	}
 
 	var worker models.Worker
+	worker.ID = uuid.NewV4().String()
 	worker.Name = params.Name
 	worker.Remark = params.Remark
-	log.Println(worker)
+	worker.Status = models.STATUS_DISCONNECTED
+	worker.IP = big.NewInt(0).Int64()
+	worker.CreatedAt = time.Now().Format("2006-1-2 15:04:05")
+	worker.UpdatedAt = time.Now().Format("2006-1-2 15:04:05")
 	if err := worker.Store(); err != nil {
 		log.Println(err)
 		if _, err = ctx.JSON(response.Send(1062, "创建节点失败", err)); err != nil {
