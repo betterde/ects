@@ -57,12 +57,12 @@ const router = new Router({
       component: () => import('../views/Log.vue')
     },
     {
-      path: '/notification',
-      name: 'notification',
+      path: '/setting',
+      name: 'setting',
       meta: {
         requiresAuth: true
       },
-      component: () => import('../views/Notification.vue')
+      component: () => import('../views/Setting.vue')
     },
     {
       path: '/signin',
