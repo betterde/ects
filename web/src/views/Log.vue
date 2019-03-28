@@ -109,10 +109,10 @@
     },
     methods: {
       handleEdit(index, row) {
-
+        window.console.log(index, row)
       },
       handleDelete(index, row) {
-
+        window.console.log(index, row)
       }
     }
   }
