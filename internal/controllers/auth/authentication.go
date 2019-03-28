@@ -68,11 +68,11 @@ func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 		return
 	}
 
-	if _, err := ctx.JSON(response.Success("登录成功", SignInSuccess{
+	if _, err := ctx.JSON(response.Success("登录成功", response.Payload{"data": SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
 		ExpiresIn:   config.Conf.Auth.TTL,
-	})); err != nil {
+	}})); err != nil {
 		// TODO Add logger
 	}
 }

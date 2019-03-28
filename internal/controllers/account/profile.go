@@ -34,14 +34,14 @@ func (instance *ProfileController) Get(ctx iris.Context) {
 		}
 		return
 	}
-	if _, err := ctx.JSON(response.Success("请求成功", &Profile{
+	if _, err := ctx.JSON(response.Success("请求成功", response.Payload{"data": &Profile{
 		ID:      user.ID,
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
 		GroupId: user.GroupId,
 		Manager: user.Manager,
-	})); err != nil {
+	}})); err != nil {
 		log.Println(err)
 	}
 }

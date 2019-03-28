@@ -21,7 +21,7 @@ type (
 )
 
 func (instance *InstallationController) Get(ctx iris.Context) {
-	_, err := ctx.JSON(response.Success("请求成功", system.Info))
+	_, err := ctx.JSON(response.Success("请求成功", response.Payload{"data": system.Info}))
 
 	if err != nil {
 		// TODO
@@ -57,7 +57,7 @@ func (instance *InstallationController) Post(ctx iris.Context) {
 		models.Engine, err = models.Connection()
 
 		if err != nil {
-			if _, err = ctx.JSON(response.Success("数据库连接错误", err)); err != nil {
+			if _, err = ctx.JSON(response.Success("数据库连接错误", response.Payload{"data": err})); err != nil {
 				// TODO
 			}
 			return
@@ -104,11 +104,11 @@ func (instance *InstallationController) Post(ctx iris.Context) {
 
 	token, err := services.IssueToken(user)
 
-	if _, err := ctx.JSON(response.Success("安装成功", auth.SignInSuccess{
+	if _, err := ctx.JSON(response.Success("安装成功", response.Payload{"data": auth.SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
 		ExpiresIn:   time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
-	})); err != nil {
+	}})); err != nil {
 		// TODO Add logger
 	}
 }
