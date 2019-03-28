@@ -12,5 +12,5 @@ func registerWebSocket(application *mvc.Application) {
 		WriteBufferSize: 1024,
 	})
 	application.Register(ws.Upgrade)
-	application.Handle(new(socket.WebSocketController))
+	application.Handle(new(socket.Controller))
 }

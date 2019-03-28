@@ -1,4 +1,4 @@
-package node
+package worker
 
 import (
 	"github.com/betterde/ects/internal/models"
@@ -15,30 +15,30 @@ import (
 )
 
 type (
-	WorkerController struct {
+	Controller struct {
 		Service services.WorkerService
 	}
 
 	CreateRequest struct {
-		Name string `json:"name" validate:"required"`
+		Name   string `json:"name" validate:"required"`
 		Remark string `json:"remark"`
 	}
 
 	UpdateRequest struct {
-		Name string `json:"name" validate:"required"`
+		Name   string `json:"name" validate:"required"`
 		Remark string `json:"remark"`
 	}
 )
 
 // 获取节点列表
-func (instance *WorkerController) Get(ctx iris.Context) {
+func (instance *Controller) Get(ctx iris.Context) *response.Response {
 	var (
-		page int
+		page  int
 		limit int
 		start int
-		name string
+		name  string
 		total int64
-		err error
+		err   error
 	)
 	page = 1
 	limit = 10
@@ -54,7 +54,6 @@ func (instance *WorkerController) Get(ctx iris.Context) {
 			page = v
 		}
 	}
-
 
 	if value, exist := params["limit"]; exist == true {
 		v, err := strconv.Atoi(value)
@@ -84,17 +83,17 @@ func (instance *WorkerController) Get(ctx iris.Context) {
 		log.Println(err)
 	}
 
-	if _, err = ctx.JSON(response.Success("请求成功", response.Payload{"data": workers, "meta": &response.Meta{
-		Limit: limit,
-		Page: page,
-		Total: int(total),
-	}})); err != nil {
-		// TODO
-	}
+	return response.Success("请求成功", response.Payload{
+		"data": workers,
+		"meta": &response.Meta{
+			Limit: limit,
+			Page:  page,
+			Total: int(total),
+		}})
 }
 
 // 创建节点
-func (instance *WorkerController) Post(ctx iris.Context) *response.Response {
+func (instance *Controller) Post(ctx iris.Context) *response.Response {
 	var params CreateRequest
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -125,7 +124,7 @@ func (instance *WorkerController) Post(ctx iris.Context) *response.Response {
 }
 
 // 更新节点信息
-func (instance *WorkerController) PutBy(id string, ctx iris.Context) *response.Response {
+func (instance *Controller) PutBy(id string, ctx iris.Context) *response.Response {
 	var params UpdateRequest
 	var worker models.Worker
 	validate := validator.New()
@@ -155,16 +154,16 @@ func (instance *WorkerController) PutBy(id string, ctx iris.Context) *response.R
 		}
 	}
 
-	return response.Success("更新节点信息成功", response.Payload{"data": worker})
+	return response.Success("更新节点成功", response.Payload{"data": worker})
 }
 
 // 删除指定ID
-func (instance *WorkerController) DeleteBy(id string) *response.Response {
+func (instance *Controller) DeleteBy(id string) *response.Response {
 	worker := &models.Worker{
 		ID: id,
 	}
 
-	_, err :=  models.Engine.Delete(worker)
+	_, err := models.Engine.Delete(worker)
 	if err != nil {
 
 	}

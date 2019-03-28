@@ -12,7 +12,7 @@ import (
 )
 
 type (
-	AuthenticationController struct {
+	Controller struct {
 		Service services.UserService
 	}
 
@@ -36,13 +36,13 @@ type (
 )
 
 
-func (instance *AuthenticationController) BeforeActivation(request mvc.BeforeActivation) {
+func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signin", "SignInHandler")
 	request.Handle("POST", "/signout", "SignOutHandler")
 }
 
 // 用户登录逻辑
-func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
+func (instance *Controller) SignInHandler(ctx iris.Context) {
 	var params SignIn
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -78,12 +78,12 @@ func (instance *AuthenticationController) SignInHandler(ctx iris.Context) {
 }
 
 // 用户注销登陆
-func (instance *AuthenticationController) SignOutHandler(ctx iris.Context) {
+func (instance *Controller) SignOutHandler(ctx iris.Context) {
 
 }
 
 // 用户注册
-func (instance *AuthenticationController) SignUpHandler(ctx iris.Context) {
+func (instance *Controller) SignUpHandler(ctx iris.Context) {
 	var params SignUp
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {

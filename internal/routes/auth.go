@@ -8,5 +8,5 @@ import (
 
 func authentication(application *mvc.Application) {
 	application.Register(services.NewUserService())
-	application.Handle(new(auth.AuthenticationController))
+	application.Handle(new(auth.Controller))
 }

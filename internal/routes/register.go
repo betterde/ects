@@ -32,6 +32,9 @@ func Register(app *iris.Application) {
 		// 节点管理路由
 		mvc.Configure(api.Party("/worker"), registerWorker)
 
+		// 任务管理
+		mvc.Configure(api.Party("/task"), registerTask)
+
 		// 组织路由
 		mvc.Configure(api.PartyFunc("/organization", func(org iris.Party) {
 			// 用户路由

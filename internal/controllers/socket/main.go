@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	WebSocketController struct {
+	Controller struct {
 		Conn websocket.Connection
 	}
 )
@@ -23,7 +23,7 @@ func decrement() uint64 {
 	return atomic.AddUint64(&visits, ^uint64(0))
 }
 
-func (c *WebSocketController) Get(ctx iris.Context) {
+func (c *Controller) Get(ctx iris.Context) {
 	if c.Conn.Err() != nil {
 		log.Println(c.Conn.Err())
 	}
@@ -33,12 +33,12 @@ func (c *WebSocketController) Get(ctx iris.Context) {
 	//c.Conn.Wait()
 }
 
-func (c *WebSocketController) update() {
+func (c *Controller) update() {
 	newCount := increment()
 	c.Conn.To(websocket.All).Emit("visit", newCount)
 }
 
-func (c *WebSocketController) onLeave(roomName string) {
+func (c *Controller) onLeave(roomName string) {
 	newCount := decrement()
 	c.Conn.To(websocket.Broadcast).Emit("visit", newCount)
 }

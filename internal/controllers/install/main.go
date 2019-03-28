@@ -16,11 +16,11 @@ import (
 )
 
 type (
-	InstallationController struct {
+	Controller struct {
 	}
 )
 
-func (instance *InstallationController) Get(ctx iris.Context) {
+func (instance *Controller) Get(ctx iris.Context) {
 	_, err := ctx.JSON(response.Success("请求成功", response.Payload{"data": system.Info}))
 
 	if err != nil {
@@ -29,7 +29,7 @@ func (instance *InstallationController) Get(ctx iris.Context) {
 }
 
 // 根据用户填写配置数据生成配置文件
-func (instance *InstallationController) Post(ctx iris.Context) {
+func (instance *Controller) Post(ctx iris.Context) {
 	var err error
 	validate := validator.New()
 
