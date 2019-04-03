@@ -18,6 +18,15 @@ let config = {
 const _axios = axios.create(config);
 
 _axios.interceptors.request.use(config => {
+  /**
+   * 过滤空参
+   */
+  for(let key in config.params) {
+    if (config.params.hasOwnProperty(key) && (config.params[key] === "" || config.params[key] === null)) {
+      delete config.params[key];
+    }
+  }
+
   if (store.state.account.access_token) {
     config.headers.Authorization = `Bearer ${store.state.account.access_token}`;
   }
@@ -34,7 +43,7 @@ _axios.interceptors.response.use(
   },
   function(error) {
     // Do something with response error
-    return Promise.reject(error);
+    return Promise.reject(error.response);
   }
 );
 
