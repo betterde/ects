@@ -9,7 +9,6 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
-	"math/big"
 	"strconv"
 	"time"
 )
@@ -36,13 +35,13 @@ func (instance *Controller) Get(ctx iris.Context) *response.Response {
 		page  int
 		limit int
 		start int
-		name  string
+		search  string
 		total int64
 		err   error
 	)
 	page = 1
 	limit = 10
-	name = ""
+	search = ""
 	params := ctx.URLParams()
 
 	if value, exist := params["page"]; exist == true {
@@ -65,18 +64,18 @@ func (instance *Controller) Get(ctx iris.Context) *response.Response {
 		}
 	}
 
-	if value, exist := params["name"]; exist == true {
-		name = value
+	if value, exist := params["search"]; exist == true {
+		search = value
 	}
 
 	start = (page - 1) * limit
 	workers := make([]models.Worker, 0)
-	if name == "" {
+	if search == "" {
 		total, err = models.Engine.Count(&models.Worker{})
 		err = models.Engine.Limit(limit, start).Find(&workers)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", name}).Count(&models.Worker{})
-		err = models.Engine.Where(builder.Like{"name", name}).Limit(limit, start).Find(&workers)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Worker{})
+		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&workers)
 	}
 
 	if err != nil {
@@ -112,7 +111,7 @@ func (instance *Controller) Post(ctx iris.Context) *response.Response {
 	worker.Name = params.Name
 	worker.Remark = params.Remark
 	worker.Status = models.STATUS_DISCONNECTED
-	worker.IP = big.NewInt(0).Int64()
+	worker.IP = ""
 	worker.CreatedAt = time.Now().Format("2006-1-2 15:04:05")
 	worker.UpdatedAt = time.Now().Format("2006-1-2 15:04:05")
 	if err := worker.Store(); err != nil {
