@@ -6,8 +6,6 @@ import (
 	"github.com/betterde/ects/internal/utils/response"
 	"github.com/kataras/iris"
 	"log"
-	"math/big"
-	"net"
 	"sync"
 
 	"github.com/kataras/iris/context"
@@ -131,9 +129,7 @@ func (s *Server) Upgrade(ctx context.Context) Connection {
 		}
 	}
 
-	ret := big.NewInt(0)
-	ip := net.ParseIP(ctx.RemoteAddr())
-	worker.IP = ret.SetBytes(ip).Int64()
+	worker.IP = ctx.RemoteAddr()
 	if err := worker.Update(); err != nil {
 		if _, err := ctx.JSON(response.NotFound(err.Error())); err != nil {
 

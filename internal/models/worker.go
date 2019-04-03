@@ -9,7 +9,7 @@ type (
 	Worker struct {
 		ID string `json:"id" xorm:"pk char(36) notnull 'id'"`
 		Name string `json:"name" xorm:"varchar(255) notnull 'name'"`
-		IP int64 `json:"ip" xorm:"int(10) null 'ip'"`
+		IP string `json:"ip" xorm:"varchar(15) null 'ip'"`
 		Status string `json:"status" xorm:"-"`
 		Remark string `json:"remark" xorm:"varchar(255) null 'remark'"`
 		CreatedAt string `json:"created_at" xorm:"datetime notnull created"`
