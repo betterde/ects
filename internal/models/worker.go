@@ -13,7 +13,7 @@ type (
 		Status string `json:"status" xorm:"-"`
 		Remark string `json:"remark" xorm:"varchar(255) null 'remark'"`
 		CreatedAt string `json:"created_at" xorm:"datetime notnull created"`
-		UpdatedAt string `json:"updated_at" xorm:"datetime null updated"`
+		UpdatedAt string `json:"updated_at" xorm:"datetime notnull updated"`
 		Model     `json:"-" xorm:"-"`
 	}
 )
