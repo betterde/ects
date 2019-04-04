@@ -50,6 +50,7 @@ func keepAlived() {
 func Migrate() error {
 	tables := []interface{}{
 		&User{},
+		&Worker{},
 	}
 
 	for _, table := range tables {

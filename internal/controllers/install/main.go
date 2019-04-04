@@ -8,6 +8,7 @@ import (
 	"github.com/betterde/ects/internal/utils/response"
 	"github.com/betterde/ects/internal/utils/system"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"gopkg.in/yaml.v2"
@@ -16,12 +17,12 @@ import (
 )
 
 type (
-	InstallationController struct {
+	Controller struct {
 	}
 )
 
-func (instance *InstallationController) Get(ctx iris.Context) {
-	_, err := ctx.JSON(response.Success("请求成功", system.Info))
+func (instance *Controller) Get(ctx iris.Context) {
+	_, err := ctx.JSON(response.Success("请求成功", response.Payload{"data": system.Info}))
 
 	if err != nil {
 		// TODO
@@ -29,16 +30,13 @@ func (instance *InstallationController) Get(ctx iris.Context) {
 }
 
 // 根据用户填写配置数据生成配置文件
-func (instance *InstallationController) Post(ctx iris.Context) {
+func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	var err error
 	validate := validator.New()
 
 	// 如果已经安装则返回错误
 	if system.Info.Installed {
-		if _, err = ctx.JSON(response.Send(400, "系统已安装", make(map[string]interface{}))); err != nil {
-			// TODO
-		}
-		return
+		return response.Send(400, "系统已安装", make(map[string]interface{}))
 	}
 
 	if err := ctx.ReadJSON(&config.Conf); err != nil {
@@ -46,10 +44,7 @@ func (instance *InstallationController) Post(ctx iris.Context) {
 	}
 
 	if err := validate.Struct(config.Conf); err != nil {
-		if _, err := ctx.JSON(response.ValidationError("请检查配置信息是否填写完整")); err != nil {
-			// TODO Add logger
-		}
-		return
+		return response.ValidationError("请检查配置信息是否填写完整")
 	}
 
 	if models.Engine == nil {
@@ -57,18 +52,12 @@ func (instance *InstallationController) Post(ctx iris.Context) {
 		models.Engine, err = models.Connection()
 
 		if err != nil {
-			if _, err = ctx.JSON(response.Success("数据库连接错误", err)); err != nil {
-				// TODO
-			}
-			return
+			return response.Success("数据库连接错误", response.Payload{"data": err})
 		}
 
 		// 迁移数据表时出现错误则返回异常
 		if err := models.Migrate(); err != nil {
-			if _, err = ctx.JSON(response.Send(1045, "数据库连接错误", err)); err != nil {
-				// TODO
-			}
-			return
+			return response.Send(1045, "数据库连接错误", err)
 		}
 	}
 
@@ -86,10 +75,7 @@ func (instance *InstallationController) Post(ctx iris.Context) {
 	}
 
 	if _, err := models.Engine.Insert(user); err != nil {
-		if _, err = ctx.JSON(response.Send(1062, "创建用户失败", err)); err != nil {
-			// TODO
-		}
-		return
+		return response.Send(1062, "创建用户失败", err)
 	}
 
 	content, err := yaml.Marshal(&config.Conf)
@@ -104,11 +90,9 @@ func (instance *InstallationController) Post(ctx iris.Context) {
 
 	token, err := services.IssueToken(user)
 
-	if _, err := ctx.JSON(response.Success("安装成功", auth.SignInSuccess{
+	return response.Success("安装成功", response.Payload{"data": auth.SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
 		ExpiresIn:   time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
-	})); err != nil {
-		// TODO Add logger
-	}
+	}})
 }

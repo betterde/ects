@@ -6,5 +6,5 @@ import (
 )
 
 func installation(application *mvc.Application) {
-	application.Handle(new(install.InstallationController))
+	application.Handle(new(install.Controller))
 }

@@ -7,7 +7,6 @@ import (
 )
 
 func authentication(application *mvc.Application) {
-	userService := services.NewUserService()
-	application.Register(userService)
-	application.Handle(new(auth.AuthenticationController))
+	application.Register(services.NewUserService())
+	application.Handle(new(auth.Controller))
 }

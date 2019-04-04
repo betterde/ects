@@ -7,13 +7,19 @@ Elastic Crontab System
 > Install view
 ---
 
-![dashboard](web/overview/dashboard.jpg)
+![dashboard](web/overview/worker.jpg)
 
-> Dashboard View
+> Worker View
 ---
 
+![dashboard](web/overview/setting.jpg)
+
+> Setting View
+---
 
 ## Architecture
+
+![dashboard](web/overview/architecture.png)
 
 ### Master 
 

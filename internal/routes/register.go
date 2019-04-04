@@ -18,7 +18,7 @@ func Register(app *iris.Application) {
 		}
 	})
 
-	mvc.Configure(app.Party("/metrics"), registerWebSocket)
+	mvc.Configure(app.Party("/websocket"), registerWebSocket)
 
 	// 接口路由
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
@@ -28,6 +28,13 @@ func Register(app *iris.Application) {
 		mvc.Configure(api.Party("/auth"), authentication)
 
 		api.Use(middleware.JWTHandler.Serve)
+
+		// 节点管理路由
+		mvc.Configure(api.Party("/worker"), registerWorker)
+
+		// 任务管理
+		mvc.Configure(api.Party("/task"), registerTask)
+
 		// 组织路由
 		mvc.Configure(api.PartyFunc("/organization", func(org iris.Party) {
 			// 用户路由

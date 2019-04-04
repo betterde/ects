@@ -58,11 +58,10 @@
             this.loading = true;
             store.dispatch('signIn', this.credentials).then(() => {
               store.dispatch("fetchProfile").then(() => {
-                this.$message.success("登录成功");
                 this.$router.replace("/");
               });
             }).catch(err => {
-              this.$message.warning(err.response.data.message);
+              this.$message.warning(err.data.message);
             });
           } else {
             return false;

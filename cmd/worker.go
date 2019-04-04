@@ -15,8 +15,8 @@ import (
 var (
 	workerCmd = &cobra.Command{
 		Use:   "worker",
-		Short: "Run a master node service",
-		Long:  "Run a master node service on this server",
+		Short: "Run a worker node service",
+		Long:  "Run a worker node service on this server",
 		Run: func(cmd *cobra.Command, args []string) {
 			listen()
 		},

@@ -57,12 +57,12 @@ const router = new Router({
       component: () => import('../views/Log.vue')
     },
     {
-      path: '/notification',
-      name: 'notification',
+      path: '/setting',
+      name: 'setting',
       meta: {
         requiresAuth: true
       },
-      component: () => import('../views/Notification.vue')
+      component: () => import('../views/Setting.vue')
     },
     {
       path: '/signin',
@@ -96,6 +96,12 @@ router.beforeEach((to, from, next) => {
   // 如果从NotFound 页面返回，并且需要认证的话，则设置视图的Layout 为 backend
   if (from.name === 'notfound' && to.meta.requiresAuth === true) {
     store.commit('SET_LAYOUT_CURRENT', 'backend')
+  }
+
+  if (store.state.account.access_token && to.path === '/signin') {
+    next({
+      path: "/"
+    })
   }
 
   /**

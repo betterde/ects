@@ -9,16 +9,12 @@
         </el-col>
         <el-col :span="16">
           <el-menu :default-active="menu.active" class="el-menu-nav" mode="horizontal" @select="handleSelect" router>
-            <el-menu-item index="/">系统概览</el-menu-item>
-            <el-menu-item index="/task">任务管理</el-menu-item>
-            <el-menu-item index="/worker">节点管理</el-menu-item>
-            <el-menu-item index="/team">团队管理</el-menu-item>
-            <el-menu-item index="/user">人员管理</el-menu-item>
-            <el-submenu index="/system">
-              <template slot="title">系统管理</template>
-              <el-menu-item index="/log">系统日志</el-menu-item>
-              <el-menu-item index="/notification">通知管理</el-menu-item>
-            </el-submenu>
+            <el-menu-item index="/">概览</el-menu-item>
+            <el-menu-item index="/task">任务</el-menu-item>
+            <el-menu-item index="/worker">节点</el-menu-item>
+            <el-menu-item index="/user">人员</el-menu-item>
+            <el-menu-item index="/log">日志</el-menu-item>
+            <el-menu-item index="/setting">设置</el-menu-item>
           </el-menu>
         </el-col>
         <el-col :span="4">
@@ -85,7 +81,6 @@
   #app {
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     height: 100%;
-    text-align: center;
     background-color: #f0f2f5;
 
     .el-header {
@@ -153,8 +148,8 @@
   .main-content {
     height: 100%;
     border-radius: 4px;
-    background-color: #FFFFFF;
-    box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);
-    padding: 40px;
+    /*background-color: #FFFFFF;*/
+    /*box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);*/
+    padding: 0 20px;
   }
 </style>
