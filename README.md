@@ -19,13 +19,16 @@ Elastic Crontab System
 
 ## Architecture
 
-<div style="align: center">
-![dashboard](web/overview/architecture.png)
-</div>
+![dashboard](web/overview/architecture.jpg)
 
 ### Master 
+* RESTful API Server
+* Scheduler Service
+* Web UI
+* HTTP task actuator
 
 ### Worker
+* Shell task actuator
 
 ## Installation
 
@@ -49,4 +52,4 @@ go build main.go -o ects
 ```
 
 ## LICENSE
-ects is open-sourced software licensed under the MIT license
+ECTS is open-sourced software licensed under the MIT license.
