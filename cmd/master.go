@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/internal/models"
-	"github.com/betterde/ects/internal/routes"
-	"github.com/betterde/ects/internal/utils/system"
+	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/models"
+	"github.com/betterde/ects/routes"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"

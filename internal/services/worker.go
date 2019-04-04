@@ -2,7 +2,7 @@ package services
 
 import (
 	"errors"
-	"github.com/betterde/ects/internal/models"
+	"github.com/betterde/ects/models"
 	"log"
 )
 

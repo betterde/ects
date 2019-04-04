@@ -3,7 +3,7 @@ package services
 import (
 	"errors"
 	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/internal/models"
+	"github.com/betterde/ects/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-xorm/builder"
 	"log"
