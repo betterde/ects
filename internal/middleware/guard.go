@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/internal/utils/response"
+	"github.com/betterde/ects/internal/response"
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
