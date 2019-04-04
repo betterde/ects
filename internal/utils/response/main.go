@@ -2,6 +2,7 @@ package response
 
 import (
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
 	"reflect"
 )
 
@@ -21,61 +22,83 @@ type (
 )
 
 // 发送成功响应
-func Success(message string, payload map[string]interface{}) *Response {
+func Success(message string, payload map[string]interface{}) mvc.Result {
 	meta, ok := payload["meta"]
 	if ok {
-		return &Response{
+		return mvc.Response{
 			Code: iris.StatusOK,
-			Message: message,
-			Data: payload["data"],
-			Meta: reflect.ValueOf(meta).Interface().(*Meta),
+			Object: Response{
+				Code: iris.StatusOK,
+				Message: message,
+				Data: payload["data"],
+				Meta: reflect.ValueOf(meta).Interface().(*Meta),
+			},
 		}
 	}
 
-	return &Response{
+	return mvc.Response{
 		Code: iris.StatusOK,
-		Message: message,
-		Data: payload["data"],
+		Object: Response{
+			Code: iris.StatusOK,
+			Message: message,
+			Data: payload["data"],
+		},
 	}
 }
 
 // 认证失败响应
-func UnAuthenticated(message string) *Response {
-	return &Response{
+func UnAuthenticated(message string) mvc.Result {
+	return mvc.Response{
 		Code: iris.StatusUnauthorized,
-		Message: message,
-		Data: make(map[string]interface{}),
+		Object: Response{
+			Code: iris.StatusUnauthorized,
+			Message: message,
+			Data: make(map[string]interface{}),
+		},
 	}
 }
 
-func NotFound(message string) *Response {
-	return &Response{
+func NotFound(message string) mvc.Result {
+	return mvc.Response{
 		Code: iris.StatusNotFound,
-		Message: message,
-		Data: make(map[string]interface{}),
+		Object: Response{
+			Code: iris.StatusNotFound,
+			Message: message,
+			Data: make(map[string]interface{}),
+		},
 	}
 }
 
-func ValidationError(message string) *Response {
-	return &Response{
+func ValidationError(message string) mvc.Result {
+	return mvc.Response{
 		Code: iris.StatusUnprocessableEntity,
-		Message: message,
-		Data: make(map[string]interface{}),
+		Object: Response{
+			Code: iris.StatusUnprocessableEntity,
+			Message: message,
+			Data: make(map[string]interface{}),
+		},
 	}
 }
 
-func InternalServerError(message string, data interface{}) *Response {
-	return &Response{
+func InternalServerError(message string, err error) mvc.Result {
+	return mvc.Response{
 		Code: iris.StatusInternalServerError,
-		Message: message,
-		Data: data,
+		Object: Response{
+			Code: iris.StatusInternalServerError,
+			Message: message,
+			Data: err,
+		},
+		Err: err,
 	}
 }
 
-func Send(code int, message string, data interface{}) *Response {
-	return &Response{
+func Send(code int, message string, data interface{}) mvc.Result {
+	return mvc.Response{
 		Code: code,
-		Message: message,
-		Data: data,
+		Object: Response{
+			Code: code,
+			Message: message,
+			Data: data,
+		},
 	}
 }
