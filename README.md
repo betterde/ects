@@ -19,7 +19,9 @@ Elastic Crontab System
 
 ## Architecture
 
+<div style="align: center">
 ![dashboard](web/overview/architecture.png)
+</div>
 
 ### Master 
 
