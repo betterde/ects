@@ -6,6 +6,7 @@ import (
 	"github.com/betterde/ects/internal/utils/response"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
@@ -30,7 +31,7 @@ type (
 )
 
 // 获取节点列表
-func (instance *Controller) Get(ctx iris.Context) *response.Response {
+func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
 		page  int
 		limit int
@@ -92,17 +93,14 @@ func (instance *Controller) Get(ctx iris.Context) *response.Response {
 }
 
 // 创建节点
-func (instance *Controller) Post(ctx iris.Context) *response.Response {
+func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	var params CreateRequest
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		log.Println(err)
+		return response.InternalServerError("解析参数失败", err)
 	}
 
-	err := validate.Struct(params)
-
-	if err != nil {
-		ctx.StatusCode(iris.StatusUnprocessableEntity)
+	if err := validate.Struct(params); err != nil {
 		return response.ValidationError("请填写名称")
 	}
 
@@ -115,15 +113,14 @@ func (instance *Controller) Post(ctx iris.Context) *response.Response {
 	worker.CreatedAt = time.Now().Format("2006-1-2 15:04:05")
 	worker.UpdatedAt = time.Now().Format("2006-1-2 15:04:05")
 	if err := worker.Store(); err != nil {
-		log.Println(err)
-		return response.Send(1062, "创建节点失败", err)
+		return response.InternalServerError("创建节点失败", err)
 	}
 
 	return response.Success("创建节点成功", response.Payload{"data": worker})
 }
 
 // 更新节点信息
-func (instance *Controller) PutBy(id string, ctx iris.Context) *response.Response {
+func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	var worker models.Worker
 	validate := validator.New()
@@ -157,7 +154,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) *response.Respons
 }
 
 // 删除指定ID
-func (instance *Controller) DeleteBy(id string) *response.Response {
+func (instance *Controller) DeleteBy(id string) mvc.Result {
 	worker := &models.Worker{
 		ID: id,
 	}

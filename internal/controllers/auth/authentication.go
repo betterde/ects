@@ -42,7 +42,7 @@ func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 }
 
 // 用户登录逻辑
-func (instance *Controller) SignInHandler(ctx iris.Context) {
+func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
 	var params SignIn
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -52,29 +52,19 @@ func (instance *Controller) SignInHandler(ctx iris.Context) {
 	err := validate.Struct(params)
 
 	if err != nil {
-		ctx.StatusCode(iris.StatusUnprocessableEntity)
-		if _, err := ctx.JSON(response.ValidationError("用户名和密码不能为空")); err != nil {
-			log.Println(err)
-		}
-		return
+		return response.ValidationError("用户名和密码不能为空")
 	}
 
 	token, err := instance.Service.Attempt(params.Username, params.Password)
 	if err != nil {
-		ctx.StatusCode(iris.StatusUnauthorized)
-		if _, err := ctx.JSON(response.UnAuthenticated(err.Error())); err != nil {
-			log.Println(err)
-		}
-		return
+		return response.UnAuthenticated(err.Error())
 	}
 
-	if _, err := ctx.JSON(response.Success("登录成功", response.Payload{"data": SignInSuccess{
+	return response.Success("登录成功", response.Payload{"data": SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
 		ExpiresIn:   config.Conf.Auth.TTL,
-	}})); err != nil {
-		// TODO Add logger
-	}
+	}})
 }
 
 // 用户注销登陆
@@ -83,7 +73,7 @@ func (instance *Controller) SignOutHandler(ctx iris.Context) {
 }
 
 // 用户注册
-func (instance *Controller) SignUpHandler(ctx iris.Context) {
+func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Result {
 	var params SignUp
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -91,10 +81,7 @@ func (instance *Controller) SignUpHandler(ctx iris.Context) {
 	}
 
 	if err := validate.Struct(params); err != nil {
-		if _, err := ctx.JSON(response.ValidationError("用户名和密码不能为空")); err != nil {
-			// TODO Add logger
-		}
-		return
+		return response.ValidationError("用户名和密码不能为空")
 	}
 
 	user := &models.User{
@@ -106,5 +93,9 @@ func (instance *Controller) SignUpHandler(ctx iris.Context) {
 		// TODO
 	}
 	user.Password = string(hash)
-	user.Save()
+
+	if err := user.Save(); err != nil {
+		log.Println(err)
+	}
+	return response.Success("注册成功", response.Payload{"data": user})
 }

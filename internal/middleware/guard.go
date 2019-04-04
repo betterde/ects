@@ -6,6 +6,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
 	"github.com/kataras/iris"
+	"log"
 )
 
 var (
@@ -15,8 +16,13 @@ var (
 		},
 		SigningMethod: jwt.SigningMethodHS256,
 		ErrorHandler: func(ctx iris.Context, s string) {
-			if _, err := ctx.JSON(response.UnAuthenticated("认证失败请重新登陆")); err != nil {
-				// TODO Add loger
+			ctx.StatusCode(iris.StatusUnauthorized)
+			if _, err := ctx.JSON(response.Response{
+				Code: iris.StatusUnauthorized,
+				Message: "",
+				Data: make(map[string]interface{}),
+			}); err != nil {
+				log.Println(err)
 			}
 		},
 	})
