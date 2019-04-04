@@ -2,8 +2,8 @@ package websocket
 
 import (
 	"errors"
+	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/internal/services"
-	"github.com/betterde/ects/internal/utils/response"
 	"github.com/kataras/iris"
 	"log"
 	"sync"
