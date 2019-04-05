@@ -53,6 +53,9 @@ func bootstrap() {
 			log.Println(err)
 		}
 		models.Engine, err = models.Connection()
+		if err := models.Migrate(); err != nil {
+			log.Println(err)
+		}
 	} else {
 		if err != nil {
 			// TODO

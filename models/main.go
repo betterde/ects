@@ -9,7 +9,7 @@ import (
 )
 
 type Model struct {
-	Page int64 `xorm:"-"`
+	Page     int64 `xorm:"-"`
 	PageSize int64 `xorm:"-"`
 }
 
@@ -27,8 +27,10 @@ func Connection() (*xorm.Engine, error) {
 		config.Conf.Database.Char,
 	)
 	engine, err := xorm.NewEngine("mysql", dsn)
-	engine.SetMaxIdleConns(10)
-	engine.SetMaxOpenConns(30)
+	if engine != nil {
+		engine.SetMaxIdleConns(10)
+		engine.SetMaxOpenConns(30)
+	}
 
 	go keepAlived()
 
@@ -51,6 +53,11 @@ func Migrate() error {
 	tables := []interface{}{
 		&User{},
 		&Worker{},
+		&Role{},
+		&Task{},
+		&Permission{},
+		&Log{},
+		&Team{},
 	}
 
 	for _, table := range tables {

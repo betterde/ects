@@ -1,20 +1,21 @@
 package models
 
 const (
-	STATUS_CONNECTED = "connected"
+	STATUS_CONNECTED    = "connected"
 	STATUS_DISCONNECTED = "disconnected"
 )
 
 type (
 	Worker struct {
-		ID         string `json:"id" xorm:"pk char(36) notnull 'id'"`
-		Name       string `json:"name" xorm:"varchar(255) notnull 'name'"`
-		IP         string `json:"ip" xorm:"varchar(15) null 'ip'"`
-		Status     string `json:"status" xorm:"-"`
-		Remark     string `json:"remark" xorm:"varchar(255) null 'remark'"`
-		CreatedAt  string `json:"created_at" xorm:"datetime notnull created"`
-		UpdatedAt  string `json:"updated_at" xorm:"datetime notnull updated"`
-		Model `json:"-" xorm:"-"`
+		ID        string `json:"id" xorm:"pk char(36) notnull 'id'"`
+		Name      string `json:"name" xorm:"varchar(255) notnull 'name'"`
+		IP        string `json:"ip" xorm:"varchar(15) null 'ip'"`
+		Status    string `json:"status" xorm:"-"`
+		Remark    string `json:"remark" xorm:"varchar(255) null 'remark'"`
+		TeamID    string `json:"team_id" xorm:"char(36) notnull"`
+		CreatedAt string `json:"created_at" xorm:"datetime notnull created"`
+		UpdatedAt string `json:"updated_at" xorm:"datetime notnull updated"`
+		Model     `json:"-" xorm:"-"`
 	}
 )
 

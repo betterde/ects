@@ -1,12 +1,16 @@
 package task
 
 import (
+	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
+	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
+	"log"
+	"strconv"
 	"time"
 )
 
@@ -15,73 +19,129 @@ type (
 	}
 
 	CreateRequest struct {
-		Name        string    `json:"name"`
-		ParentID    string    `json:"parent_id"`
-		Content     string    `json:"content"`
-		Event       string    `json:"event"`
-		Mode        string    `json:"mode"`
-		Overlap     bool      `json:"overlap"`
-		Timeout     int       `json:"timeout"`
-		Interval    int       `json:"interval"`
-		Retries     int       `json:"retries"`
-		Status      string    `json:"status"`
-		Triggering  time.Time `json:"triggering"`
-		Description string    `json:"description"`
+		Name        string `json:"name" validate:"required"`
+		ParentID    string `json:"parent_id" validate:"omitempty,uuid4"`
+		Content     string `json:"content" validate:"required"`
+		Event       string `json:"event" validate:"required"`
+		Mode        string `json:"mode" validate:"required"`
+		Overlap     bool   `json:"overlap" validate:"required"`
+		Timeout     int    `json:"timeout" validate:"gte=0"`
+		Interval    int    `json:"interval" validate:"gte=0"`
+		Retries     int    `json:"retries" validate:"gte=0"`
+		Status      string `json:"status" validate:"required"`
+		Description string `json:"description"`
 	}
 
 	UpdateRequest struct {
-		Name        string    `json:"name"`
-		ParentID    string    `json:"parent_id"`
-		Content     string    `json:"content"`
-		Event       string    `json:"event"`
-		Mode        string    `json:"mode"`
-		Overlap     bool      `json:"overlap"`
-		Timeout     int       `json:"timeout"`
-		Interval    int       `json:"interval"`
-		Retries     int       `json:"retries"`
-		Status      string    `json:"status"`
-		Triggering  time.Time `json:"triggering"`
-		Description string    `json:"description"`
+		Name        string `json:"name" validate:"required"`
+		ParentID    string `json:"parent_id" validate:"omitempty,uuid4"`
+		Content     string `json:"content" validate:"required"`
+		Event       string `json:"event" validate:"required"`
+		Mode        string `json:"mode" validate:"required"`
+		Overlap     bool   `json:"overlap" validate:"required"`
+		Timeout     int    `json:"timeout" validate:"gte=0"`
+		Interval    int    `json:"interval" validate:"gte=0"`
+		Retries     int    `json:"retries" validate:"gte=0"`
+		Status      string `json:"status" validate:"required"`
+		Description string `json:"description"`
 	}
 )
 
+var (
+	validate = validator.New()
+)
+
+// 获取任务俩表
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
-	tasks := new(models.Task)
-	return response.Success("", response.Payload{
+	var (
+		page   int
+		limit  int
+		start  int
+		search string
+		total  int64
+		err    error
+	)
+	page = 1
+	limit = 10
+	search = ""
+	params := ctx.URLParams()
+
+	if value, exist := params["page"]; exist == true {
+		v, err := strconv.Atoi(value)
+		if err != nil {
+
+		}
+		if v >= 0 {
+			page = v
+		}
+	}
+
+	if value, exist := params["limit"]; exist == true {
+		v, err := strconv.Atoi(value)
+		if err != nil {
+
+		}
+		if v >= 0 {
+			limit = v
+		}
+	}
+
+	start = (page - 1) * limit
+
+	tasks := make([]models.Task, 0)
+
+	if search == "" {
+		total, err = models.Engine.Count(&models.Task{})
+		err = models.Engine.Limit(limit, start).Find(&tasks)
+	} else {
+		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Task{})
+		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&tasks)
+	}
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return response.Success("请求成功", response.Payload{
 		"data": tasks,
 		"meta": &response.Meta{
-
+			Limit: limit,
+			Page:  page,
+			Total: int(total),
 		}})
 }
 
 // 创建任务
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
-	var params CreateRequest
-	validate := validator.New()
+	var (
+		params CreateRequest
+	)
+
 	if err := ctx.ReadJSON(&params); err != nil {
 		return response.InternalServerError("解析参数失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
-		return response.ValidationError("请填写名称")
+		validationErrors := err.(validator.ValidationErrors)
+		return response.ValidationError(message.Get("task", validationErrors))
 	}
 
-	var task models.Task
-	task.ID = uuid.NewV4().String()
-	task.Name = params.Name
-	task.ParentID = params.ParentID
-	task.Content = params.Content
-	task.Event = params.Event
-	task.Mode = params.Mode
-	task.Overlap = params.Overlap
-	task.Timeout = params.Timeout
-	task.Interval = params.Interval
-	task.Retries = params.Retries
-	task.Status = params.Status
-	task.Triggering = params.Triggering
-	task.Description = params.Description
-	task.CreatedAt = time.Now().Format("2006-1-2 15:04:05")
-	task.UpdatedAt = time.Now().Format("2006-1-2 15:04:05")
+	task := &models.Task{
+		ID:          uuid.NewV4().String(),
+		Name:        params.Name,
+		ParentID:    params.ParentID,
+		Content:     params.Content,
+		Event:       params.Event,
+		Mode:        params.Mode,
+		Overlap:     params.Overlap,
+		Timeout:     params.Timeout,
+		Interval:    params.Interval,
+		Retries:     params.Retries,
+		Status:      params.Status,
+		Description: params.Description,
+		CreatedAt:   time.Now().Format("2006-1-2 15:04:05"),
+		UpdatedAt:   time.Now().Format("2006-1-2 15:04:05"),
+	}
 	if err := task.Store(); err != nil {
 		return response.InternalServerError("创建任务失败", err)
 	}
@@ -99,10 +159,29 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	}
 
 	if err := validate.Struct(params); err != nil {
-		return response.ValidationError("请填写名称")
+		validationErrors := err.(validator.ValidationErrors)
+		return response.ValidationError(message.Get("task", validationErrors))
 	}
 
-	var task models.Task
+	task := &models.Task{
+		ID:          id,
+		Name:        params.Name,
+		ParentID:    params.ParentID,
+		Content:     params.Content,
+		Event:       params.Event,
+		Mode:        params.Mode,
+		Overlap:     params.Overlap,
+		Timeout:     params.Timeout,
+		Interval:    params.Interval,
+		Retries:     params.Retries,
+		Status:      params.Status,
+		Description: params.Description,
+		UpdatedAt:   time.Now().Format("2006-1-2 15:04:05"),
+	}
+
+	if err := task.Update(); err != err {
+		return response.InternalServerError("创建任务失败", err)
+	}
 
 	return response.Success("更新任务成功", response.Payload{"data": task})
 }
