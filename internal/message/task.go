@@ -10,19 +10,26 @@ func taskMessage() map[string]map[string]string {
 		},
 		"Content": {
 			"required": "请填写任务内容",
-		}, "Event": {
+		},
+		"Event": {
 			"required": "请选择触发事件",
-		}, "Mode": {
+		},
+		"Mode": {
 			"required": "请选择任务类型",
-		}, "Overlap": {
+		},
+		"Overlap": {
 			"required": "请选择是否重复执行",
-		}, "Timeout": {
+		},
+		"Timeout": {
 			"gte": "请填写超时时间",
-		}, "Interval": {
+		},
+		"Interval": {
 			"gte": "请填写重试间隔时间",
-		}, "Retries": {
+		},
+		"Retries": {
 			"gte": "请填写重试次数",
-		}, "Status": {
+		},
+		"Status": {
 			"required": "请选择任务状态",
 		},
 	}

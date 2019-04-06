@@ -131,7 +131,7 @@
                 this.workers.push(res.data);
               }
               this.$message.success(res.message);
-              this.handleClose();
+              this.createDialogClose();
             }).catch(err => {
               this.$message.warning(err.message);
             });

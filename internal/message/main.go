@@ -7,6 +7,7 @@ import (
 var (
 	modules = map[string]map[string]map[string]string{
 		"task": taskMessage(),
+		"user": userMessage(),
 	}
 )
 

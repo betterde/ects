@@ -131,7 +131,6 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	err := validate.Struct(params)
 
 	if err != nil {
-		ctx.StatusCode(iris.StatusUnprocessableEntity)
 		return response.ValidationError("请填写名称")
 	}
 
@@ -145,7 +144,6 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 		worker.Name = params.Name
 		worker.Remark = params.Remark
 		if _, err := models.Engine.Id(id).Update(worker); err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
 			return response.Send(iris.StatusInternalServerError, "更新失败", make(map[string]interface{}))
 		}
 	}

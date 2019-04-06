@@ -17,7 +17,7 @@ type (
 		Name    string `json:"name"`
 		Email   string `json:"email"`
 		Avatar  string `json:"avatar"`
-		GroupId int64  `json:"group_id"`
+		TeamID  string `json:"team_id"`
 		Manager bool   `json:"manager"`
 	}
 )
@@ -36,7 +36,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
-		GroupId: user.GroupId,
+		TeamID:  user.TeamID,
 		Manager: user.Manager,
 	}})
 }

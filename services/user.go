@@ -3,16 +3,19 @@ package services
 import (
 	"errors"
 	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-xorm/builder"
 	"log"
+	"strconv"
 	"time"
 )
 
 type UserService interface {
-	Users() []models.User
+	Users(params map[string]string) (*[]models.User, *response.Meta)
 	FindByID(id string) (*models.User, error)
+	FindByEmail(email string) (*models.User, error)
 	Attempt(username, password string) (string, error)
 	Destroy(id string, force bool) error
 }
@@ -24,8 +27,58 @@ func NewUserService() UserService {
 type userService struct {
 }
 
-func (service *userService) Users() []models.User {
-	return []models.User{}
+// 获取用户信息
+func (service *userService) Users(params map[string]string) (*[]models.User, *response.Meta) {
+	var (
+		page  int
+		limit int
+		start int
+		total int64
+		err   error
+	)
+	page = 1
+	limit = 10
+
+	if value, exist := params["page"]; exist == true {
+		v, err := strconv.Atoi(value)
+		if err != nil {
+
+		}
+		if v >= 0 {
+			page = v
+		}
+	}
+
+	if value, exist := params["limit"]; exist == true {
+		v, err := strconv.Atoi(value)
+		if err != nil {
+
+		}
+		if v >= 0 {
+			limit = v
+		}
+	}
+
+	start = (page - 1) * limit
+	users := make([]models.User, 0)
+
+	if search, exist := params["search"]; exist && search != "" {
+		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.User{})
+		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&users)
+	} else {
+		total, err = models.Engine.Count(&models.User{})
+		err = models.Engine.Limit(limit, start).Find(&users)
+	}
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return &users, &response.Meta{
+		Limit: limit,
+		Page:  page,
+		Total: int(total),
+	}
 }
 
 // 验证用户凭证

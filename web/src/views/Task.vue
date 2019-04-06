@@ -14,12 +14,13 @@
         </div>
       </div>
       <div class="panel-body">
-        <el-table :data="workers" style="width: 100%" height="100%">
+        <el-table :data="tasks" style="width: 100%">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="名称" width="200"></el-table-column>
-          <el-table-column prop="ip" label="执行方式" width="140"></el-table-column>
-          <el-table-column prop="status" label="执行次数" width="120"></el-table-column>
-          <el-table-column prop="remark" label="标记"></el-table-column>
+          <el-table-column prop="mode" label="方式" width="100"></el-table-column>
+          <el-table-column prop="description" label="简介"></el-table-column>
+          <el-table-column prop="status" label="状态" width="100"></el-table-column>
+          <el-table-column prop="created_at" label="创建于" width="155"></el-table-column>
           <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
@@ -29,7 +30,7 @@
           </el-table-column>
         </el-table>
         <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :total="11"></el-pagination>
+          <el-pagination background layout="prev, pager, next" :total="meta.total"></el-pagination>
         </div>
       </div>
     </div>
@@ -37,83 +38,44 @@
 </template>
 
 <script>
+  import api from '../apis'
+
   export default {
     name: "Task",
     data() {
       return {
+        loading: false,
         params: {
           search: ""
         },
-        workers: [{
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: '删除一个月以前的日志',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: '检查Kafka消费者运行状态',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: '给用户发送通知',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }]
+        tasks: [],
+        meta: {
+          limit: 10,
+          page: 1,
+          total: 0
+        }
       }
     },
     methods: {
       handleEdit(index, row) {
-
+        window.console.log(index,row);
       },
       handleDelete(index, row) {
-
+        window.console.log(index,row);
+      },
+      fetchTasks() {
+        this.loading = true;
+        api.task.fetch(this.params).then(res => {
+          this.tasks = res.data;
+          this.meta = res.meta;
+        }).catch(err => {
+          this.$message.warning(err.message)
+        });
+        this.loading = false;
       }
+    },
+    mounted() {
+      this.fetchTasks();
     }
   }
 </script>
