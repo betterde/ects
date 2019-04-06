@@ -12,32 +12,32 @@ import (
 	"time"
 )
 
-type UserService interface {
-	Users(params map[string]string) (*[]models.User, *response.Meta)
-	FindByID(id string) (*models.User, error)
-	FindByEmail(email string) (*models.User, error)
-	Attempt(username, password string) (string, error)
-	Destroy(id string, force bool) error
-}
+type (
+	UserInterface interface {
+		Users(params map[string]string) (*[]models.User, *response.Meta)
+		FindByID(id string) (*models.User, error)
+		FindByEmail(email string) (*models.User, error)
+		Attempt(username, password string) (string, error)
+		Destroy(id string, force bool) error
+	}
 
-func NewUserService() UserService {
-	return &userService{}
-}
+	UserService struct {
+	}
+)
 
-type userService struct {
+func NewUserService() UserInterface {
+	return &UserService{}
 }
 
 // 获取用户信息
-func (service *userService) Users(params map[string]string) (*[]models.User, *response.Meta) {
+func (service *UserService) Users(params map[string]string) (*[]models.User, *response.Meta) {
 	var (
-		page  int
-		limit int
+		page  = 1
+		limit = 10
 		start int
 		total int64
 		err   error
 	)
-	page = 1
-	limit = 10
 
 	if value, exist := params["page"]; exist == true {
 		v, err := strconv.Atoi(value)
@@ -82,7 +82,7 @@ func (service *userService) Users(params map[string]string) (*[]models.User, *re
 }
 
 // 验证用户凭证
-func (service *userService) Attempt(username, passwod string) (token string, err error) {
+func (service *UserService) Attempt(username, passwod string) (token string, err error) {
 	user, err := service.RetrieveByCredentials(username, passwod)
 
 	if err != nil {
@@ -94,7 +94,7 @@ func (service *userService) Attempt(username, passwod string) (token string, err
 }
 
 // 根据用户凭证获取用户模型
-func (service *userService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
+func (service *UserService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
 	user, err = service.FindByEmail(username)
 
 	if err != nil {
@@ -111,7 +111,7 @@ func (service *userService) RetrieveByCredentials(username, password string) (us
 }
 
 // 根据用户邮箱查询用户信息
-func (service *userService) FindByEmail(email string) (*models.User, error) {
+func (service *UserService) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	result, err := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
 
@@ -127,7 +127,7 @@ func (service *userService) FindByEmail(email string) (*models.User, error) {
 }
 
 // 根据用户ID获取用户信息
-func (service *userService) FindByID(id string) (*models.User, error) {
+func (service *UserService) FindByID(id string) (*models.User, error) {
 	var user models.User
 	result, err := models.Engine.Id(id).Get(&user)
 	if err != nil {
@@ -142,7 +142,7 @@ func (service *userService) FindByID(id string) (*models.User, error) {
 }
 
 // 删除用户信息
-func (service *userService) Destroy(id string, force bool) (err error) {
+func (service *UserService) Destroy(id string, force bool) (err error) {
 	var result int64
 	if force {
 		result, err = models.Engine.Id(id).Unscoped().Delete(&models.User{})

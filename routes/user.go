@@ -7,7 +7,6 @@ import (
 )
 
 func users(application *mvc.Application) {
-	userService := services.NewUserService()
-	application.Register(userService)
+	application.Register(services.NewUserService())
 	application.Handle(new(organization.UserController))
 }

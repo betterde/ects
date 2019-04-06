@@ -4,6 +4,7 @@ import (
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
+	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -16,6 +17,7 @@ import (
 
 type (
 	Controller struct {
+		Service services.TaskService
 	}
 
 	CreateRequest struct {

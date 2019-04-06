@@ -6,20 +6,21 @@ import (
 	"log"
 )
 
-type WorkerService interface {
-	FindByID(id string) (*models.Worker, error)
-}
+type (
+	WorkerInterface interface {
+		FindByID(id string) (*models.Worker, error)
+	}
 
-func NewWorkerService() WorkerService {
-	return &workerService{}
-}
+	WorkerService struct {
+	}
+)
 
-type workerService struct {
-
+func NewWorkerService() WorkerInterface {
+	return &WorkerService{}
 }
 
 // 根据ID获取节点信息
-func (service *workerService) FindByID(id string) (*models.Worker, error) {
+func (service *WorkerService) FindByID(id string) (*models.Worker, error) {
 	var worker models.Worker
 	result, err := models.Engine.Id(id).Get(&worker)
 	if err != nil {

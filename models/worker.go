@@ -15,7 +15,6 @@ type (
 		TeamID    string `json:"team_id" xorm:"char(36) notnull"`
 		CreatedAt string `json:"created_at" xorm:"datetime notnull created"`
 		UpdatedAt string `json:"updated_at" xorm:"datetime notnull updated"`
-		Model     `json:"-" xorm:"-"`
 	}
 )
 

@@ -8,11 +8,6 @@ import (
 	"time"
 )
 
-type Model struct {
-	Page     int64 `xorm:"-"`
-	PageSize int64 `xorm:"-"`
-}
-
 var Engine *xorm.Engine
 
 const DefaultTimeFormat = "2006-01-02 15:04:05"

@@ -6,18 +6,19 @@ import (
 	"log"
 )
 
-type TaskService interface {
+type TaskInterface interface {
 	Tasks(pipline bool) []models.Task
 }
 
-func NewTaskService() TaskService {
-	return &taskService{}
+func NewTaskService() TaskInterface {
+	return &TaskService{}
 }
 
-type taskService struct {
+type TaskService struct {
 }
 
-func (service *taskService) Tasks(pipline bool) []models.Task {
+// 获取任务列表
+func (service *TaskService) Tasks(pipline bool) []models.Task {
 	tasks := make([]models.Task, 0)
 	session := models.Engine.NewSession()
 	if pipline {
