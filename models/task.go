@@ -18,6 +18,7 @@ type (
 		ID          string    `json:"id" xorm:"pk char(36) notnull 'id'"`               // ID
 		Name        string    `json:"name" xorm:"varchar(255) notnull"`                 // 名称
 		ParentID    string    `json:"parent_id" xorm:"char(36) null 'parent_id'"`       // 父任务ID
+		Spec        string    `json:"spec" xorm:"varchar(64) notnull"`                  // 定时器
 		Content     string    `json:"content" xorm:"varchar(255) notnull"`              // 任务内容
 		Event       string    `json:"event" xorm:"varchar(255)"`                        // 依赖父任务事件
 		Mode        string    `json:"mode" xorm:"varchar(255) notnull default 'shell'"` // 执行方式

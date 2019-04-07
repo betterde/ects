@@ -38,10 +38,19 @@ func Register(app *iris.Application) {
 		// 组织路由
 		mvc.Configure(api.PartyFunc("/organization", func(org iris.Party) {
 			// 用户路由
-			mvc.Configure(org.Party("/user"), users)
+			mvc.Configure(org.Party("/user"), registerUser)
 			// 团队路由
-			mvc.Configure(org.Party("/team"), teams)
+			mvc.Configure(org.Party("/team"), registerTeam)
 		}))
+
+		// 角色路由
+		mvc.Configure(api.Party("/role"), registerRole)
+
+		// 权限路由
+		mvc.Configure(api.Party("/permission"), registerPermission)
+
+		// 日志路由
+		mvc.Configure(api.Party("/log"), registerLog)
 
 		// 账户路由
 		mvc.Configure(api.PartyFunc("/account", func(account iris.Party) {

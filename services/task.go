@@ -8,6 +8,7 @@ import (
 
 type TaskInterface interface {
 	Tasks(pipline bool) []models.Task
+	NormalTasks() ([]models.Task, error)
 }
 
 func NewTaskService() TaskInterface {
@@ -32,4 +33,11 @@ func (service *TaskService) Tasks(pipline bool) []models.Task {
 	}
 
 	return []models.Task{}
+}
+
+// 获取需要执行的任务
+func (service *TaskService) NormalTasks() ([]models.Task, error) {
+	tasks := make([]models.Task, 0)
+	err := models.Engine.Where(builder.Eq{"status": "normal"}).Find(&tasks)
+	return tasks, err
 }

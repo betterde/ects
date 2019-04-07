@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris/mvc"
 )
 
-func users(application *mvc.Application) {
+func registerUser(application *mvc.Application) {
 	application.Register(services.NewUserService())
 	application.Handle(new(organization.UserController))
 }

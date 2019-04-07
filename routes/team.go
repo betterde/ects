@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris/mvc"
 )
 
-func teams(application *mvc.Application) {
+func registerTeam(application *mvc.Application) {
 	application.Register(services.NewTeamService())
 	application.Handle(new(organization.TeamController))
 }
