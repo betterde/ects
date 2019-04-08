@@ -23,13 +23,13 @@ type (
 		Email   string `json:"email" validate:"required,email"`
 		Pass    string `json:"pass" validate:"required"`
 		Confirm string `json:"confirm" validate:"eqfield=Pass"`
-		TeamID  string `json:"team_id" validate:"omitempty,uuid4"`
+		TeamId  string `json:"team_id" validate:"omitempty,uuid4"`
 		Manager bool   `json:"manager" validate:"required"`
 	}
 	UpdateRequest struct {
 		Name    string `json:"name" validate:"required"`
 		Email   string `json:"email" validate:"required,email"`
-		TeamID  string `json:"team_id" validate:"omitempty,uuid4"`
+		TeamId  string `json:"team_id" validate:"omitempty,uuid4"`
 		Manager bool   `json:"manager" validate:"required"`
 	}
 )
@@ -70,14 +70,14 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	}
 
 	user := &models.User{
-		ID:        uuid.NewV4().String(),
+		Id:        uuid.NewV4().String(),
 		Name:      params.Name,
 		Email:     params.Email,
 		Password:  string(pass),
-		TeamID:    params.TeamID,
+		TeamId:    params.TeamId,
 		Manager:   params.Manager,
-		CreatedAt: time.Now().Format("2006-1-2 15:04:05"),
-		UpdatedAt: time.Now().Format("2006-1-2 15:04:05"),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	if err := user.Store(); err != nil {
@@ -108,7 +108,7 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	if result {
 		user.Name = params.Name
 		user.Email = params.Email
-		user.TeamID = params.TeamID
+		user.TeamId = params.TeamId
 		user.Manager = params.Manager
 		if _, err := models.Engine.Id(id).Update(user); err != nil {
 			return response.Send(iris.StatusInternalServerError, "更新失败", make(map[string]interface{}))
@@ -121,7 +121,7 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 // 删除用户
 func (instance *UserController) DeleteBy(id string) mvc.Result {
 	user := &models.User{
-		ID: id,
+		Id: id,
 	}
 
 	_, err := models.Engine.Delete(user)
