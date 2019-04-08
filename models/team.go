@@ -1,13 +1,19 @@
 package models
 
+import "time"
+
 type (
 	Team struct {
-		ID          string  `json:"id" xorm:"pk char(36) notnull 'id'"`
-		Name        string  `json:"name" xorm:"varchar(36) notnull"`
-		Description string  `json:"description" xorm:"varchar(255) null"`
-		CreatedAt   string  `json:"created_at" xorm:"datetime notnull created"`
-		UpdatedAt   string  `json:"updated_at" xorm:"datetime null updated"`
-		DeletedAt   string  `json:"deleted_at" xorm:"datetime null deleted"`
+		Id          string    `xorm:"not null pk comment('ID') CHAR(36)"`
+		Name        string    `xorm:"not null comment('名称') VARCHAR(255)"`
+		Description string    `xorm:"not null comment('描述') VARCHAR(255)"`
+		CreatedAt   time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
+		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
 		Users       []*User `json:"users" xorm:"-"`
 	}
 )
+
+// 定义模型的数据表名称
+func (team *Team) TableName() string {
+	return "teams"
+}

@@ -105,13 +105,13 @@ func (service *TeamService) FindByID(id string) (*models.Team, error) {
 
 // 更新团队信息
 func (service *TeamService) Update(id string, params *UpdateRequest) (*models.Team, error) {
-
+	return nil, nil
 }
 
 // 删除团队
 func (service *TeamService) Delete(id string) error {
 	_, err := models.Engine.Delete(&models.Worker{
-		ID: id,
+		Id: id,
 	})
 
 	return err
