@@ -104,14 +104,15 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		return response.ValidationError("请填写名称")
 	}
 
-	var worker models.Worker
-	worker.ID = uuid.NewV4().String()
-	worker.Name = params.Name
-	worker.Remark = params.Remark
-	worker.Status = models.STATUS_DISCONNECTED
-	worker.IP = ""
-	worker.CreatedAt = time.Now().Format("2006-1-2 15:04:05")
-	worker.UpdatedAt = time.Now().Format("2006-1-2 15:04:05")
+	worker := models.Worker{
+		Id: uuid.NewV4().String(),
+		Name: params.Name,
+		Description: params.Remark,
+		Status: models.STATUS_DISCONNECTED,
+		Host: "",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 	if err := worker.Store(); err != nil {
 		return response.InternalServerError("创建节点失败", err)
 	}
@@ -142,7 +143,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 
 	if result {
 		worker.Name = params.Name
-		worker.Remark = params.Remark
+		worker.Description = params.Remark
 		if _, err := models.Engine.Id(id).Update(worker); err != nil {
 			return response.Send(iris.StatusInternalServerError, "更新失败", make(map[string]interface{}))
 		}
@@ -154,7 +155,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 // 删除指定ID
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	worker := &models.Worker{
-		ID: id,
+		Id: id,
 	}
 
 	_, err := models.Engine.Delete(worker)

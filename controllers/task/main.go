@@ -22,7 +22,6 @@ type (
 
 	CreateRequest struct {
 		Name        string `json:"name" validate:"required"`
-		ParentID    string `json:"parent_id" validate:"omitempty,uuid4"`
 		Content     string `json:"content" validate:"required"`
 		Event       string `json:"event" validate:"required"`
 		Mode        string `json:"mode" validate:"required"`
@@ -36,7 +35,6 @@ type (
 
 	UpdateRequest struct {
 		Name        string `json:"name" validate:"required"`
-		ParentID    string `json:"parent_id" validate:"omitempty,uuid4"`
 		Content     string `json:"content" validate:"required"`
 		Event       string `json:"event" validate:"required"`
 		Mode        string `json:"mode" validate:"required"`
@@ -129,20 +127,13 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	}
 
 	task := &models.Task{
-		ID:          uuid.NewV4().String(),
+		Id:          uuid.NewV4().String(),
 		Name:        params.Name,
-		ParentID:    params.ParentID,
 		Content:     params.Content,
-		Event:       params.Event,
 		Mode:        params.Mode,
-		Overlap:     params.Overlap,
-		Timeout:     params.Timeout,
-		Interval:    params.Interval,
-		Retries:     params.Retries,
-		Status:      params.Status,
 		Description: params.Description,
-		CreatedAt:   time.Now().Format("2006-1-2 15:04:05"),
-		UpdatedAt:   time.Now().Format("2006-1-2 15:04:05"),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
 	}
 	if err := task.Store(); err != nil {
 		return response.InternalServerError("创建任务失败", err)
@@ -166,19 +157,12 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	}
 
 	task := &models.Task{
-		ID:          id,
+		Id:          id,
 		Name:        params.Name,
-		ParentID:    params.ParentID,
 		Content:     params.Content,
-		Event:       params.Event,
 		Mode:        params.Mode,
-		Overlap:     params.Overlap,
-		Timeout:     params.Timeout,
-		Interval:    params.Interval,
-		Retries:     params.Retries,
-		Status:      params.Status,
 		Description: params.Description,
-		UpdatedAt:   time.Now().Format("2006-1-2 15:04:05"),
+		UpdatedAt:   time.Now(),
 	}
 
 	if err := task.Update(); err != err {
@@ -191,7 +175,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 // 删除任务
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	task := &models.Task{
-		ID: id,
+		Id: id,
 	}
 
 	if err := task.Destroy(); err != nil {

@@ -15,24 +15,21 @@ const (
 
 type (
 	Task struct {
-		ID          string    `json:"id" xorm:"pk char(36) notnull 'id'"`               // ID
-		Name        string    `json:"name" xorm:"varchar(255) notnull"`                 // 名称
-		ParentID    string    `json:"parent_id" xorm:"char(36) null 'parent_id'"`       // 父任务ID
-		Spec        string    `json:"spec" xorm:"varchar(64) notnull"`                  // 定时器
-		Content     string    `json:"content" xorm:"varchar(255) notnull"`              // 任务内容
-		Event       string    `json:"event" xorm:"varchar(255)"`                        // 依赖父任务事件
-		Mode        string    `json:"mode" xorm:"varchar(255) notnull default 'shell'"` // 执行方式
-		Overlap     bool      `json:"overlap" xorm:"tinyint notnull default 0"`         // 重复执行
-		Timeout     int       `json:"timeout" xorm:"mediumint notnull default 0"`       // 超时时间
-		Interval    int       `json:"interval" xorm:"smallint notnull default 0"`       // 重试间隔
-		Retries     int       `json:"retries" xorm:"tinyint notnull default 0"`         // 重试次数
-		Status      string    `json:"status" xorm:"char(10) notnull default 'normal'"`  // 状态
-		Triggering  time.Time `json:"triggering" xorm:"-"`                              // 下次触发时间
-		Description string    `json:"description" xorm:"varchar(255) null"`             // 描述
-		CreatedAt   string    `json:"created_at" xorm:"datetime notnull created"`       // 创建时间
-		UpdatedAt   string    `json:"updated_at" xorm:"datetime notnull updated"`       // 更新时间
+		Id          string    `xorm:"not null pk comment('用户ID') CHAR(36)"`
+		TeamId      string    `xorm:"not null comment('团队ID') index CHAR(36)"`
+		Name        string    `xorm:"not null comment('名称') VARCHAR(255)"`
+		Content     string    `xorm:"not null comment('内容') TEXT"`
+		Mode        string    `xorm:"not null comment('执行方式') VARCHAR(255)"`
+		Description string    `xorm:"comment('描述') VARCHAR(255)"`
+		CreatedAt   time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
+		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
 	}
 )
+
+// 定义模型的数据表名称
+func (task *Task) TableName() string {
+	return "tasks"
+}
 
 // 创建任务
 func (task *Task) Store() error {
@@ -42,7 +39,7 @@ func (task *Task) Store() error {
 
 // 更新任务
 func (task *Task) Update() error {
-	_, err := Engine.Id(task.ID).Update(task)
+	_, err := Engine.Id(task.Id).Update(task)
 	return err
 }
 
