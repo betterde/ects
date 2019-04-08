@@ -2,19 +2,26 @@ package models
 
 import (
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type User struct {
-	ID        string `json:"id" xorm:"pk char(36) notnull 'id'"`
-	Name      string `json:"name" xorm:"varchar(32) notnull"`
-	Email     string `json:"email" xorm:"varchar(64) notnull unique"`
-	Password  string `json:"-" xorm:"varchar(128) notnull"`
-	Avatar    string `json:"avatar" xorm:"varchar(255) notnull default ''"`
-	TeamID    string `json:"team_id" xorm:"varchar(36) int index 'team_id'"`
-	Manager   bool   `json:"manager" xorm:"tinyint notnull default 0"`
-	CreatedAt string `json:"created_at" xorm:"datetime notnull created"`
-	UpdatedAt string `json:"updated_at" xorm:"datetime null updated"`
-	DeletedAt string `json:"deleted_at" xorm:"datetime null deleted"`
+	Id        string    `xorm:"not null pk comment('用户ID') CHAR(36)"`
+	Name      string    `xorm:"not null comment('姓名') VARCHAR(255)"`
+	Email     string    `xorm:"not null comment('邮箱') unique VARCHAR(255)"`
+	Password  string    `xorm:"not null comment('密码') VARCHAR(255)"`
+	Avatar    string    `xorm:"comment('头像') VARCHAR(255)"`
+	TeamId    string    `xorm:"not null default '' comment('团队ID') index CHAR(36)"`
+	RoleId    string    `xorm:"not null default '' comment('角色ID') index CHAR(36)"`
+	Manager   bool      `xorm:"not null default 0 comment('管理员') TINYINT(1)"`
+	CreatedAt time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
+	UpdatedAt time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
+	DeletedAt time.Time `xorm:"null updated comment('删除于') TIMESTAMP"`
+}
+
+// 定义模型的数据表名称
+func (user *User) TableName() string {
+	return "users"
 }
 
 func GeneratePassword(password string) ([]byte, error) {
@@ -34,7 +41,7 @@ func (user *User) Store() error {
 }
 
 func (user *User) Save() error {
-	_, err := Engine.Id(user.ID).Update(&user)
+	_, err := Engine.Id(user.Id).Update(&user)
 	return err
 }
 

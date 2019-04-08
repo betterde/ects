@@ -117,7 +117,8 @@ func (service *UserService) FindByEmail(email string) (*models.User, error) {
 
 	if result {
 		// 如果用户已经被删除则
-		if user.DeletedAt != "" {
+		undeleted := time.Time{}
+		if user.DeletedAt != undeleted {
 			return &user, errors.New("用户已禁用")
 		}
 		return &user, err
@@ -165,7 +166,7 @@ func IssueToken(user *models.User) (string, error) {
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
 		"nbf": time.Now().Unix(),
-		"sub": user.ID,
+		"sub": user.Id,
 	})
 
 	return token.SignedString([]byte(config.Conf.Auth.Secret))

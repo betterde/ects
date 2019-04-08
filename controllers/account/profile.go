@@ -17,7 +17,7 @@ type (
 		Name    string `json:"name"`
 		Email   string `json:"email"`
 		Avatar  string `json:"avatar"`
-		TeamID  string `json:"team_id"`
+		TeamId  string `json:"team_id"`
 		Manager bool   `json:"manager"`
 	}
 )
@@ -32,11 +32,11 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		return response.NotFound(err.Error())
 	}
 	return response.Success("请求成功", response.Payload{"data": &Profile{
-		ID:      user.ID,
+		ID:      user.Id,
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
-		TeamID:  user.TeamID,
+		TeamId:  user.TeamId,
 		Manager: user.Manager,
 	}})
 }
