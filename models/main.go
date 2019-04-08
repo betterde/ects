@@ -8,6 +8,16 @@ import (
 	"time"
 )
 
+type (
+	Seeder interface {
+		Seed() error
+	}
+	Model interface {
+		Store() error
+		Update(id string) error
+	}
+)
+
 var Engine *xorm.Engine
 
 const DefaultTimeFormat = "2006-01-02 15:04:05"
@@ -53,6 +63,15 @@ func Migrate() error {
 		&Permission{},
 		&Log{},
 		&Team{},
+		&Configuration{},
+		&Menu{},
+		&PasswordResets{},
+		&Pipelines{},
+		&PipelineRecords{},
+		&PipelineTaskPivot{},
+		&PipelineWorkerPivot{},
+		&RolePermissionPivot{},
+		&TaskRecords{},
 	}
 
 	for _, table := range tables {
