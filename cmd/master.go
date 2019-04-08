@@ -74,7 +74,7 @@ func start(addr string) {
 	// 注册路由
 	routes.Register(app)
 
-	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler); err != nil {
+	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithCharset("UTF-8")); err != nil {
 		log.Println(err)
 	}
 }
