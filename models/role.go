@@ -8,8 +8,8 @@ type (
 		Name        string    `xorm:"not null comment('名称') VARCHAR(255)"`
 		Description string    `xorm:"not null comment('描述') VARCHAR(255)"`
 		System      int       `xorm:"not null default 0 comment('系统定义') TINYINT(1)"`
-		CreatedAt   time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
-		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
+		CreatedAt   time.Time `xorm:"not null created comment('创建于') DATETIME"`
+		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') DATETIME"`
 	}
 )
 

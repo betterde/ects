@@ -8,7 +8,7 @@ import (
 
 type (
 	WorkerInterface interface {
-		FindByID(id string) (*models.Worker, error)
+		FindByID(id string) (*models.Node, error)
 	}
 
 	WorkerService struct {
@@ -20,16 +20,16 @@ func NewWorkerService() WorkerInterface {
 }
 
 // 根据ID获取节点信息
-func (service *WorkerService) FindByID(id string) (*models.Worker, error) {
-	var worker models.Worker
-	result, err := models.Engine.Id(id).Get(&worker)
+func (service *WorkerService) FindByID(id string) (*models.Node, error) {
+	var node models.Node
+	result, err := models.Engine.Id(id).Get(&node)
 	if err != nil {
 		log.Println(err)
 	}
 
 	if result {
-		return &worker, nil
+		return &node, nil
 	}
 
-	return &worker, errors.New("节点信息不存在")
+	return &node, errors.New("节点信息不存在")
 }

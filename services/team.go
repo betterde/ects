@@ -110,7 +110,7 @@ func (service *TeamService) Update(id string, params *UpdateRequest) (*models.Te
 
 // 删除团队
 func (service *TeamService) Delete(id string) error {
-	_, err := models.Engine.Delete(&models.Worker{
+	_, err := models.Engine.Delete(&models.Node{
 		Id: id,
 	})
 

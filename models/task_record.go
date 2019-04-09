@@ -18,8 +18,8 @@ type TaskRecords struct {
 	Retries          int       `xorm:"not null default 0 comment('重试次数') TINYINT(3)"`
 	Status           string    `xorm:"not null default 'finished' comment('状态') VARCHAR(255)"`
 	Result           string    `xorm:"not null comment('执行结果') TEXT"`
-	CreatedAt        time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
-	UpdatedAt        time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
+	CreatedAt        time.Time `xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt        time.Time `xorm:"not null updated comment('更新于') DATETIME"`
 }
 
 // 定义模型的数据表名称

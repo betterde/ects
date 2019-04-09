@@ -14,9 +14,9 @@ type User struct {
 	TeamId    string    `xorm:"not null default '' comment('团队ID') index CHAR(36)"`
 	RoleId    string    `xorm:"not null default '' comment('角色ID') index CHAR(36)"`
 	Manager   bool      `xorm:"not null default 0 comment('管理员') TINYINT(1)"`
-	CreatedAt time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
-	UpdatedAt time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
-	DeletedAt time.Time `xorm:"null updated comment('删除于') TIMESTAMP"`
+	CreatedAt time.Time `xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt time.Time `xorm:"not null updated comment('更新于') DATETIME"`
+	DeletedAt time.Time `xorm:"null updated comment('删除于') DATETIME"`
 }
 
 // 定义模型的数据表名称

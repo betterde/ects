@@ -21,8 +21,8 @@ type (
 		Content     string    `xorm:"not null comment('内容') TEXT"`
 		Mode        string    `xorm:"not null comment('执行方式') VARCHAR(255)"`
 		Description string    `xorm:"comment('描述') VARCHAR(255)"`
-		CreatedAt   time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
-		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
+		CreatedAt   time.Time `xorm:"not null created comment('创建于') DATETIME"`
+		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') DATETIME"`
 	}
 )
 

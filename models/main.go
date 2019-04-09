@@ -57,7 +57,7 @@ func keepAlived() {
 func Migrate() error {
 	tables := []interface{}{
 		&User{},
-		&Worker{},
+		&Node{},
 		&Role{},
 		&Task{},
 		&Permission{},

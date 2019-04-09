@@ -14,8 +14,8 @@ type Pipelines struct {
 	Finished    string    `xorm:"comment('成功时执行') CHAR(36)"`
 	Failed      string    `xorm:"comment('失败时执行') CHAR(36)"`
 	Overlap     int       `xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
-	CreatedAt   time.Time `xorm:"not null created comment('创建于') TIMESTAMP"`
-	UpdatedAt   time.Time `xorm:"not null updated comment('更新于') TIMESTAMP"`
+	CreatedAt   time.Time `xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt   time.Time `xorm:"not null updated comment('更新于') DATETIME"`
 }
 
 // 定义模型的数据表名称

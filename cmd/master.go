@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
@@ -23,6 +25,16 @@ var masterCmd = &cobra.Command{
 	Long:  "Run a master node service on this server",
 	Run: func(cmd *cobra.Command, args []string) {
 		bootstrap()
+		cluster := discover.NewCluster()
+		ctx, cancelFunc := context.WithCancel(context.Background())
+		go cluster.Watch(ctx)
+
+		if false {
+			cancelFunc()
+		}
+
+		log.Println(cluster.Nodes())
+
 		start(fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port))
 	},
 }
@@ -33,6 +45,7 @@ func init() {
 	masterCmd.PersistentFlags().StringVarP(&config.Path, "config", "c", "/etc/ects/ects.yaml", "Set configuration file")
 	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
+	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", nil, "Set Etcd endpoints")
 }
 
 func bootstrap() {
