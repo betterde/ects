@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
@@ -84,7 +85,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	}
 
 	return response.Success("请求成功", response.Payload{
-		"data": workers,
+		"data": discover.ServiceCluster.AllNodes(),
 		"meta": &response.Meta{
 			Limit: limit,
 			Page:  page,
@@ -108,7 +109,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		Id: uuid.NewV4().String(),
 		Name: params.Name,
 		Description: params.Remark,
-		Status: models.STATUS_DISCONNECTED,
+		Status: models.ONLINE,
 		Host: "",
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

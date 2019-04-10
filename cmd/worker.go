@@ -24,9 +24,12 @@ var (
 			listen()
 		},
 	}
-	ID string
-	Host string
-	Port int
+
+	worker = &models.Node{
+		Mode: models.MODE_WORKER,
+		Status: models.ONLINE,
+	}
+
 	EndPoints []string
 )
 
@@ -37,10 +40,12 @@ type (
 
 func init() {
 	rootCmd.AddCommand(workerCmd)
-	workerCmd.PersistentFlags().StringVar(&Host, "host", "0.0.0.0", "Set listen on IP")
-	workerCmd.PersistentFlags().IntVar(&Port, "port", 9412, "Set listen on port")
-	workerCmd.PersistentFlags().StringSliceVar(&EndPoints, "etcd", nil, "Set Etcd endpoints")
-	workerCmd.PersistentFlags().StringVarP(&ID, "node", "n", "", "Set node id")
+	workerCmd.PersistentFlags().StringVar(&worker.Name, "name", "", "Set worker node name")
+	workerCmd.PersistentFlags().StringVar(&worker.Host, "host", "0.0.0.0", "Set listen on IP")
+	workerCmd.PersistentFlags().IntVar(&worker.Port, "port", 9412, "Set listen on port")
+	workerCmd.PersistentFlags().StringSliceVar(&EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
+	workerCmd.PersistentFlags().StringVarP(&worker.Id, "node", "n", "", "Set node id")
+	workerCmd.PersistentFlags().StringVar(&worker.Description, "desc", "", "Set worker node description")
 }
 
 func (server *Server) Run(ctx context.Context, request *rpc.Request) (*rpc.Response, error) {
@@ -50,26 +55,22 @@ func (server *Server) Run(ctx context.Context, request *rpc.Request) (*rpc.Respo
 }
 
 func listen() {
-	addr := fmt.Sprintf("%s:%d", Host, Port)
+	addr := fmt.Sprintf("%s:%d", worker.Host, worker.Port)
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	if ID == "" {
-		ID = uuid.NewV4().String()
+	if worker.Id == "" {
+		worker.Id = uuid.NewV4().String()
 	}
 
-	node := &models.Node{
-		Id: ID,
-		Name: "Worker",
-		Host: Host,
-		Port: Port,
-		Mode: models.MODE_WORKER,
+	if worker.Name == "" {
+		worker.Name = "worker-" + worker.Id
 	}
 
-	service, err := discover.NewService(node, EndPoints)
-	if err := service.Register(600); err != nil {
+	service, err := discover.NewService(worker, EndPoints)
+	if err := service.Register(5); err != nil {
 		log.Println(err)
 	}
 

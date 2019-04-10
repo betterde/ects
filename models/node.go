@@ -3,8 +3,8 @@ package models
 import "time"
 
 const (
-	STATUS_CONNECTED    = "connected"
-	STATUS_DISCONNECTED = "disconnected"
+	ONLINE    = "online"
+	OFFLINE = "offline"
 	MODE_MASTER = "master"
 	MODE_WORKER = "worker"
 )

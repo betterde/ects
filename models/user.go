@@ -16,7 +16,7 @@ type User struct {
 	Manager   bool      `xorm:"not null default 0 comment('管理员') TINYINT(1)"`
 	CreatedAt time.Time `xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt time.Time `xorm:"not null updated comment('更新于') DATETIME"`
-	DeletedAt time.Time `xorm:"null updated comment('删除于') DATETIME"`
+	DeletedAt time.Time `xorm:"null comment('删除于') DATETIME"`
 }
 
 // 定义模型的数据表名称

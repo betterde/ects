@@ -11,33 +11,40 @@ import (
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
+	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 )
 
 // masterCmd represents the master command
-var masterCmd = &cobra.Command{
-	Use:   "master",
-	Short: "Run a master node service",
-	Long:  "Run a master node service on this server",
-	Run: func(cmd *cobra.Command, args []string) {
-		bootstrap()
-		cluster := discover.NewCluster()
-		ctx, cancelFunc := context.WithCancel(context.Background())
-		go cluster.Watch(ctx)
+var (
+	masterCmd = &cobra.Command{
+		Use:   "master",
+		Short: "Run a master node service",
+		Long:  "Run a master node service on this server",
+		Run: func(cmd *cobra.Command, args []string) {
+			bootstrap()
+			go register()
+			discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
+			ctx, cancelFunc := context.WithCancel(context.Background())
+			go discover.ServiceCluster.WatchNodes(ctx)
+			go discover.ServiceCluster.WatchStatus(ctx)
+			if false {
+				cancelFunc()
+			}
 
-		if false {
-			cancelFunc()
-		}
-
-		log.Println(cluster.Nodes())
-
-		start(fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port))
-	},
-}
+			start(fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port))
+		},
+	}
+	master = &models.Node{
+		Mode: models.MODE_MASTER,
+		Status: models.ONLINE,
+	}
+)
 
 func init() {
 	rootCmd.AddCommand(masterCmd)
@@ -45,7 +52,10 @@ func init() {
 	masterCmd.PersistentFlags().StringVarP(&config.Path, "config", "c", "/etc/ects/ects.yaml", "Set configuration file")
 	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
-	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", nil, "Set Etcd endpoints")
+	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
+	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
+	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
+	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "", "Set master node description")
 }
 
 func bootstrap() {
@@ -76,6 +86,29 @@ func bootstrap() {
 		dir := path.Dir(config.Path)
 		config.CreateConfigDir(dir)
 		system.Info.Permission = config.CheckConfigDirPermisson(dir)
+	}
+}
+
+func register()  {
+	master.Host = config.Conf.Service.Host
+	master.Port = config.Conf.Service.Port
+
+	if master.Id == "" {
+		master.Id = uuid.NewV4().String()
+	}
+
+	if master.Name == "" {
+		master.Name = "master-" + master.Id
+	}
+
+	service, err := discover.NewService(master, EndPoints)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+	if err := service.Register(5); err != nil {
+		log.Println(err)
+		os.Exit(1)
 	}
 }
 
