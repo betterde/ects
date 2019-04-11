@@ -4,9 +4,10 @@ import (
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/controllers/auth"
 	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/internal/services"
 	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/models"
+	"github.com/betterde/ects/seeds"
+	"github.com/betterde/ects/services"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/satori/go.uuid"
@@ -21,12 +22,8 @@ type (
 	}
 )
 
-func (instance *Controller) Get(ctx iris.Context) {
-	_, err := ctx.JSON(response.Success("请求成功", response.Payload{"data": system.Info}))
-
-	if err != nil {
-		// TODO
-	}
+func (instance *Controller) Get(ctx iris.Context) mvc.Result {
+	return response.Success("请求成功", response.Payload{"data": system.Info})
 }
 
 // 根据用户填写配置数据生成配置文件
@@ -59,19 +56,25 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		if err := models.Migrate(); err != nil {
 			return response.Send(1045, "数据库连接错误", err)
 		}
+
+		// 填充系统初始数据
+		seedService := seeds.Seeder{}
+		if err := seedService.Run(); err != nil {
+			return response.Send(1045, "填出系统数据失败", err)
+		}
 	}
 
 	pass, err := models.GeneratePassword(config.Conf.User.Pass)
 	id := uuid.NewV4()
 
 	user := &models.User{
-		ID:        id.String(),
+		Id:        id.String(),
 		Name:      config.Conf.User.Name,
 		Email:     config.Conf.User.Email,
 		Password:  string(pass),
 		Manager:   true,
-		CreatedAt: time.Now().Format("2006-1-2 15:04:05"),
-		UpdatedAt: time.Now().Format("2006-1-2 15:04:05"),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	if _, err := models.Engine.Insert(user); err != nil {

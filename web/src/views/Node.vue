@@ -42,12 +42,13 @@
         </div>
       </el-dialog>
       <div class="panel-body">
-        <el-table :data="workers" style="width: 100%" v-loading="loading">
+        <el-table :data="nodes" style="width: 100%" v-loading="loading">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="名称" width="200"></el-table-column>
-          <el-table-column prop="ip" label="IP" width="140"></el-table-column>
+          <el-table-column prop="host" label="主机" width="140"></el-table-column>
+          <el-table-column prop="port" label="端口" width="80"></el-table-column>
           <el-table-column prop="status" label="状态" width="120"></el-table-column>
-          <el-table-column prop="remark" label="标记"></el-table-column>
+          <el-table-column prop="description" label="标记"></el-table-column>
           <el-table-column prop="option" label="操作" width="100">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
@@ -101,7 +102,7 @@
             {type: 'string', required: false, message: '请输入节点名称', trigger: 'blur'}
           ]
         },
-        workers: [],
+        nodes: [],
         meta: {
           limit: 10,
           page: 1,
@@ -121,17 +122,17 @@
       submitCreateForm() {
         this.$refs.create.validate((valid) => {
           if (valid) {
-            api.worker.create(this.createParams).then(res => {
+            api.node.create(this.createParams).then(res => {
               this.meta.total += 1;
               // 判断是否需要跳转到最后一页
               if (this.meta.total > (this.meta.limit * this.meta.page)) {
                 this.changePage(Math.ceil(this.meta.total / this.meta.limit));
               } else {
                 // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                this.workers.push(res.data);
+                this.nodes.push(res.data);
               }
               this.$message.success(res.message);
-              this.handleClose();
+              this.createDialogClose();
             }).catch(err => {
               this.$message.warning(err.message);
             });
@@ -148,7 +149,7 @@
       // 删除节点
       handleDelete(index, row) {
         if (row.hasOwnProperty('id')) {
-          api.worker.delete({id: row.id}).then(res => {
+          api.node.delete({id: row.id}).then(res => {
             this.$message.success(res.message);
             this.fetchWorkers();
           }).catch(err => {
@@ -163,8 +164,8 @@
       },
       fetchWorkers() {
         this.loading = true;
-        api.worker.fetch(this.params).then(res => {
-          this.workers = res.data;
+        api.node.fetch(this.params).then(res => {
+          this.nodes = res.data;
           this.meta = res.meta;
         }).catch(err => {
           this.$message.warning(err.message)

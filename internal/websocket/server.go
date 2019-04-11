@@ -3,7 +3,7 @@ package websocket
 import (
 	"errors"
 	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/internal/services"
+	"github.com/betterde/ects/services"
 	"github.com/kataras/iris"
 	"log"
 	"sync"
@@ -121,7 +121,7 @@ func (s *Server) Upgrade(ctx context.Context) Connection {
 		return &connection{err: errors.New("缺少必要参数")}
 	}
 
-	srv := services.NewWorkerService()
+	srv := services.NewNodeService()
 	worker, err := srv.FindByID(ctx.URLParam("id"))
 	if err != nil {
 		if _, err := ctx.JSON(response.NotFound(err.Error())); err != nil {
@@ -129,7 +129,7 @@ func (s *Server) Upgrade(ctx context.Context) Connection {
 		}
 	}
 
-	worker.IP = ctx.RemoteAddr()
+	worker.Host = ctx.RemoteAddr()
 	if err := worker.Update(); err != nil {
 		if _, err := ctx.JSON(response.NotFound(err.Error())); err != nil {
 
@@ -143,7 +143,7 @@ func (s *Server) Upgrade(ctx context.Context) Connection {
 		return &connection{err: err}
 	}
 
-	return s.handleConnection(ctx, conn, worker.ID)
+	return s.handleConnection(ctx, conn, worker.Id)
 }
 
 func (s *Server) addConnection(c *connection) {

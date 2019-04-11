@@ -25,12 +25,12 @@ const router = new Router({
       component: () => import('../views/Task.vue')
     },
     {
-      path: '/worker',
-      name: 'worker',
+      path: '/node',
+      name: 'node',
       meta: {
         requiresAuth: true
       },
-      component: () => import('../views/Worker.vue')
+      component: () => import('../views/Node.vue')
     },
     {
       path: '/team',

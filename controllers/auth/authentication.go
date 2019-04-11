@@ -3,8 +3,8 @@ package auth
 import (
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/internal/services"
 	"github.com/betterde/ects/models"
+	"github.com/betterde/ects/services"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"gopkg.in/go-playground/validator.v9"
@@ -34,7 +34,6 @@ type (
 		ExpiresIn   int64  `json:"expires_in"`
 	}
 )
-
 
 func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signin", "SignInHandler")

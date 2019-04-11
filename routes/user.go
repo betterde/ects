@@ -2,12 +2,11 @@ package routes
 
 import (
 	"github.com/betterde/ects/controllers/organization"
-	"github.com/betterde/ects/internal/services"
+	"github.com/betterde/ects/services"
 	"github.com/kataras/iris/mvc"
 )
 
-func users(application *mvc.Application) {
-	userService := services.NewUserService()
-	application.Register(userService)
+func registerUser(application *mvc.Application) {
+	application.Register(services.NewUserService())
 	application.Handle(new(organization.UserController))
 }

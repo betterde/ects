@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/betterde/ects/controllers/auth"
-	"github.com/betterde/ects/internal/services"
+	"github.com/betterde/ects/services"
 	"github.com/kataras/iris/mvc"
 )
 

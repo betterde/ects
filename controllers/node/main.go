@@ -1,9 +1,9 @@
-package worker
+package node
 
 import (
 	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/internal/services"
 	"github.com/betterde/ects/models"
+	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -16,7 +16,7 @@ import (
 
 type (
 	Controller struct {
-		Service services.WorkerService
+		Service services.NodeService
 	}
 
 	CreateRequest struct {
@@ -33,12 +33,12 @@ type (
 // 获取节点列表
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
-		page  int
-		limit int
-		start int
-		search  string
-		total int64
-		err   error
+		page   int
+		limit  int
+		start  int
+		search string
+		total  int64
+		err    error
 	)
 	page = 1
 	limit = 10
@@ -70,12 +70,12 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	}
 
 	start = (page - 1) * limit
-	workers := make([]models.Worker, 0)
+	workers := make([]models.Node, 0)
 	if search == "" {
-		total, err = models.Engine.Count(&models.Worker{})
+		total, err = models.Engine.Count(&models.Node{})
 		err = models.Engine.Limit(limit, start).Find(&workers)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Worker{})
+		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Node{})
 		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&workers)
 	}
 
@@ -104,14 +104,15 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		return response.ValidationError("请填写名称")
 	}
 
-	var worker models.Worker
-	worker.ID = uuid.NewV4().String()
-	worker.Name = params.Name
-	worker.Remark = params.Remark
-	worker.Status = models.STATUS_DISCONNECTED
-	worker.IP = ""
-	worker.CreatedAt = time.Now().Format("2006-1-2 15:04:05")
-	worker.UpdatedAt = time.Now().Format("2006-1-2 15:04:05")
+	worker := models.Node{
+		Id: uuid.NewV4().String(),
+		Name: params.Name,
+		Description: params.Remark,
+		Status: models.ONLINE,
+		Host: "",
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
 	if err := worker.Store(); err != nil {
 		return response.InternalServerError("创建节点失败", err)
 	}
@@ -122,7 +123,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 // 更新节点信息
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
-	var worker models.Worker
+	var worker models.Node
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
 		log.Println(err)
@@ -131,7 +132,6 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	err := validate.Struct(params)
 
 	if err != nil {
-		ctx.StatusCode(iris.StatusUnprocessableEntity)
 		return response.ValidationError("请填写名称")
 	}
 
@@ -143,9 +143,8 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 
 	if result {
 		worker.Name = params.Name
-		worker.Remark = params.Remark
+		worker.Description = params.Remark
 		if _, err := models.Engine.Id(id).Update(worker); err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
 			return response.Send(iris.StatusInternalServerError, "更新失败", make(map[string]interface{}))
 		}
 	}
@@ -155,8 +154,8 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 
 // 删除指定ID
 func (instance *Controller) DeleteBy(id string) mvc.Result {
-	worker := &models.Worker{
-		ID: id,
+	worker := &models.Node{
+		Id: id,
 	}
 
 	_, err := models.Engine.Delete(worker)

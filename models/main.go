@@ -8,10 +8,15 @@ import (
 	"time"
 )
 
-type Model struct {
-	Page int64 `xorm:"-"`
-	PageSize int64 `xorm:"-"`
-}
+type (
+	Seeder interface {
+		Seed() error
+	}
+	Model interface {
+		Store() error
+		Update(id string) error
+	}
+)
 
 var Engine *xorm.Engine
 
@@ -27,8 +32,10 @@ func Connection() (*xorm.Engine, error) {
 		config.Conf.Database.Char,
 	)
 	engine, err := xorm.NewEngine("mysql", dsn)
-	engine.SetMaxIdleConns(10)
-	engine.SetMaxOpenConns(30)
+	if engine != nil {
+		engine.SetMaxIdleConns(10)
+		engine.SetMaxOpenConns(30)
+	}
 
 	go keepAlived()
 
@@ -50,7 +57,21 @@ func keepAlived() {
 func Migrate() error {
 	tables := []interface{}{
 		&User{},
-		&Worker{},
+		&Node{},
+		&Role{},
+		&Task{},
+		&Permission{},
+		&Log{},
+		&Team{},
+		&Configuration{},
+		&Menu{},
+		&PasswordResets{},
+		&Pipelines{},
+		&PipelineRecords{},
+		&PipelineTaskPivot{},
+		&PipelineNodePivot{},
+		&RolePermissionPivot{},
+		&TaskRecords{},
 	}
 
 	for _, table := range tables {
