@@ -1,10 +1,13 @@
 package models
 
-import "time"
+import (
+	"github.com/go-xorm/builder"
+	"time"
+)
 
 const (
-	ONLINE    = "online"
-	OFFLINE = "offline"
+	ONLINE      = "online"
+	OFFLINE     = "offline"
 	MODE_MASTER = "master"
 	MODE_WORKER = "worker"
 )
@@ -38,4 +41,14 @@ func (node *Node) Store() error {
 func (node *Node) Update() error {
 	_, err := Engine.Id(node.Id).Update(node)
 	return err
+}
+
+// 创建或更新节点
+func (node *Node) CreateOrUpdate() error {
+	exist := &Node{}
+	if count, err := Engine.Where(builder.Eq{"id": node.Id}).Count(exist); count > 0 && err == nil {
+		return node.Update()
+	}
+
+	return node.Store()
 }

@@ -121,7 +121,7 @@ func (s *Server) Upgrade(ctx context.Context) Connection {
 		return &connection{err: errors.New("缺少必要参数")}
 	}
 
-	srv := services.NewWorkerService()
+	srv := services.NewNodeService()
 	worker, err := srv.FindByID(ctx.URLParam("id"))
 	if err != nil {
 		if _, err := ctx.JSON(response.NotFound(err.Error())); err != nil {

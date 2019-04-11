@@ -69,7 +69,7 @@ func Migrate() error {
 		&Pipelines{},
 		&PipelineRecords{},
 		&PipelineTaskPivot{},
-		&PipelineWorkerPivot{},
+		&PipelineNodePivot{},
 		&RolePermissionPivot{},
 		&TaskRecords{},
 	}

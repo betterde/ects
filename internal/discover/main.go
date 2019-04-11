@@ -68,16 +68,9 @@ func (service *Service) Register(ttlSecond int64) error {
 
 	cancelCtx, _ = context.WithCancel(context.TODO())
 
-	// 创建带有节点详情的永久Key
-	if _, err = service.client.Put(cancelCtx, key, string(val)); err != nil {
+	if _, err = service.client.Put(cancelCtx, key, string(val), clientv3.WithLease(service.leaseID)); err != nil {
 		return err
 	}
-
-	// 创建实时更新节点状态的Key，当节点出现故障则移除节点状态
-	if _, err = service.client.Put(cancelCtx, fmt.Sprintf("%s%s", SERVICE_STATUS, service.node.Id), service.node.Id, clientv3.WithLease(service.leaseID)); err != nil {
-		return err
-	}
-
 
 	log.Printf("Node is runing, register id is %s", service.node.Id)
 

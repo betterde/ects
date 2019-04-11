@@ -7,20 +7,20 @@ import (
 )
 
 type (
-	WorkerInterface interface {
+	NodeInterface interface {
 		FindByID(id string) (*models.Node, error)
 	}
 
-	WorkerService struct {
+	NodeService struct {
 	}
 )
 
-func NewWorkerService() WorkerInterface {
-	return &WorkerService{}
+func NewNodeService() NodeInterface {
+	return &NodeService{}
 }
 
 // 根据ID获取节点信息
-func (service *WorkerService) FindByID(id string) (*models.Node, error) {
+func (service *NodeService) FindByID(id string) (*models.Node, error) {
 	var node models.Node
 	result, err := models.Engine.Id(id).Get(&node)
 	if err != nil {

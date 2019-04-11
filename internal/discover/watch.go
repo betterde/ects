@@ -1,17 +1,13 @@
 package discover
 
 import (
-	"github.com/betterde/ects/models"
 	"github.com/coreos/etcd/clientv3"
 	"log"
-	"sync"
 	"time"
 )
 
 type (
 	Cluster struct {
-		Mutex sync.Mutex
-		Nodes map[string]models.Node
 		client *clientv3.Client
 	}
 )
@@ -31,7 +27,6 @@ func NewCluster(endpoints []string) *Cluster {
 	}
 
 	return &Cluster{
-		Nodes: make(map[string]models.Node),
 		client: client,
 	}
 }

@@ -22,12 +22,8 @@ type (
 	}
 )
 
-func (instance *Controller) Get(ctx iris.Context) {
-	_, err := ctx.JSON(response.Success("请求成功", response.Payload{"data": system.Info}))
-
-	if err != nil {
-		// TODO
-	}
+func (instance *Controller) Get(ctx iris.Context) mvc.Result {
+	return response.Success("请求成功", response.Payload{"data": system.Info})
 }
 
 // 根据用户填写配置数据生成配置文件

@@ -32,7 +32,6 @@ var (
 			discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
 			ctx, cancelFunc := context.WithCancel(context.Background())
 			go discover.ServiceCluster.WatchNodes(ctx)
-			go discover.ServiceCluster.WatchStatus(ctx)
 			if false {
 				cancelFunc()
 			}
@@ -53,7 +52,7 @@ func init() {
 	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
 	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
-	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
+	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "6d037444-8667-4364-848b-0b3b79e9044a", "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
 	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "", "Set master node description")
 }

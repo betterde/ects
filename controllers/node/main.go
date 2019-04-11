@@ -1,7 +1,6 @@
-package worker
+package node
 
 import (
-	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
@@ -17,7 +16,7 @@ import (
 
 type (
 	Controller struct {
-		Service services.WorkerService
+		Service services.NodeService
 	}
 
 	CreateRequest struct {
@@ -85,7 +84,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	}
 
 	return response.Success("请求成功", response.Payload{
-		"data": discover.ServiceCluster.AllNodes(),
+		"data": workers,
 		"meta": &response.Meta{
 			Limit: limit,
 			Page:  page,
