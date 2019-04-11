@@ -30,9 +30,12 @@ func Register(app *iris.Application) {
 		api.Use(middleware.JWTHandler.Serve)
 
 		// 节点管理路由
-		mvc.Configure(api.Party("/worker"), registerWorker)
+		mvc.Configure(api.Party("/node"), registerNode)
 
-		// 任务管理
+		// 任务流水线
+		mvc.Configure(api.Party("/pipeline"), registerPipeline)
+
+		// 任务
 		mvc.Configure(api.Party("/task"), registerTask)
 
 		// 组织路由

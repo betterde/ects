@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris/mvc"
 )
 
-func registerWorker(application *mvc.Application) {
+func registerNode(application *mvc.Application) {
 	application.Register(services.NewNodeService())
 	application.Handle(new(node.Controller))
 }
