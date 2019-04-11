@@ -68,6 +68,7 @@
   }
   .page-error {
     height: 100%;
+    text-align: center;
   }
   .layout-full {
     .page {

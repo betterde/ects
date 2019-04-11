@@ -45,9 +45,10 @@
         <el-table :data="workers" style="width: 100%" v-loading="loading">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="名称" width="200"></el-table-column>
-          <el-table-column prop="ip" label="IP" width="140"></el-table-column>
+          <el-table-column prop="host" label="主机" width="140"></el-table-column>
+          <el-table-column prop="port" label="端口" width="80"></el-table-column>
           <el-table-column prop="status" label="状态" width="120"></el-table-column>
-          <el-table-column prop="remark" label="标记"></el-table-column>
+          <el-table-column prop="description" label="标记"></el-table-column>
           <el-table-column prop="option" label="操作" width="100">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
