@@ -16,4 +16,3 @@ type (
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	return response.Success("", response.Payload{})
 }
-

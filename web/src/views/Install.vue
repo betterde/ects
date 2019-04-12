@@ -5,18 +5,31 @@
         <el-col :span="12" :offset="6">
           <div class="panel-heading">
             <h1 class="title">Install Elastic Crontab System</h1>
+            <p class="version">Version: {{info.version}}</p>
           </div>
           <el-steps :active="step" finish-status="success" simple style="margin-top: 20px">
-            <el-step title="环境"></el-step>
-            <el-step title="服务"></el-step>
-            <el-step title="数据库"></el-step>
-            <el-step title="用户"></el-step>
-            <el-step title="完成"></el-step>
+            <el-step title="Env"></el-step>
+            <el-step title="Service"></el-step>
+            <el-step title="DB"></el-step>
+            <el-step title="Manager"></el-step>
+            <el-step title="Finish"></el-step>
           </el-steps>
           <div class="panel-body">
             <div v-show="step === 0">
               <div class="system-info">
-                <el-alert title="配置文件写入权限" :type="info.permission" :closable="false"
+                <div class="env-select" style="text-align: center; margin: 0 0 20px 0">
+                  <el-radio v-model="env" label="etcd" border>ETCD</el-radio>
+                  <el-radio v-model="env" label="yaml" border>YAML</el-radio>
+                </div>
+                <el-form v-if="env === 'etcd'" :model="config.etcd" :rules="serviceRules" ref="service" label-position="left">
+                  <el-col :span="24">
+                    <el-form-item prop="host">
+                      <el-select v-model="config.etcd.endpoints" multiple filterable allow-create default-first-option placeholder="请输入ETCD的Endpoints" style="width: 100%"></el-select>
+                    </el-form-item>
+                  </el-col>
+                </el-form>
+
+                <el-alert v-if="env === 'yaml'" title="配置文件写入权限" :type="info.permission" :closable="false"
                           description="如您运行时未指定配置文件路径，系统将使用 /etc/ects/ects.yaml 作为配置文件的默认路径" show-icon></el-alert>
               </div>
               <div class="footer">
@@ -155,6 +168,7 @@
           permission: "success"
         },
         step: 0,
+        env: "etcd",
         config: {
           service: {
             host: "0.0.0.0",
@@ -177,6 +191,9 @@
             email: "george@betterde.com",
             pass: "George@1994",
             confirm: "George@1994"
+          },
+          etcd: {
+            endpoints: []
           }
         },
         serviceRules: {
@@ -293,8 +310,8 @@
      */
     mounted() {
       api.system.fetch().then(res => {
-        this.info.version = res.data.version;
-        this.info.permission = res.data.permission ? 'success' : 'error';
+        this.info.version = res.version;
+        this.info.permission = res.permission ? 'success' : 'error';
       }).catch(err => {
         window.console.log(err);
       })
@@ -335,6 +352,11 @@
         .title {
           font-size: 48px;
           color: #8c939d;
+        }
+
+        .version {
+          margin-top: 30px;
+          color: #C0C4CC
         }
 
       }

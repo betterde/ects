@@ -30,8 +30,8 @@ type Config struct {
 		TTL    int64  `json:"ttl" yaml:"ttl"`
 	}
 	Etcd struct {
-		EndPoints []string `json:"end_points"`
-		Timeout   int64    `json:"timeout"`
+		EndPoints []string `json:"end_points" yaml:"endpoints"`
+		Timeout   int64    `json:"timeout" yaml:"timeout"`
 	}
 }
 
