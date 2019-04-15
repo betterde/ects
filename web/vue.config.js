@@ -1,4 +1,4 @@
-const CompressionPlugin = require("compression-webpack-plugin")
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   pages: {
@@ -9,12 +9,12 @@ module.exports = {
       title: 'Index Page',
       chunks: ['chunk-vendors', 'chunk-common', 'index']
     },
-    install: {
-      entry: "src/entries/install.js",
+    initialize: {
+      entry: "src/entries/initialize.js",
       template: 'public/index.html',
-      filename: 'install.html',
+      filename: 'initialize.html',
       title: 'Insatll Page',
-      chunks: ['chunk-vendors', 'chunk-common', 'install']
+      chunks: ['chunk-vendors', 'chunk-common', 'initialize']
     }
   },
   devServer: {

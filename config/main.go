@@ -11,7 +11,7 @@ type (
 		Service   string   `json:"service" yaml:"service" validate:"required"`
 		Pipeline  string   `json:"pipeline" yaml:"pipeline" validate:"required"`
 		Config    string   `json:"config" yaml:"config" validate:"required"`
-		EndPoints []string `json:"end_points" yaml:"endpoints" validate:"required"`
+		EndPoints []string `json:"endpoints" yaml:"endpoints" validate:"required"`
 		Timeout   int64    `json:"timeout" yaml:"timeout" validate:"required"`
 	}
 	Service struct {

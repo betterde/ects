@@ -7,6 +7,7 @@ import (
 	"github.com/betterde/ects/controllers/auth"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/seeds"
 	"github.com/betterde/ects/services"
@@ -50,6 +51,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	}
 
 	if err := validate.Struct(params); err != nil {
+		log.Println(err)
 		return response.ValidationError("请检查配置信息是否填写完整")
 	}
 
@@ -86,29 +88,22 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		log.Println(err)
 	}
 
-	// 如果已经安装则返回错误
-	if system.Info.Installed {
-		return response.Send(400, "系统已安装", make(map[string]interface{}))
-	}
-
 	if models.Engine == nil {
-		config.Conf.Database = params.Database
 		// 初始化数据库
 		models.Engine, err = models.Connection()
-
 		if err != nil {
 			return response.Success("数据库连接错误", response.Payload{"data": err})
 		}
 
 		// 迁移数据表时出现错误则返回异常
 		if err := models.Migrate(); err != nil {
-			return response.Send(1045, "数据库连接错误", err)
+			return response.InternalServerError("Failed to connect to database", err)
 		}
 
 		// 填充系统初始数据
 		seedService := seeds.Seeder{}
 		if err := seedService.Run(); err != nil {
-			return response.Send(1045, "填出系统数据失败", err)
+			return response.InternalServerError("Failed to seed system data", err)
 		}
 	}
 
@@ -125,14 +120,19 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	}
 
 	if _, err := models.Engine.Insert(user); err != nil {
-		return response.Send(1062, "创建用户失败", err)
+		return response.InternalServerError("Failed to create system manager", err)
 	}
 
 	token, err := services.IssueToken(user)
 
-	return response.Success("安装成功", response.Payload{"data": auth.SignInSuccess{
+	return response.Success("Congratulations! successful installation", response.Payload{"data": auth.SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
 		ExpiresIn:   time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
 	}})
+}
+
+// Get JWT Secret
+func (instance *Controller) GetSecret(ctx iris.Context) mvc.Result {
+	return response.Success("Success", response.Payload{"data": utils.Random(64)})
 }
