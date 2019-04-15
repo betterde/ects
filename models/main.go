@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/betterde/ects/config"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"time"
 )
@@ -36,6 +37,8 @@ func Connection() (*xorm.Engine, error) {
 		engine.SetMaxIdleConns(10)
 		engine.SetMaxOpenConns(30)
 	}
+
+	engine.SetLogLevel(core.LOG_OFF)
 
 	go keepAlived()
 
