@@ -5,7 +5,6 @@
         <el-col :span="12" :offset="6">
           <div class="panel-heading">
             <h1 class="title">Install Elastic Crontab System</h1>
-            <p class="version">Version: {{info.version}}</p>
           </div>
           <el-steps :active="step" finish-status="success" simple style="margin-top: 20px">
             <el-step title="ETCD"></el-step>
@@ -21,27 +20,29 @@
                 <el-row :gutter="20">
                   <el-col :span="24">
                     <el-form-item prop="endpoints" label="EndPoints">
-                      <el-select v-model="config.etcd.endpoints" multiple filterable allow-create default-first-option placeholder="请输入ETCD的Endpoints" style="width: 100%"></el-select>
+                      <el-select v-model="config.etcd.endpoints" multiple filterable allow-create default-first-option
+                                 placeholder="Endpoints" style="width: 100%"></el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
                     <el-form-item prop="service" label-width="80px" label="Service key">
-                      <el-input v-model="config.etcd.service" placeholder="请输入服务发现的key"></el-input>
+                      <el-input v-model="config.etcd.service" placeholder="Service discover key"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
                     <el-form-item prop="pipeline" label-width="80px" label="Pipeline key">
-                      <el-input v-model="config.etcd.pipeline" placeholder="请输入服务发现的key"></el-input>
+                      <el-input v-model="config.etcd.pipeline" placeholder="Pipeline key"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
                     <el-form-item prop="config" label-width="80px" label="Config key">
-                      <el-input v-model="config.etcd.config" placeholder="请输入服务发现的key"></el-input>
+                      <el-input v-model="config.etcd.config" placeholder="System config key"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="6">
                     <el-form-item prop="timeout" label-width="80px" label="Timeout">
-                      <el-input-number v-model="config.etcd.timeout" @change="numberChangeHandler" :min="1" :max="300" label="设置超时时间"></el-input-number>
+                      <el-input-number v-model="config.etcd.timeout" :min="1" :max="300"
+                                       label="Timeout"></el-input-number>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -51,17 +52,18 @@
               </div>
             </div>
             <div class="install-form-container" v-show="step === 1">
-              <el-form :model="config.service" :rules="rules.service" ref="service" label-width="100px" label-position="top">
+              <el-form :model="config.service" :rules="rules.service" ref="service" label-width="100px"
+                       label-position="top">
                 <el-row :gutter="10">
                   <el-col :span="14">
                     <el-form-item prop="host" label="Host">
-                      <el-input v-model="config.service.host" placeholder="服务器地址"></el-input>
+                      <el-input v-model="config.service.host" placeholder="Host"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col class="line" :span="2">:</el-col>
                   <el-col :span="8">
                     <el-form-item prop="port" label="Port">
-                      <el-input v-model="config.service.port" placeholder="监听端口"></el-input>
+                      <el-input v-model="config.service.port" placeholder="Port"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -99,24 +101,25 @@
               <el-form :model="config.database" :rules="rules.database" ref="database">
                 <el-col :span="14">
                   <el-form-item prop="host" label="Host">
-                    <el-input v-model="config.database.host" placeholder="数据库主机地址"></el-input>
+                    <el-input v-model="config.database.host" placeholder="Host"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 50px; text-align: center">:</el-col>
                 <el-col :span="8">
                   <el-form-item prop="port" label="Port">
-                    <el-input v-model="config.database.port" placeholder="数据库端口"></el-input>
+                    <el-input v-model="config.database.port" placeholder="Port"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="14">
                   <el-form-item prop="name" label="Database">
-                    <el-input v-model="config.database.name" placeholder="数据库名称"></el-input>
+                    <el-input v-model="config.database.name" placeholder="Database name"
+                              @blur="fetchDatabaseIsExist"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 10px"></el-col>
                 <el-col :span="8">
                   <el-form-item prop="char" label="Charset">
-                    <el-select v-model="config.database.char" placeholder="请选择字符类型">
+                    <el-select v-model="config.database.char" placeholder="Database charset">
                       <el-option v-for="char in chars" :key="char.value" :label="char.label"
                                  :value="char.value"></el-option>
                     </el-select>
@@ -124,12 +127,12 @@
                 </el-col>
                 <el-col :span="24">
                   <el-form-item prop="user" label="Username">
-                    <el-input v-model="config.database.user" placeholder="数据库用户名"></el-input>
+                    <el-input v-model="config.database.user" placeholder="Database username"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
                   <el-form-item prop="pass" label="Password">
-                    <el-input v-model="config.database.pass" placeholder="数据库密码" show-password></el-input>
+                    <el-input v-model="config.database.pass" placeholder="Database password" show-password></el-input>
                   </el-form-item>
                 </el-col>
               </el-form>
@@ -141,16 +144,16 @@
             <div class="install-form-container" v-show="step === 4">
               <el-form :model="config.user" :rules="rules.user" ref="user">
                 <el-form-item prop="name">
-                  <el-input v-model="config.user.name" placeholder="昵称"></el-input>
+                  <el-input v-model="config.user.name" placeholder="Name"></el-input>
                 </el-form-item>
                 <el-form-item prop="email">
-                  <el-input v-model="config.user.email" placeholder="邮箱"></el-input>
+                  <el-input v-model="config.user.email" placeholder="Email"></el-input>
                 </el-form-item>
                 <el-form-item prop="pass">
-                  <el-input v-model="config.user.pass" placeholder="密码" show-password></el-input>
+                  <el-input v-model="config.user.pass" placeholder="Password" show-password></el-input>
                 </el-form-item>
                 <el-form-item prop="confirm">
-                  <el-input v-model="config.user.confirm" placeholder="确认密码" show-password></el-input>
+                  <el-input v-model="config.user.confirm" placeholder="Confirm" show-password></el-input>
                 </el-form-item>
               </el-form>
               <div class="footer">
@@ -162,12 +165,23 @@
               <el-progress type="circle" :percentage="100" status="text">
                 <i class="el-icon-check" style="color: #409EFF; font-size: 48px"></i>
               </el-progress>
-              <h2 style="color: #8c939d; margin: 40px 0;">系统初始化完成</h2>
+              <h2 style="color: #8c939d; margin: 40px 0;">System initialization complete</h2>
               <div class="footer">
-                <el-button type="primary" @click="confirm('index')">进入后台</el-button>
+                <div class="command">
+                  <code v-html="command"></code>
+                </div>
+                <p>Copy this command to your terminal and execute it</p>
               </div>
             </div>
           </div>
+        </el-col>
+      </el-row>
+      <el-row type="flex" align="bottom">
+        <el-col :span="24">
+          <footer class="copyright page-copyright-inverse text-center">
+            <p class="version">ECTS Version: {{info.version}}</p>
+            <p>Copyright © 2018 Betterde.Inc. All Rights Reserved.</p>
+          </footer>
         </el-col>
       </el-row>
     </div>
@@ -182,7 +196,7 @@
     data() {
       let validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请输入密码'));
+          callback(new Error('Please enter your password!'));
         } else {
           if (this.config.user.confirm !== '') {
             this.$refs.user.validateField('confirm');
@@ -192,9 +206,9 @@
       };
       let confirmPass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('请再次输入密码'));
+          callback(new Error('Please confirm your password!'));
         } else if (value !== this.config.user.pass) {
-          callback(new Error('两次输入密码不一致!'));
+          callback(new Error('Password mismatch!'));
         } else {
           callback();
         }
@@ -206,6 +220,7 @@
         },
         step: 0,
         env: "etcd",
+        loading: false,
         config: {
           service: {
             host: "0.0.0.0",
@@ -240,47 +255,46 @@
         rules: {
           service: {
             host: [
-              {type: "string", required: true, message: '请输入服务运行时绑定的IP', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a host', trigger: 'blur'}
             ],
             port: [
-              {type: "integer", required: true, message: '请输入服务运行时监听的端口', trigger: 'blur'}
+              {type: "integer", required: true, message: 'Please enter a port', trigger: 'blur'}
             ]
           },
           database: {
             host: [
-              {type: "string", required: true, message: '请输入服务MySQL主机地址', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a host', trigger: 'blur'}
             ],
             port: [
-              {type: "integer", required: true, message: '请输入服务MySQL主机端口', trigger: 'blur'}
+              {type: "integer", required: true, message: 'Please enter a port', trigger: 'blur'}
             ],
             user: [
-              {type: "string", required: true, message: '请输入服务MySQL用户名', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a username', trigger: 'blur'}
             ],
             pass: [
-              {type: "string", required: true, message: '请输入服务MySQL密码', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a password', trigger: 'blur'}
             ],
             name: [
-              {type: "string", required: true, message: '请输入服务MySQL数据库名称', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a database name', trigger: 'blur'}
             ],
             char: [
-              {type: "string", required: true, message: '请选择数据库字符类型', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a charset', trigger: 'blur'}
             ]
           },
           auth: {
             secret: [
-              {type: "string", required: true, message: '请输入Secret', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a secret', trigger: 'blur'}
             ],
             ttl: [
-              {type: "number", required: true, message: '请设置过期时间', trigger: 'blur'}
+              {type: "number", required: true, message: 'Please enter a ttl', trigger: 'blur'}
             ]
           },
           user: {
             name: [
-              {type: "string", required: true, message: '请输入管理员姓名', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a user name', trigger: 'blur'}
             ],
             email: [
-              {type: "string", required: true, message: '请输入管理员姓名', trigger: 'blur'},
-              {type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change']}
+              {type: 'email', message: 'Please enter a valid email address', trigger: ['blur', 'change']}
             ],
             pass: [
               {validator: validatePass, trigger: 'blur'}
@@ -291,19 +305,19 @@
           },
           etcd: {
             endpoints: [
-              {type: "array", required: true, message: '请输入服务MySQL主机地址', trigger: 'blur'}
+              {type: "array", required: true, message: 'Please enter a endpoints', trigger: 'blur'}
             ],
             service: [
-              {type: "string", required: true, message: '请输入服务MySQL主机地址', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a service discover key', trigger: 'blur'}
             ],
             pipeline: [
-              {type: "string", required: true, message: '请输入服务MySQL主机地址', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a pipeline key', trigger: 'blur'}
             ],
             config: [
-              {type: "string", required: true, message: '请输入服务MySQL主机地址', trigger: 'blur'}
+              {type: "string", required: true, message: 'Please enter a system config key', trigger: 'blur'}
             ],
             timeout: [
-              {type: "number", required: true, message: '请设置超时时间', trigger: 'blur'}
+              {type: "number", required: true, message: 'Please enter a timeout', trigger: 'blur'}
             ],
           }
         },
@@ -312,12 +326,13 @@
             label: "utf8mb4",
             value: "utf8mb4"
           }
-        ]
+        ],
+        command: "ects master --etcd"
       }
     },
     methods: {
       /**
-       * 后退
+       * Back
        */
       back() {
         if (this.step >= 1) {
@@ -325,7 +340,7 @@
         }
       },
       /**
-       * 表单验证
+       * Form validate
        */
       confirm(form) {
         if (form === 'index') {
@@ -341,7 +356,7 @@
         }
       },
       /**
-       * 进入下一步
+       * Next
        */
       next() {
         if (this.step < 4) {
@@ -351,7 +366,7 @@
         }
       },
       /**
-       * 提交配置信息
+       * Submit system config
        */
       submit() {
         api.system.initialize(this.config).then(res => {
@@ -360,6 +375,7 @@
             type: 'success'
           });
           this.step += 1;
+          this.generateCommand()
         }).catch(err => {
           this.$notify.error({
             title: "Error",
@@ -367,9 +383,9 @@
           });
         });
       },
-      numberChangeHandler() {
-
-      },
+      /**
+       * Fetch JSON Web Token secret
+       */
       fetchJWTSecret() {
         api.system.secret().then(res => {
           this.config.auth.secret = res.data
@@ -379,14 +395,26 @@
             message: err.message,
           })
         })
+      },
+      fetchDatabaseIsExist() {
+        api.system.database(this.config.database).then(res => {
+          let exist = res.data;
+          if (exist) {
+            this.$notify.warning("The database already exists and will overwrite the original data if it continues!")
+          }
+        })
+      },
+      generateCommand() {
+        let endpoints = this.config.etcd.endpoints.join(',');
+        this.command = `ects master --etcd ${endpoints} --name='master' --desc='master node'`;
       }
     },
     /**
-     * 获取权限信息
+     * Fetch system version information
      */
     mounted() {
       api.system.fetch().then(res => {
-        this.info.version = res.version;
+        this.info.version = res.data.version;
       });
     }
   }
@@ -431,7 +459,6 @@
           margin-top: 30px;
           color: #C0C4CC
         }
-
       }
 
       .panel-body {
@@ -450,6 +477,10 @@
         .footer {
           text-align: center;
           margin: 20px 0;
+          p {
+            padding: 20px 20px 0 20px;
+            color: #C0C4CC;
+          }
         }
 
         .install-form-container {
@@ -467,6 +498,23 @@
           .el-input-number {
             width: auto;
           }
+        }
+      }
+
+      .command {
+        padding: 20px;
+        font-size: 14px;
+        border-radius: 4px;
+        background-color: #fafafa;
+      }
+
+      .copyright {
+        margin-top: 40px;
+        font-size: 14px;
+        color: #C0C4CC;
+
+        p {
+          margin: 10px 0;
         }
       }
     }

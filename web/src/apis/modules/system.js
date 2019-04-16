@@ -22,5 +22,14 @@ export default {
    */
   secret() {
     return Vue.axios.get('/api/initialize/secret')
+  },
+  /**
+   * Validate database name is exist
+   * @returns {*}
+   */
+  database(params) {
+    return Vue.axios.get('/api/initialize/database', {
+      params: params
+    })
   }
 }

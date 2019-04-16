@@ -12,7 +12,7 @@ var (
 	err error
 )
 
-func IsDatabaseExist() bool {
+func Init() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/?charset=%s",
 		config.Conf.Database.User,
 		config.Conf.Database.Pass,
@@ -22,12 +22,15 @@ func IsDatabaseExist() bool {
 	)
 
 	DB, err = sql.Open("mysql", dsn)
+}
 
-	//defer func() {
-	//	if err := DB.Close(); err != nil {
-	//		// TODO
-	//	}
-	//}()
+func IsDatabaseExist(name string) bool {
+	Init()
+	defer func() {
+		if err := DB.Close(); err != nil {
+			// TODO
+		}
+	}()
 
 	statement := fmt.Sprintf("SHOW DATABASES LIKE '%s'", config.Conf.Database.Name)
 
@@ -37,6 +40,9 @@ func IsDatabaseExist() bool {
 	)
 
 	rows, err = DB.Query(statement)
+	if err != nil {
+		log.Println(err)
+	}
 
 	for rows.Next() {
 		err := rows.Scan(&Database)
@@ -45,22 +51,18 @@ func IsDatabaseExist() bool {
 		}
 	}
 
-	if err != nil {
-		// TODO
-	}
-
-	return Database == config.Conf.Database.Name
+	return Database == name
 }
 
-func CreateDatabase()  {
+func CreateDatabase() error {
+	Init()
 	var rows *sql.Rows
 	statement := fmt.Sprintf("CREATE DATABASE %s", config.Conf.Database.Name)
 	rows, err = DB.Query(statement)
-	if err != nil {
-		log.Println(err)
-	}
-
-	if err := rows.Close(); err != nil {
-		//TODO
-	}
+	defer func() {
+		if err := rows.Close(); err != nil {
+			//TODO
+		}
+	}()
+	return err
 }
