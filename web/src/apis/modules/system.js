@@ -2,18 +2,34 @@ import Vue from 'vue'
 
 export default {
   /**
-   * 获取系统信息
+   * Fetch system info
    * @returns {*}
    */
   fetch() {
-    return Vue.axios.get('/api/install');
+    return Vue.axios.get('/api/initialize');
   },
   /**
-   * 创建安装配置文件
+   * Initialization system config
    * @param params
    * @returns {*}
    */
-  install(params) {
-    return Vue.axios.post('/api/install', params)
+  initialize(params) {
+    return Vue.axios.post('/api/initialize', params)
+  },
+  /**
+   * Get JWT secret
+   * @returns {*}
+   */
+  secret() {
+    return Vue.axios.get('/api/initialize/secret')
+  },
+  /**
+   * Validate database name is exist
+   * @returns {*}
+   */
+  database(params) {
+    return Vue.axios.get('/api/initialize/database', {
+      params: params
+    })
   }
 }

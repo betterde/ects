@@ -18,6 +18,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"time"
 )
 
 // masterCmd represents the master command
@@ -35,12 +36,11 @@ var (
 			if false {
 				cancelFunc()
 			}
-
 			start(fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port))
 		},
 	}
 	master = &models.Node{
-		Mode: models.MODE_MASTER,
+		Mode:   models.MODE_MASTER,
 		Status: models.ONLINE,
 	}
 )
@@ -48,11 +48,10 @@ var (
 func init() {
 	rootCmd.AddCommand(masterCmd)
 	config.Conf = config.Init()
-	masterCmd.PersistentFlags().StringVarP(&config.Path, "config", "c", "/etc/ects/ects.yaml", "Set configuration file")
 	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
 	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
-	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "6d037444-8667-4364-848b-0b3b79e9044a", "Set master node id")
+	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
 	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "", "Set master node description")
 }
@@ -88,7 +87,8 @@ func bootstrap() {
 	}
 }
 
-func register()  {
+// 注册服务节点
+func register() {
 	master.Host = config.Conf.Service.Host
 	master.Port = config.Conf.Service.Port
 
@@ -105,7 +105,7 @@ func register()  {
 		log.Println(err)
 		os.Exit(1)
 	}
-	if err := service.Register(5); err != nil {
+	if err := service.Register(2); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
@@ -119,7 +119,20 @@ func start(addr string) {
 	// 注册路由
 	routes.Register(app)
 
-	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithCharset("UTF-8")); err != nil {
+	iris.RegisterOnInterrupt(func() {
+		timeout := 5 * time.Second
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
+		node := &models.Node{
+			Id: master.Id,
+		}
+		node.Offline()
+		if err := app.Shutdown(ctx); err != nil {
+			log.Println(err)
+		}
+	})
+
+	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithOptimizations, iris.WithCharset("UTF-8")); err != nil {
 		log.Println(err)
 	}
 }

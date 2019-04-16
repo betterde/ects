@@ -43,6 +43,22 @@ func (node *Node) Update() error {
 	return err
 }
 
+// 更新状态为在线
+func (node *Node) Online() {
+	node.Status = ONLINE
+	if err := node.Update(); err != nil {
+		// todo
+	}
+}
+
+// 更新状态为离线
+func (node *Node) Offline() {
+	node.Status = OFFLINE
+	if err := node.Update(); err != nil {
+		// todo
+	}
+}
+
 // 创建或更新节点
 func (node *Node) CreateOrUpdate() error {
 	exist := &Node{}

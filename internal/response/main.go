@@ -88,7 +88,6 @@ func InternalServerError(message string, err error) mvc.Result {
 			Message: message,
 			Data: err,
 		},
-		Err: err,
 	}
 }
 

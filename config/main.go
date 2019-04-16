@@ -6,34 +6,43 @@ import (
 	"os"
 )
 
-type Config struct {
+type (
+	Etcd struct {
+		Service   string   `json:"service" yaml:"service" validate:"required"`
+		Pipeline  string   `json:"pipeline" yaml:"pipeline" validate:"required"`
+		Config    string   `json:"config" yaml:"config" validate:"required"`
+		EndPoints []string `json:"endpoints" yaml:"endpoints" validate:"required"`
+		Timeout   int64    `json:"timeout" yaml:"timeout" validate:"required"`
+	}
 	Service struct {
-		Host string `json:"host" yaml:"host"`
-		Port int    `json:"port" yaml:"port"`
+		Host string `json:"host" yaml:"host" validate:"required"`
+		Port int    `json:"port" yaml:"port" validate:"required"`
 	}
 	Database struct {
-		Host string `json:"host" yaml:"host"`
-		Port int    `json:"port" yaml:"port"`
-		Name string `json:"name" yaml:"name"`
-		User string `json:"user" yaml:"user"`
-		Pass string `json:"pass" yaml:"pass"`
-		Char string `json:"char" yaml:"char"`
+		Host string `json:"host" yaml:"host" validate:"required"`
+		Port int    `json:"port" yaml:"port" validate:"required"`
+		Name string `json:"name" yaml:"name" validate:"required"`
+		User string `json:"user" yaml:"user" validate:"required"`
+		Pass string `json:"pass" yaml:"pass" validate:"required"`
+		Char string `json:"char" yaml:"char" validate:"required"`
 	}
 	User struct {
 		Name    string `json:"name" validate:"required" yaml:"-"`
 		Email   string `json:"email" validate:"required" yaml:"-"`
 		Pass    string `json:"pass" validate:"required" yaml:"-"`
 		Confirm string `json:"confirm" validate:"required" yaml:"-"`
-	} `yaml:"-"`
+	}
 	Auth struct {
-		Secret string `json:"secret" yaml:"secret"`
-		TTL    int64  `json:"ttl" yaml:"ttl"`
+		Secret string `json:"secret" yaml:"secret" validate:"required"`
+		TTL    int64  `json:"ttl" yaml:"ttl" validate:"required"`
 	}
-	Etcd struct {
-		EndPoints []string `json:"end_points"`
-		Timeout   int64    `json:"timeout"`
+	Config struct {
+		Service `json:"service"`
+		Database `json:"database"`
+		Auth `json:"auth"`
+		Etcd `json:"etcd"`
 	}
-}
+)
 
 var (
 	Conf *Config

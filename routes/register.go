@@ -22,8 +22,6 @@ func Register(app *iris.Application) {
 
 	// 接口路由
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
-		// 安装路由
-		mvc.Configure(api.Party("/install"), installation)
 		// 鉴权路由
 		mvc.Configure(api.Party("/auth"), authentication)
 

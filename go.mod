@@ -16,6 +16,7 @@ require (
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/go-xorm/builder v0.3.2
 	github.com/go-xorm/cmd/xorm v0.0.0-20190319023129-d3c5dfa7f0b2 // indirect
+	github.com/go-xorm/core v0.6.1-0.20181008132326-6bc9412b1c4d
 	github.com/go-xorm/xorm v0.7.1
 	github.com/golang/protobuf v1.3.1
 	github.com/gorilla/websocket v1.4.0

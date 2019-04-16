@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/betterde/ects/config"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-xorm/core"
 	"github.com/go-xorm/xorm"
 	"time"
 )
@@ -37,12 +38,13 @@ func Connection() (*xorm.Engine, error) {
 		engine.SetMaxOpenConns(30)
 	}
 
+	engine.SetLogLevel(core.LOG_OFF)
+
 	go keepAlived()
 
 	return engine, err
 }
 
-// 定时Ping，保证连接不被服务器断开
 func keepAlived() {
 	t := time.Tick(60 * time.Second)
 	for {
@@ -53,7 +55,6 @@ func keepAlived() {
 	}
 }
 
-// 迁移数据库
 func Migrate() error {
 	tables := []interface{}{
 		&User{},
@@ -74,20 +75,12 @@ func Migrate() error {
 		&TaskRecords{},
 	}
 
-	for _, table := range tables {
-		exist, err := Engine.IsTableExist(table)
-		if exist {
-			continue
-		}
+	if err := Engine.DropTables(tables...); err != nil {
+		return err
+	}
 
-		if err != nil {
-			return err
-		}
-
-		err = Engine.Sync2(table)
-		if err != nil {
-			return err
-		}
+	if err := Engine.Sync2(tables...); err != nil {
+		return err
 	}
 
 	return nil
