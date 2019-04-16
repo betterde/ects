@@ -2,7 +2,7 @@
   <div id="install">
     <div class="panel">
       <el-row>
-        <el-col :span="12" :offset="6">
+        <el-col :span="14" :offset="5">
           <div class="panel-heading">
             <h1 class="title">Install Elastic Crontab System</h1>
           </div>
@@ -41,8 +41,7 @@
                   </el-col>
                   <el-col :span="6">
                     <el-form-item prop="timeout" label-width="80px" label="Timeout">
-                      <el-input-number v-model="config.etcd.timeout" :min="1" :max="300"
-                                       label="Timeout"></el-input-number>
+                      <el-input v-model="config.etcd.timeout" label="Timeout"></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>

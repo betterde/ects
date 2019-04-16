@@ -2,24 +2,9 @@
 
 Elastic Crontab System
 
-![install](web/overview/install_env.jpg)
-
-> Install view
----
-
-![dashboard](web/overview/worker.jpg)
-
-> Worker View
----
-
-![dashboard](web/overview/setting.jpg)
-
-> Setting View
----
-
 ## Architecture
 
-![dashboard](web/overview/architecture.jpg)
+![dashboard](docs/overview/architecture.jpg)
 
 ### Master 
 * RESTful API Server
@@ -50,6 +35,44 @@ go-bindata -pkg web -o web/bindata.go web/dist/...
 go build main.go -o ects
 
 ```
+
+## Initialization
+
+### Run initialization service
+```bash
+$ ects init
+
+Now listening on: http://localhost:9701
+Application started. Press CMD+C to shut down.
+```
+
+### Open your browser
+
+Point your browser to http://localhost:9701
+
+### Config ETCD
+
+![install](docs/overview/initialization/step_1.png)
+
+### Cofnig Service
+
+![install](docs/overview/initialization/step_2.png)
+
+### Cofnig JWT
+
+![install](docs/overview/initialization/step_3.png)
+
+### Config DB
+
+![install](docs/overview/initialization/step_4.png)
+
+### Config User
+
+![install](docs/overview/initialization/step_5.png)
+
+### Complete
+
+![install](docs/overview/initialization/step_6.png)
 
 ## LICENSE
 ECTS is open-sourced software licensed under the MIT license.
