@@ -33,7 +33,8 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 	var curRevision int64 = 0
 
 	for {
-		rangeResp, err := client.Get(context.TODO(), SERVICE_NODE, clientv3.WithPrefix())
+		rangeResp, err := client.Get(context.TODO(), config.Conf.Etcd.Service, clientv3.WithPrefix())
+
 		if err != nil {
 			continue
 		}
@@ -52,7 +53,7 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 
 	nodeService := services.NewNodeService()
 
-	watchNodes := watcher.Watch(ctx, SERVICE_NODE, clientv3.WithPrefix(), clientv3.WithRev(curRevision))
+	watchNodes := watcher.Watch(ctx, config.Conf.Etcd.Service, clientv3.WithPrefix(), clientv3.WithRev(curRevision))
 	for watchResp := range watchNodes {
 		for _, event := range watchResp.Events {
 			switch (event.Type) {
