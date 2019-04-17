@@ -9,6 +9,7 @@ var (
 		"task": taskMessage(),
 		"user": userMessage(),
 		"role": roleMessage(),
+		"team": teamMessage(),
 	}
 )
 

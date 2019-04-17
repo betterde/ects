@@ -34,10 +34,6 @@ type (
 	}
 )
 
-var (
-	validate = validator.New()
-)
-
 // 获取用户列表
 func (instance *UserController) Get(ctx iris.Context) mvc.Result {
 	params := ctx.URLParams()
@@ -50,6 +46,8 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	var (
 		params CreateRequest
 	)
+
+	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
 		return response.InternalServerError("解析参数失败", err)
@@ -91,6 +89,8 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	var user models.User
+
+	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
 		log.Println(err)

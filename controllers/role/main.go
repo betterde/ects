@@ -72,7 +72,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	role.System = 0
 	err := role.Store()
 	if err != nil {
-		return response.InternalServerError("Failed to create roole", err)
+		return response.InternalServerError("Failed to create role", err)
 	}
 
 	return response.Success("Role created successfully", response.Payload{"data": role})
@@ -87,7 +87,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 
 	if err := validate.Struct(role); err != nil {
 		validationErrors := err.(validator.ValidationErrors)
-		return response.ValidationError(message.Get("task", validationErrors))
+		return response.ValidationError(message.Get("role", validationErrors))
 	}
 
 	role.Id = id

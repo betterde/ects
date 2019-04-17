@@ -3,7 +3,7 @@ package message
 func userMessage() map[string]map[string]string {
 	return map[string]map[string]string{
 		"Name": {
-			"required": "请填写用户姓名",
+			"required": "Please enter a user name",
 		},
 		"Email": {
 			"email": "请填写正确的邮箱地址",
