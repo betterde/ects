@@ -2,22 +2,21 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
+	"github.com/coreos/etcd/clientv3"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"time"
 )
 
@@ -29,20 +28,18 @@ var (
 		Long:  "Run a master node service on this server",
 		Run: func(cmd *cobra.Command, args []string) {
 			bootstrap()
-			go register()
-			discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
-			ctx, cancelFunc := context.WithCancel(context.Background())
-			go discover.ServiceCluster.WatchNodes(ctx)
-			if false {
-				cancelFunc()
-			}
-			start(fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port))
+			go watch()
+			start()
 		},
 	}
 	master = &models.Node{
 		Mode:   models.MODE_MASTER,
 		Status: models.ONLINE,
 	}
+
+	confKey string
+
+	ctx, cancelFunc = context.WithCancel(context.Background())
 )
 
 func init() {
@@ -54,40 +51,54 @@ func init() {
 	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
 	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "", "Set master node description")
+	masterCmd.PersistentFlags().StringVar(&confKey, "config", "ects_config", "Set the key used to get configuration information")
 }
 
 func bootstrap() {
 	var err error
-	// 判断是否已经安装
 	system.Info = &system.Information{
 		Version: rootCmd.Version,
 	}
-	system.Info.Installed, err = config.CheckConfigFile(config.Path)
 
-	if system.Info.Installed {
-		file, err := ioutil.ReadFile(config.Path)
-		if err != nil {
+	client, err := clientv3.New(clientv3.Config{
+		Endpoints:   config.Conf.EndPoints,
+		DialTimeout: 10 * time.Second,
+	})
+
+	defer func() {
+		if err := client.Close(); err != nil {
 			log.Println(err)
 		}
-		err = yaml.Unmarshal(file, &config.Conf)
-		if err != nil {
+	}()
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	requestctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	res, err := client.Get(requestctx, confKey)
+	cancel()
+
+	if res != nil {
+		if err := json.Unmarshal(res.Kvs[0].Value, &config.Conf); err != nil {
 			log.Println(err)
+			os.Exit(1)
 		}
-		models.Engine, err = models.Connection()
-		if err := models.Migrate(); err != nil {
-			log.Println(err)
-		}
-	} else {
-		if err != nil {
-			// TODO
-		}
-		dir := path.Dir(config.Path)
-		config.CreateConfigDir(dir)
-		system.Info.Permission = config.CheckConfigDirPermisson(dir)
+	}
+
+	models.Engine, err = models.Connection()
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
 	}
 }
 
-// 注册服务节点
+func watch() {
+	discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
+	discover.ServiceCluster.WatchNodes(ctx)
+}
+
+// Service registry
 func register() {
 	master.Host = config.Conf.Service.Host
 	master.Port = config.Conf.Service.Port
@@ -111,12 +122,12 @@ func register() {
 	}
 }
 
-func start(addr string) {
+func start() {
+	addr := fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port)
 	app := iris.New()
 	app.Use(recover.New())
 	app.Use(logger.New())
 
-	// 注册路由
 	routes.Register(app)
 
 	iris.RegisterOnInterrupt(func() {
@@ -127,10 +138,13 @@ func start(addr string) {
 			Id: master.Id,
 		}
 		node.Offline()
+		cancelFunc()
 		if err := app.Shutdown(ctx); err != nil {
 			log.Println(err)
 		}
 	})
+
+	go register()
 
 	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithOptimizations, iris.WithCharset("UTF-8")); err != nil {
 		log.Println(err)

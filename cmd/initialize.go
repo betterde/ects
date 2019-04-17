@@ -41,7 +41,7 @@ func startInitialize() {
 	app.RegisterView(iris.HTML("./web/dist", ".html").Binary(web.Asset, web.AssetNames))
 
 	app.Get("/", func(ctx iris.Context) {
-		if err := ctx.View("install.html"); err != nil {
+		if err := ctx.View("initialize.html"); err != nil {
 			log.Println(err)
 		}
 	})
@@ -49,7 +49,7 @@ func startInitialize() {
 	mvc.Configure(app.Party("/api/initialize"), routes.Initialize)
 
 	assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
-	app.SPA(assetHandler).AddIndexName("install.html")
+	app.SPA(assetHandler).AddIndexName("initialize.html")
 	if err := app.Run(iris.Addr(":9701"), iris.WithOptimizations, iris.WithCharset("UTF-8")); err != nil {
 		log.Println(err)
 	}

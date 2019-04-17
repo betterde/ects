@@ -54,11 +54,11 @@ Point your browser to http://localhost:9701
 
 ![install](docs/overview/initialization/step_1.png)
 
-### Cofnig Service
+### Config Service
 
 ![install](docs/overview/initialization/step_2.png)
 
-### Cofnig JWT
+### Config JWT
 
 ![install](docs/overview/initialization/step_3.png)
 
