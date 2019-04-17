@@ -5,17 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/models"
 	"github.com/coreos/etcd/clientv3"
 	"log"
 	"sync"
 	"time"
-)
-
-const (
-	SERVICE_CONF = "/ects/config/"
-	SERVICE_NODE = "/ects/nodes/"
-	SERVICE_STATUS = "/ects/status/"
 )
 
 type (
@@ -64,7 +59,7 @@ func (service *Service) Register(ttlSecond int64) error {
 	var key string
 	var cancelCtx context.Context
 
-	key = fmt.Sprintf("%s%s", SERVICE_NODE, service.node.Id)
+	key = fmt.Sprintf("%s_%s", config.Conf.Etcd.Service, service.node.Id)
 
 	cancelCtx, _ = context.WithCancel(context.TODO())
 
