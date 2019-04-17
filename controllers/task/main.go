@@ -54,15 +54,13 @@ var (
 // 获取任务俩表
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
-		page   int
-		limit  int
+		page   = 1
+		limit  = 10
 		start  int
 		search string
 		total  int64
 		err    error
 	)
-	page = 1
-	limit = 10
 	search = ""
 	params := ctx.URLParams()
 
