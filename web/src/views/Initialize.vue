@@ -405,7 +405,7 @@
       },
       generateCommand() {
         let endpoints = this.config.etcd.endpoints.join(',');
-        this.command = `ects master --etcd ${endpoints} --name='master' --desc='master node'`;
+        this.command = `ects master --etcd=${endpoints} --name='master' --desc='master node' --config=${this.config.etcd.config}`;
       }
     },
     /**
