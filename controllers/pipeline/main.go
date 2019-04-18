@@ -228,3 +228,24 @@ func (instance * Controller) PostTask(ctx iris.Context) mvc.Result {
 
 	return response.Success("Bind successfully", response.Payload{"data": pivot})
 }
+
+// Get pipeline detail by id
+func (instance *Controller) GetBy(id string) mvc.Result {
+	pipeline := models.Pipeline{
+		Id: id,
+	}
+
+	_, err := models.Engine.Get(&pipeline)
+
+	if err != nil {
+		return response.InternalServerError("Query pipeline on error", err)
+	}
+
+	_, err = pipeline.Build()
+
+	if err != nil {
+		return response.InternalServerError("Failed to build pipeline to string", err)
+	}
+
+	return response.Success("", response.Payload{"data": pipeline})
+}
