@@ -5,51 +5,51 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-button type="primary" plain @click="createDialog = true">添加</el-button>
+              <el-button type="primary" plain @click="createDialog = true">Create</el-button>
             </el-col>
             <el-col :span="8">
-              <el-input placeholder="请输入内容" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="Search in here" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
             </el-col>
           </el-row>
         </div>
       </div>
-      <el-dialog title="创建节点" :visible.sync="createDialog" @close="createDialogClose" width="500px">
+      <el-dialog title="Create node" :visible.sync="createDialog" @close="createDialogClose" width="500px">
         <el-form :model="createParams" :rules="createRules" ref="create">
-          <el-form-item label="节点名称" prop="name">
+          <el-form-item label="Name" prop="name">
             <el-input v-model="createParams.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="节点说明" prop="remark">
-            <el-input v-model="createParams.remark" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
+          <el-form-item label="Description" prop="description">
+            <el-input v-model="createParams.description" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="createDialog = false">取 消</el-button>
-          <el-button type="primary" @click="submitCreateForm">确 定</el-button>
+          <el-button @click="createDialog = false">Cancel</el-button>
+          <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="编辑节点" :visible.sync="editDialog" @close="editDialogClose" width="500px">
+      <el-dialog title="Edit node" :visible.sync="editDialog" @close="editDialogClose" width="500px">
         <el-form :model="editParams" :rules="editRules" ref="edit">
-          <el-form-item label="节点名称" prop="name">
+          <el-form-item label="Name" prop="name">
             <el-input v-model="editParams.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="节点说明" prop="remark">
-            <el-input v-model="editParams.remark" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
+          <el-form-item label="Description" prop="remark">
+            <el-input v-model="editParams.description" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="editDialog = false">取 消</el-button>
-          <el-button type="primary" @click="submitCreateForm">确 定</el-button>
+          <el-button @click="editDialog = false">Cancel</el-button>
+          <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
         </div>
       </el-dialog>
       <div class="panel-body">
-        <el-table :data="nodes" style="width: 100%" v-loading="loading">
+        <el-table :data="nodes" style="width: 100%" v-loading="loading" empty-text="No more data">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
-          <el-table-column prop="name" label="名称" width="200"></el-table-column>
-          <el-table-column prop="host" label="主机" width="140"></el-table-column>
-          <el-table-column prop="port" label="端口" width="80"></el-table-column>
-          <el-table-column prop="status" label="状态" width="120"></el-table-column>
-          <el-table-column prop="description" label="标记"></el-table-column>
-          <el-table-column prop="option" label="操作" width="100">
+          <el-table-column prop="name" label="Name" width="200"></el-table-column>
+          <el-table-column prop="host" label="Host" width="140"></el-table-column>
+          <el-table-column prop="port" label="Port" width="80"></el-table-column>
+          <el-table-column prop="status" label="Status" width="120"></el-table-column>
+          <el-table-column prop="description" label="Description"></el-table-column>
+          <el-table-column prop="option" label="Action" width="100">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
@@ -79,26 +79,26 @@
         createDialog: false,
         createParams: {
           name: '',
-          remark: ''
+          description: ''
         },
         createRules: {
           name: [
             {type: 'string', required: true, message: '请输入节点名称', trigger: 'blur'}
           ],
-          remark: [
+          description: [
             {type: 'string', required: false, message: '请输入节点名称', trigger: 'blur'}
           ]
         },
         editDialog: false,
         editParams: {
           name: '',
-          remark: ''
+          description: ''
         },
         editRules: {
           name: [
             {type: 'string', required: true, message: '请输入节点名称', trigger: 'blur'}
           ],
-          remark: [
+          description: [
             {type: 'string', required: false, message: '请输入节点名称', trigger: 'blur'}
           ]
         },
@@ -144,7 +144,7 @@
       handleEdit(index, row) {
         this.editDialog = true;
         this.editParams.name = row.name;
-        this.editParams.remark = row.remark;
+        this.editParams.description = row.description;
       },
       // 删除节点
       handleDelete(index, row) {

@@ -17,14 +17,18 @@
         <el-table :data="tasks" style="width: 100%">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="mode" label="Mode" width="100"></el-table-column>
+          <el-table-column prop="mode" label="Spec" width="100"></el-table-column>
+          <el-table-column prop="status" label="Status" width="80"></el-table-column>
           <el-table-column prop="description" label="Description"></el-table-column>
           <el-table-column prop="created_at" label="CreatedAt" width="155"></el-table-column>
           <el-table-column prop="option" label="Action" width="130">
             <template slot-scope="scope">
-              <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-tickets" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-delete" type="danger" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
+              <el-button size="mini" icon="el-icon-edit" circle
+                         @click="handleEdit(scope.$index, scope.row)"></el-button>
+              <el-button size="mini" icon="el-icon-tickets" plain circle
+                         @click="handleDelete(scope.$index, scope.row)"></el-button>
+              <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
+                         @click="handleDelete(scope.$index, scope.row)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -40,7 +44,7 @@
   import api from '../apis'
 
   export default {
-    name: "Task",
+    name: "Pipeline",
     data() {
       return {
         loading: false,
