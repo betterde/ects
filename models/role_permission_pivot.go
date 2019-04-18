@@ -1,8 +1,8 @@
 package models
 
 type RolePermissionPivot struct {
-	RoleId         string `xorm:"not null pk comment('角色ID') index CHAR(36)"`
-	PermissionCode string `xorm:"not null pk comment('权限编码') index VARCHAR(255)"`
+	RoleId         string `json:"role_id" validate:"required,uuid4" xorm:"not null pk comment('角色ID') index CHAR(36)"`
+	PermissionCode string `json:"permission_code" validate:"required" xorm:"not null pk comment('权限编码') index VARCHAR(255)"`
 }
 
 // 定义模型的数据表名称

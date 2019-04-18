@@ -40,4 +40,3 @@ func (role *Role) Destroy() error {
 	_, err := Engine.Delete(role)
 	return err
 }
-

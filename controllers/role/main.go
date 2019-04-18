@@ -16,6 +16,10 @@ type (
 	Controller struct {
 		Service services.RoleService
 	}
+	BindPermissionsRequest struct {
+		RoleId string   `json:"role_id" validate:"required,uuid4"`
+		Codes  []string `json:"codes" validate:"required"`
+	}
 )
 
 var (
@@ -108,4 +112,67 @@ func (instance *Controller) DeleteBy(id string) mvc.Result {
 		return response.InternalServerError("Failed to delete role", err)
 	}
 	return response.Success("Role deleted successfully", response.Payload{"data": make(map[string]interface{})})
+}
+
+// Get role permissions
+func (instance *Controller) GetPermissions(ctx iris.Context) mvc.Result {
+	id := ctx.URLParam("role_id")
+
+	if id == "" {
+		return response.ValidationError("pipeline id is required")
+	}
+
+	relations := make([]models.RolePermissionPivot, 0)
+
+	if err := models.Engine.Where(builder.Eq{"role_id": id}).Find(&relations); err != nil {
+		return response.InternalServerError("Failed to query relations", err)
+	}
+
+	codes := make([]string, 0)
+
+	for _, pivot := range relations {
+		codes = append(codes, pivot.PermissionCode)
+	}
+
+	permissions := make([]models.Permission, 0)
+
+	if err := models.Engine.Where(builder.Eq{"code": codes}).Find(&permissions); err != nil {
+		return response.InternalServerError("Failed to query relations", err)
+	}
+
+	return response.Success("Success", response.Payload{"data": permissions})
+}
+
+// Bind the permissions to role
+func (instance *Controller) PostPermissions(ctx iris.Context) mvc.Result {
+	params := BindPermissionsRequest{}
+
+	if err := ctx.ReadJSON(&params); err != nil {
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
+	}
+
+	if err := validate.Struct(params); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		return response.ValidationError(message.Get("pipeline", validationErrors))
+	}
+
+	if _, err := models.Engine.Where(builder.Eq{"pipeline_id": params.RoleId}).Delete(&models.PipelineNodePivot{}); err != nil {
+		return response.InternalServerError("Failed to delete pipeline and node relations", err)
+	}
+
+	relations := make([]*models.RolePermissionPivot, 0)
+
+	for _, code := range params.Codes {
+		relations = append(relations, &models.RolePermissionPivot{
+			RoleId: params.RoleId,
+			PermissionCode: code,
+		})
+	}
+
+	_, err := models.Engine.Insert(relations)
+	if err != nil {
+		return response.InternalServerError("Failed to bind pipeline to node", err)
+	}
+
+	return response.Success("Bind successfully", response.Payload{"data": relations})
 }
