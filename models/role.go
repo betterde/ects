@@ -23,7 +23,7 @@ func (role *Role) Seed() error {
 	return role.Store()
 }
 
-// 创建角色
+// Create a pipeline
 func (role *Role) Store() error {
 	_, err := Engine.Insert(role)
 	return err
@@ -35,6 +35,7 @@ func (role *Role) Update() error {
 	return err
 }
 
+// Delete a pipeline
 func (role *Role) Destroy() error {
 	_, err := Engine.Delete(role)
 	return err

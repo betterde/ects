@@ -20,19 +20,6 @@ type (
 		Service services.TaskService
 	}
 
-	CreateRequest struct {
-		Name        string `json:"name" validate:"required"`
-		Content     string `json:"content" validate:"required"`
-		Event       string `json:"event" validate:"required"`
-		Mode        string `json:"mode" validate:"required"`
-		Overlap     bool   `json:"overlap" validate:"required"`
-		Timeout     int    `json:"timeout" validate:"gte=0"`
-		Interval    int    `json:"interval" validate:"gte=0"`
-		Retries     int    `json:"retries" validate:"gte=0"`
-		Status      string `json:"status" validate:"required"`
-		Description string `json:"description"`
-	}
-
 	UpdateRequest struct {
 		Name        string `json:"name" validate:"required"`
 		Content     string `json:"content" validate:"required"`
@@ -111,28 +98,19 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 
 // 创建任务
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
-	var (
-		params CreateRequest
-	)
+	task := models.Task{}
 
-	if err := ctx.ReadJSON(&params); err != nil {
+	if err := ctx.ReadJSON(&task); err != nil {
 		return response.InternalServerError("解析参数失败", err)
 	}
 
-	if err := validate.Struct(params); err != nil {
+	if err := validate.Struct(task); err != nil {
 		validationErrors := err.(validator.ValidationErrors)
 		return response.ValidationError(message.Get("task", validationErrors))
 	}
 
-	task := &models.Task{
-		Id:          uuid.NewV4().String(),
-		Name:        params.Name,
-		Content:     params.Content,
-		Mode:        params.Mode,
-		Description: params.Description,
-		CreatedAt:   time.Now(),
-		UpdatedAt:   time.Now(),
-	}
+	task.Id = uuid.NewV4().String()
+
 	if err := task.Store(); err != nil {
 		return response.InternalServerError("创建任务失败", err)
 	}

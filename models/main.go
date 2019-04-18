@@ -67,7 +67,7 @@ func Migrate() error {
 		&Configuration{},
 		&Menu{},
 		&PasswordResets{},
-		&Pipelines{},
+		&Pipeline{},
 		&PipelineRecords{},
 		&PipelineTaskPivot{},
 		&PipelineNodePivot{},
