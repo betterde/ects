@@ -74,8 +74,8 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 		Password:  string(pass),
 		TeamId:    params.TeamId,
 		Manager:   params.Manager,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().Format("2016-01-02 15:04:05"),
+		UpdatedAt: time.Now().Format("2016-01-02 15:04:05"),
 	}
 
 	if err := user.Store(); err != nil {
