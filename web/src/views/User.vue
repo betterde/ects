@@ -14,12 +14,51 @@
         </div>
       </div>
       <div class="panel-body">
-        <el-table :data="workers" style="width: 100%" height="100%">
-          <el-table-column prop="id" label="ID" width="300"></el-table-column>
+        <el-table :data="users" style="width: 100%">
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form label-position="top" inline class="table-expand">
+                <el-row :gutter="10">
+                  <el-col :span="12">
+                    <el-form-item label="ID">
+                      <span>{{ props.row.id }}</span>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="Team">
+                      <span>{{ props.row.team_id === "" ? "Not on any team" : props.row.team_id }}</span>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="10">
+                  <el-col :span="12">
+                    <el-form-item label="Role">
+                      <span>{{ props.row.role_id === "" ? "Unspecified role" : props.row.role_id}}</span>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="Create at">
+                      <span>{{ props.row.created_at }}</span>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </el-form>
+            </template>
+          </el-table-column>
           <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="ip" label="Email" width="300"></el-table-column>
-          <el-table-column prop="remark" label="Manager" width="100"></el-table-column>
-          <el-table-column prop="status" label="Status"></el-table-column>
+          <el-table-column prop="email" label="Email" width="300"></el-table-column>
+          <el-table-column label="Manager" width="100">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.manager === 0" size="medium" type="info">NO</el-tag>
+              <el-tag v-else size="medium">Yes</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="Status">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.deleted_at === ''" size="medium">Normal</el-tag>
+              <el-tag v-else size="medium" type="info">Disabled</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="option" label="Action" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
@@ -37,74 +76,22 @@
 </template>
 
 <script>
+  import api from '../apis'
+
   export default {
     name: "User",
     data() {
       return {
+        loading: false,
         params: {
           search: ""
         },
-        workers: [{
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: '删除一个月以前的日志',
-          ip: 'george@betterde.com',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: '检查Kafka消费者运行状态',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: '给用户发送通知',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }, {
-          id: '6dd14a84-759a-4676-a511-7c3802077db5',
-          name: 'Betterde',
-          ip: '192.168.128.234',
-          status: 'connected',
-          remark: '线下',
-        }]
+        users: [],
+        meta: {
+          limit: 10,
+          page: 1,
+          total: 0
+        }
       }
     },
     methods: {
@@ -113,7 +100,20 @@
       },
       handleDelete(index, row) {
         window.console.log(index, row);
+      },
+      fetchUsers() {
+        this.loading = true;
+        api.user.fetch(this.params).then(res => {
+          this.users = res.data;
+          this.meta = res.meta;
+        }).catch(err => {
+          this.$message.warning(err.message)
+        });
+        this.loading = false;
       }
+    },
+    mounted() {
+      this.fetchUsers()
     }
   }
 </script>

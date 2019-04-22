@@ -5,11 +5,6 @@
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
           <el-tab-pane label="Basic" name="basic">
             <el-form :model="basic" :rules="rules" ref="basic" label-width="100px" class="demo-ruleForm">
-              <el-col :span="18">
-                <el-form-item label="系统名称" prop="name" style="text-align: left">
-                  <el-input v-model="basic.name"></el-input>
-                </el-form-item>
-              </el-col>
               <el-col :span="6">
                 <el-form-item label="用户注册" prop="type">
                   <el-switch v-model="basic.register"></el-switch>
