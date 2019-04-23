@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-button type="primary" plain @click="create.dialog = true">Create</el-button>
+              <el-button type="primary" plain @click="handleCreate">Create</el-button>
             </el-col>
             <el-col :span="8">
               <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
@@ -33,9 +33,7 @@
             </el-col>
             <el-col :span="24">
               <collapse-view content="Crontab reference">
-                <pre>
-                  <code style="display: -webkit-box; height: 200px">
-  *    *    *    *    *    *
+                <pre><code style="display: -webkit-box; height: 200px">*    *    *    *    *    *
   ┬    ┬    ┬    ┬    ┬    ┬
   │    │    │    │    │    |
   │    │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
@@ -43,9 +41,7 @@
   │    │    │    └────────── day of month (1 - 31)
   │    │    └─────────────── hour (0 - 23)
   │    └──────────────────── minute (0 - 59)
-  └───────────────────────── second (0 - 59, optional)
-                  </code>
-                </pre>
+  └───────────────────────── second (0 - 59, optional)</code></pre>
               </collapse-view>
             </el-col>
           </el-row>
@@ -53,14 +49,14 @@
            <el-col :span="12">
              <el-form-item label="Finished" prop="finished">
                <el-select v-model="create.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
-                 <el-option v-for="task in create.tasks" :key="task.value" :label="task.label" :value="task.value"></el-option>
+                 <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                </el-select>
              </el-form-item>
            </el-col>
            <el-col :span="12">
              <el-form-item label="Failed" prop="failed">
                <el-select v-model="create.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
-                 <el-option v-for="task in create.tasks" :key="task.value" :label="task.label" :value="task.value"></el-option>
+                 <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                </el-select>
              </el-form-item>
            </el-col>
@@ -103,7 +99,7 @@
         </div>
       </el-dialog>
       <div class="panel-body">
-        <el-table :data="tasks" style="width: 100%">
+        <el-table :data="pipelines" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
@@ -218,7 +214,6 @@
               {type: 'number', required: true, message: 'Please select pipeline overlap', trigger: 'change'}
             ]
           },
-          tasks: [],
           next_execution: ""
         },
         edit: {
@@ -227,6 +222,7 @@
           rules: {},
         },
         tasks: [],
+        pipelines: [],
         meta: {
           limit: 10,
           page: 1,
@@ -238,6 +234,10 @@
       changeCron(value) {
         this.create.params.spec = value;
       },
+      handleCreate() {
+        this.create.dialog = true;
+        this.fetchTasks();
+      },
       handleEdit(index, row) {
         window.console.log(index,row);
       },
@@ -245,9 +245,16 @@
         window.console.log(index,row);
       },
       fetchTasks() {
+        api.task.fetch(this.params).then(res => {
+          this.tasks = res.data;
+        }).catch(err => {
+          this.$message.warning(err.message)
+        });
+      },
+      fetchPipelines() {
         this.loading = true;
         api.pipeline.fetch(this.params).then(res => {
-          this.tasks = res.data;
+          this.pipelines = res.data;
           this.meta = res.meta;
         }).catch(err => {
           this.$message.warning(err.message)
@@ -280,7 +287,7 @@
       },
     },
     mounted() {
-      this.fetchTasks();
+      this.fetchPipelines();
     },
     components: {
       CronExpression
