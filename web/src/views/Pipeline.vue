@@ -84,14 +84,71 @@
           <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit pipeline" :visible.sync="edit.dialog" @close="handleClose('edit')" width="500px">
+      <el-dialog title="Edit pipeline" :visible.sync="edit.dialog" @close="handleClose('edit')" width="40%" :close-on-click-modal="false">
         <el-form :model="edit.params" :rules="edit.rules" ref="edit">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="edit.params.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="Description" prop="remark">
+          <el-row :gutter="10">
+            <el-col :span="24">
+              <el-form-item label="Name" prop="name">
+                <el-input v-model="edit.params.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="24">
+              <el-form-item label="Spec" prop="spec">
+                <el-popover v-model="cronPopover">
+                  <cron-expression @change="changeCron" @close="cronPopover=false" i18n="en"></cron-expression>
+                  <el-input slot="reference" @click="cronPopover=true" v-model="edit.params.spec" placeholder="Please enter a cron expression"></el-input>
+                </el-popover>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <collapse-view content="Crontab reference">
+                <pre><code style="display: -webkit-box; height: 200px">*    *    *    *    *    *
+  ┬    ┬    ┬    ┬    ┬    ┬
+  │    │    │    │    │    |
+  │    │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
+  │    │    │    │    └───── month (1 - 12)
+  │    │    │    └────────── day of month (1 - 31)
+  │    │    └─────────────── hour (0 - 23)
+  │    └──────────────────── minute (0 - 59)
+  └───────────────────────── second (0 - 59, optional)</code></pre>
+              </collapse-view>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="12">
+              <el-form-item label="Finished" prop="finished">
+                <el-select v-model="edit.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="Failed" prop="failed">
+                <el-select v-model="edit.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item label="Description" prop="description">
             <el-input v-model="edit.params.description" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
           </el-form-item>
+          <el-row :gutter="10">
+            <el-col :span="12">
+              <el-form-item label="Status" prop="status">
+                <el-radio v-model="edit.params.status" :label="0" border>Disable</el-radio>
+                <el-radio v-model="edit.params.status" :label="1" border>Enable</el-radio>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="Overlap" prop="overlap">
+                <el-radio v-model="edit.params.overlap" :label="0" border>Disable</el-radio>
+                <el-radio v-model="edit.params.overlap" :label="1" border>Enable</el-radio>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="edit.dialog = false">Cancel</el-button>
@@ -156,7 +213,7 @@
               <el-button size="mini" icon="el-icon-edit" circle
                          @click="handleEdit(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-tickets" plain circle
-                         @click="handleDelete(scope.$index, scope.row)"></el-button>
+                         @click="queryLog(scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
                          @click="handleDelete(scope.$index, scope.row)"></el-button>
             </template>
@@ -216,13 +273,40 @@
             overlap: [
               {type: 'number', required: true, message: 'Please select pipeline overlap', trigger: 'change'}
             ]
-          },
-          next_execution: ""
+          }
         },
         edit: {
           dialog: false,
-          params: {},
-          rules: {},
+          params: {
+            name: '',
+            spec: '',
+            description: '',
+            status: 1,
+            finished: '',
+            failed: '',
+            overlap: 1,
+            team_id: "",
+          },
+          rules: {
+            name: [
+              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
+            ],
+            spec: [
+              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'change'}
+            ],
+            finished: [
+              {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
+            ],
+            failed: [
+              {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
+            ],
+            status: [
+              {type: 'number', required: true, message: 'Please select pipeline status', trigger: 'change'}
+            ],
+            overlap: [
+              {type: 'number', required: true, message: 'Please select pipeline overlap', trigger: 'change'}
+            ]
+          },
         },
         tasks: [],
         pipelines: [],
@@ -237,13 +321,36 @@
       changeCron(value) {
         this.create.params.spec = value;
       },
+      /**
+       * Show create pipeline dialog
+       */
       handleCreate() {
         this.create.dialog = true;
         this.fetchTasks();
       },
+      /**
+       * Show edit pipeline dialog
+       */
       handleEdit(index, row) {
-        window.console.log(index,row);
+        this.edit.dialog = true;
+        this.fetchTasks();
+        this.edit.params = {...row};
       },
+      /**
+       * Get pipeline log
+       */
+      queryLog(row) {
+        this.$router.push({
+          name: 'log',
+          params: {
+            pipeline_id: row.id
+          }
+        });
+      },
+      /**
+       * Close create or edit dialog handler
+       * @param form
+       */
       handleClose(form) {
         switch (form) {
           case 'create':
@@ -251,7 +358,7 @@
             this.create.dialog = false;
             break;
           case 'edit':
-            this.$refs.create.resetFields();
+            this.$refs.edit.resetFields();
             this.edit.dialog = false;
             break;
         }
@@ -283,6 +390,9 @@
           });
         });
       },
+      /**
+       * Fetch task data
+       */
       fetchTasks() {
         api.task.fetch(this.params).then(res => {
           this.tasks = res.data;
@@ -290,6 +400,9 @@
           this.$message.warning(err.message)
         });
       },
+      /**
+       * Fetch pipeline data
+       */
       fetchPipelines() {
         this.loading = true;
         api.pipeline.fetch(this.params).then(res => {
@@ -300,6 +413,9 @@
         });
         this.loading = false;
       },
+      /**
+       * Submit create pipeline form
+       */
       submitCreateForm() {
         this.$refs.create.validate((valid) => {
           if (valid) {
@@ -339,13 +455,26 @@
     components: {
       CronExpression
     },
+    /**
+     * Modify the class name before entering the current component
+     * @param to
+     * @param from
+     * @param next
+     */
     beforeRouteEnter(to, from, next) {
       next(vm => {
         vm.classes = ['animated', 'fade-in', 'fast'];
       });
     },
+    /**
+     * Modify the class name before leaving the current component
+     * @param to
+     * @param from
+     * @param next
+     */
     beforeRouteLeave (to, from, next) {
       this.classes = ['animated', 'fade-out', 'faster'];
+      // Wait for leave animation to finish
       setTimeout(next, 200);
     }
   }
