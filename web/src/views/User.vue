@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="panel">
-      <div class="panel-header">
+      <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
@@ -13,7 +13,7 @@
           </el-row>
         </div>
       </div>
-      <div class="panel-body">
+      <div class="panel-body" :class="classes">
         <el-table :data="users" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
@@ -82,6 +82,7 @@
     name: "User",
     data() {
       return {
+        classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
           search: ""
@@ -114,6 +115,15 @@
     },
     mounted() {
       this.fetchUsers()
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.classes = ['animated', 'fade-in', 'fast'];
+      });
+    },
+    beforeRouteLeave (to, from, next) {
+      this.classes = ['animated', 'fade-out', 'faster'];
+      setTimeout(next, 200);
     }
   }
 </script>

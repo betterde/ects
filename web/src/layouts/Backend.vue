@@ -35,7 +35,9 @@
     <el-main>
       <el-row :gutter="20">
         <el-col :span="18" :offset="3">
-          <router-view></router-view>
+          <!--<transition name="custom-classes-transition" enter-to-class="animated slide-in faster">-->
+            <router-view></router-view>
+          <!--</transition>-->
         </el-col>
       </el-row>
     </el-main>
@@ -48,8 +50,7 @@
   export default {
     name: 'backend',
     data() {
-      return {
-      }
+      return {}
     },
     methods: {
       handleSelect(key){
@@ -74,7 +75,7 @@
         profile: state => state.account.profile,
         access_token: state => state.account.access_token
       })
-    },
+    }
   }
 </script>
 

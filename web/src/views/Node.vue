@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="panel">
-      <div class="panel-header">
+      <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
@@ -41,7 +41,7 @@
           <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
         </div>
       </el-dialog>
-      <div class="panel-body">
+      <div class="panel-body" :class="classes">
         <el-table :data="nodes" style="width: 100%" v-loading="loading" empty-text="No more data">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="Name" width="200"></el-table-column>
@@ -71,6 +71,7 @@
     name: 'Worker',
     data() {
       return {
+        classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
           search: '',
@@ -175,6 +176,15 @@
     },
     mounted() {
       this.fetchWorkers();
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.classes = ['animated', 'fade-in', 'fast'];
+      });
+    },
+    beforeRouteLeave (to, from, next) {
+      this.classes = ['animated', 'fade-out', 'faster'];
+      setTimeout(next, 200);
     }
   }
 </script>

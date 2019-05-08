@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="panel">
-      <div class="panel-header">
+      <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
@@ -13,14 +13,14 @@
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create pipeline" :visible.sync="create.dialog" @close="createDialogClose" width="40%">
+      <el-dialog title="Create pipeline" :visible.sync="create.dialog" @close="handleClose('create')" width="40%" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
           <el-row :gutter="10">
-           <el-col :span="24">
-             <el-form-item label="Name" prop="name">
-               <el-input v-model="create.params.name" autocomplete="off"></el-input>
-             </el-form-item>
-           </el-col>
+            <el-col :span="24">
+              <el-form-item label="Name" prop="name">
+                <el-input v-model="create.params.name" autocomplete="off"></el-input>
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24">
@@ -46,20 +46,20 @@
             </el-col>
           </el-row>
           <el-row :gutter="10">
-           <el-col :span="12">
-             <el-form-item label="Finished" prop="finished">
-               <el-select v-model="create.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
-                 <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
-               </el-select>
-             </el-form-item>
-           </el-col>
-           <el-col :span="12">
-             <el-form-item label="Failed" prop="failed">
-               <el-select v-model="create.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
-                 <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
-               </el-select>
-             </el-form-item>
-           </el-col>
+            <el-col :span="12">
+              <el-form-item label="Finished" prop="finished">
+                <el-select v-model="create.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="Failed" prop="failed">
+                <el-select v-model="create.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-form-item label="Description" prop="description">
             <el-input v-model="create.params.description" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
@@ -84,7 +84,7 @@
           <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit pipeline" :visible.sync="edit.dialog" @close="editDialogClose" width="500px">
+      <el-dialog title="Edit pipeline" :visible.sync="edit.dialog" @close="handleClose('edit')" width="500px">
         <el-form :model="edit.params" :rules="edit.rules" ref="edit">
           <el-form-item label="Name" prop="name">
             <el-input v-model="edit.params.name" autocomplete="off"></el-input>
@@ -98,17 +98,17 @@
           <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
         </div>
       </el-dialog>
-      <div class="panel-body">
+      <div class="panel-body" :class="classes">
         <el-table :data="pipelines" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
                 <el-row :gutter="10">
-                 <el-col :span="12">
-                   <el-form-item label="ID">
-                     <span>{{ props.row.id }}</span>
-                   </el-form-item>
-                 </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="ID">
+                      <span>{{ props.row.id }}</span>
+                    </el-form-item>
+                  </el-col>
                   <el-col :span="12">
                     <el-form-item label="TeamID">
                       <span>{{ props.row.team_id }}</span>
@@ -172,12 +172,14 @@
 
 <script>
   import api from '../apis'
+  import {mapState} from 'vuex'
   import CronExpression from '../components/CronExpression'
 
   export default {
     name: "Pipeline",
     data() {
       return {
+        classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
           search: ''
@@ -193,6 +195,7 @@
             finished: '',
             failed: '',
             overlap: 1,
+            team_id: "",
           },
           rules: {
             name: [
@@ -241,8 +244,44 @@
       handleEdit(index, row) {
         window.console.log(index,row);
       },
+      handleClose(form) {
+        switch (form) {
+          case 'create':
+            this.$refs.create.resetFields();
+            this.create.dialog = false;
+            break;
+          case 'edit':
+            this.$refs.create.resetFields();
+            this.edit.dialog = false;
+            break;
+        }
+      },
+      /**
+       * Delete pipeline
+       * @param index
+       * @param row
+       */
       handleDelete(index, row) {
-        window.console.log(index,row);
+        this.$confirm('This operation will delete the pipeline, whether to continue?', 'Alert', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          api.pipeline.delete(row.id).then(() => {
+            this.fetchPipelines();
+            this.$message({
+              type: 'success',
+              message: 'Pipeline deleted!'
+            });
+          }).catch(err => {
+            this.$message.error(err.message)
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Operation canceled!'
+          });
+        });
       },
       fetchTasks() {
         api.task.fetch(this.params).then(res => {
@@ -257,44 +296,66 @@
           this.pipelines = res.data;
           this.meta = res.meta;
         }).catch(err => {
-          this.$message.warning(err.message)
+          this.$message.error(err.data.message);
         });
         this.loading = false;
       },
-      createDialogClose() {},
-      editDialogClose() {},
       submitCreateForm() {
         this.$refs.create.validate((valid) => {
           if (valid) {
-            api.node.create(this.createParams).then(res => {
-              this.meta.total += 1;
-              // 判断是否需要跳转到最后一页
-              if (this.meta.total > (this.meta.limit * this.meta.page)) {
-                this.changePage(Math.ceil(this.meta.total / this.meta.limit));
-              } else {
-                // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                this.nodes.push(res.data);
-              }
-              this.$message.success(res.message);
-              this.createDialogClose();
-            }).catch(err => {
-              this.$message.warning(err.message);
-            });
+            if (this.profile.team_id.length === 36) {
+              this.create.params.team_id = this.profile.team_id;
+              api.pipeline.create(this.create.params).then(res => {
+                this.meta.total += 1;
+                // 判断是否需要跳转到最后一页
+                if (this.meta.total > (this.meta.limit * this.meta.page)) {
+                  this.changePage(Math.ceil(this.meta.total / this.meta.limit));
+                } else {
+                  // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
+                  this.pipelines.push(res.data);
+                }
+                this.handleClose('create');
+                this.$message.success(res.message);
+              }).catch(err => {
+                this.$message.warning(err.message);
+              });
+            } else {
+              this.$message.warning('You can\'t create it until you join a team');
+            }
           } else {
             return false;
           }
         });
       },
     },
+    computed: {
+      ...mapState({
+        profile: state => state.account.profile,
+      }),
+    },
     mounted() {
       this.fetchPipelines();
     },
     components: {
       CronExpression
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.classes = ['animated', 'fade-in', 'fast'];
+      });
+    },
+    beforeRouteLeave (to, from, next) {
+      this.classes = ['animated', 'fade-out', 'faster'];
+      setTimeout(next, 200);
     }
   }
 </script>
 
 <style lang="scss">
-
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+  }
 </style>

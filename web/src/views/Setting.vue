@@ -1,7 +1,7 @@
 <template>
   <div class="main-content">
     <div class="panel">
-      <div class="panel-body">
+      <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
           <el-tab-pane label="Basic" name="basic">
             <el-form :model="basic" :rules="rules" ref="basic" label-width="100px" class="demo-ruleForm">
@@ -89,6 +89,7 @@
     name: "Setting",
     data() {
       return {
+        classes: ['animated', 'fade-in', 'fast'],
         active: "basic",
         basic: {
           name: 'ECTS',
@@ -149,6 +150,15 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       }
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.classes = ['animated', 'fade-in', 'fast'];
+      });
+    },
+    beforeRouteLeave (to, from, next) {
+      this.classes = ['animated', 'fade-out', 'faster'];
+      setTimeout(next, 200);
     }
   }
 </script>
