@@ -9,13 +9,13 @@
         </el-col>
         <el-col :span="16">
           <el-menu :default-active="menu.active" class="el-menu-nav" mode="horizontal" @select="handleSelect" router>
-            <el-menu-item index="/">概览</el-menu-item>
-            <el-menu-item index="/pipeline">流水线</el-menu-item>
-            <el-menu-item index="/task">任务</el-menu-item>
-            <el-menu-item index="/node">节点</el-menu-item>
-            <el-menu-item index="/user">人员</el-menu-item>
-            <el-menu-item index="/log">日志</el-menu-item>
-            <el-menu-item index="/setting">设置</el-menu-item>
+            <el-menu-item index="/">Dashboard</el-menu-item>
+            <el-menu-item index="/pipeline">Pipeline</el-menu-item>
+            <el-menu-item index="/task">Task</el-menu-item>
+            <el-menu-item index="/node">Node</el-menu-item>
+            <el-menu-item index="/user">User</el-menu-item>
+            <el-menu-item index="/log">Log</el-menu-item>
+            <el-menu-item index="/setting">Setting</el-menu-item>
           </el-menu>
         </el-col>
         <el-col :span="4">
@@ -24,9 +24,9 @@
             <div class="avatar grid-content" v-html="profile.name.slice(0,1)"></div>
           </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="a">消息通知</el-dropdown-item>
-              <el-dropdown-item command="a">个人信息</el-dropdown-item>
-              <el-dropdown-item command="signOut">退出登录</el-dropdown-item>
+              <el-dropdown-item command="a">Message</el-dropdown-item>
+              <el-dropdown-item command="a">Profile</el-dropdown-item>
+              <el-dropdown-item command="signOut">Sign out</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
@@ -35,7 +35,9 @@
     <el-main>
       <el-row :gutter="20">
         <el-col :span="18" :offset="3">
-          <router-view></router-view>
+          <!--<transition name="custom-classes-transition" enter-to-class="animated slide-in faster">-->
+            <router-view></router-view>
+          <!--</transition>-->
         </el-col>
       </el-row>
     </el-main>
@@ -48,8 +50,7 @@
   export default {
     name: 'backend',
     data() {
-      return {
-      }
+      return {}
     },
     methods: {
       handleSelect(key){
@@ -74,13 +75,12 @@
         profile: state => state.account.profile,
         access_token: state => state.account.access_token
       })
-    },
+    }
   }
 </script>
 
 <style lang="scss">
   #app {
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     height: 100%;
     background-color: #f0f2f5;
 

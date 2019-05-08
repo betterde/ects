@@ -7,7 +7,7 @@ let profile = {
   name: '',
   email: '',
   avatar: '',
-  group_id: 0,
+  team_id: 0,
   manager: false
 };
 
@@ -31,7 +31,7 @@ export default {
           name: '',
           email: '',
           avatar: '',
-          group_id: 0,
+          team_id: 0,
           manager: false
         });
         localStorage.removeItem('profile')
@@ -41,7 +41,7 @@ export default {
           name: data.name,
           email: data.email,
           avatar: data.avatar,
-          group_id: data.group_id,
+          team_id: data.team_id,
           manager: data.manager
         };
         Vue.set(state, 'profile', profile);

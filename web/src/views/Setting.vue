@@ -1,15 +1,10 @@
 <template>
   <div class="main-content">
     <div class="panel">
-      <div class="panel-body">
+      <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
-          <el-tab-pane label="基本设置" name="basic">
+          <el-tab-pane label="Basic" name="basic">
             <el-form :model="basic" :rules="rules" ref="basic" label-width="100px" class="demo-ruleForm">
-              <el-col :span="18">
-                <el-form-item label="系统名称" prop="name" style="text-align: left">
-                  <el-input v-model="basic.name"></el-input>
-                </el-form-item>
-              </el-col>
               <el-col :span="6">
                 <el-form-item label="用户注册" prop="type">
                   <el-switch v-model="basic.register"></el-switch>
@@ -28,9 +23,9 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="系统日志" name="log">
+          <el-tab-pane label="Log" name="log">
           </el-tab-pane>
-          <el-tab-pane label="异常通知" name="notification">
+          <el-tab-pane label="Nofification" name="notification">
             <el-form :model="notification" :rules="rules" ref="database">
               <el-col :span="18">
                 <el-form-item prop="host">
@@ -75,14 +70,14 @@
               </el-col>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="版本升级" name="upgrade">
+          <el-tab-pane label="Upgrade" name="upgrade">
             <el-upload class="upgrade" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将最新的ECTS可执行文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="系统信息" name="info">系统信息</el-tab-pane>
-          <el-tab-pane label="获得帮助" name="service">获得帮助</el-tab-pane>
+          <el-tab-pane label="Information" name="info">系统信息</el-tab-pane>
+          <el-tab-pane label="Service" name="service">获得帮助</el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -94,6 +89,7 @@
     name: "Setting",
     data() {
       return {
+        classes: ['animated', 'fade-in', 'fast'],
         active: "basic",
         basic: {
           name: 'ECTS',
@@ -154,6 +150,15 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       }
+    },
+    beforeRouteEnter(to, from, next) {
+      next(vm => {
+        vm.classes = ['animated', 'fade-in', 'fast'];
+      });
+    },
+    beforeRouteLeave (to, from, next) {
+      this.classes = ['animated', 'fade-out', 'faster'];
+      setTimeout(next, 200);
     }
   }
 </script>
