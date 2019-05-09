@@ -1,3 +1,4 @@
+const fs = require('fs');
 const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
@@ -18,7 +19,14 @@ module.exports = {
     }
   },
   devServer: {
-    port: 8080,
+    host: 'ects.betterde.com',
+    port: 443,
+    // http2: true,
+    https: {
+      key: fs.readFileSync('./cert/betterde.com.key'),
+      cert: fs.readFileSync('./cert/fullchain.cer'),
+      ca: fs.readFileSync('./cert/ca-bundle.trust.crt'),
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:9701/',
@@ -28,7 +36,9 @@ module.exports = {
           '^/api': '/api'
         }
       }
-    }
+    },
+    compress: true,
+    open: 'Google Chrome'
   },
   // configureWebpack: config => {
   //   if (process.env.NODE_ENV === 'production') {

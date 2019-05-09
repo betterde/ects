@@ -19,3 +19,4 @@ bindata.go
 *.njsproj
 *.sln
 *.sw*
+cert

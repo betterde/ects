@@ -35,9 +35,7 @@
     <el-main>
       <el-row :gutter="20">
         <el-col :span="18" :offset="3">
-          <!--<transition name="custom-classes-transition" enter-to-class="animated slide-in faster">-->
-            <router-view></router-view>
-          <!--</transition>-->
+          <router-view></router-view>
         </el-col>
       </el-row>
     </el-main>

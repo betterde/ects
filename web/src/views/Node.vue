@@ -44,11 +44,10 @@
       <div class="panel-body" :class="classes">
         <el-table :data="nodes" style="width: 100%" v-loading="loading" empty-text="No more data">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
-          <el-table-column prop="name" label="Name" width="200"></el-table-column>
+          <el-table-column prop="name" label="Name"></el-table-column>
           <el-table-column prop="host" label="Host" width="140"></el-table-column>
           <el-table-column prop="port" label="Port" width="80"></el-table-column>
           <el-table-column prop="status" label="Status" width="120"></el-table-column>
-          <el-table-column prop="description" label="Description"></el-table-column>
           <el-table-column prop="option" label="Action" width="100">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>

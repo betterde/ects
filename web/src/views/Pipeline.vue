@@ -26,7 +26,7 @@
             <el-col :span="24">
               <el-form-item label="Spec" prop="spec">
                 <el-popover v-model="cronPopover">
-                  <cron-expression @change="changeCron" @close="cronPopover=false" i18n="en"></cron-expression>
+                  <cron-expression @change="changeCreateCron" @close="cronPopover=false" i18n="en"></cron-expression>
                   <el-input slot="reference" @click="cronPopover=true" v-model="create.params.spec" placeholder="Please enter a cron expression"></el-input>
                 </el-popover>
               </el-form-item>
@@ -97,7 +97,7 @@
             <el-col :span="24">
               <el-form-item label="Spec" prop="spec">
                 <el-popover v-model="cronPopover">
-                  <cron-expression @change="changeCron" @close="cronPopover=false" i18n="en"></cron-expression>
+                  <cron-expression @change="changeEditCron" @close="cronPopover=false" i18n="en"></cron-expression>
                   <el-input slot="reference" @click="cronPopover=true" v-model="edit.params.spec" placeholder="Please enter a cron expression"></el-input>
                 </el-popover>
               </el-form-item>
@@ -318,8 +318,17 @@
       }
     },
     methods: {
-      changeCron(value) {
+      /**
+       * Change create cron
+       */
+      changeCreateCron(value) {
         this.create.params.spec = value;
+      },
+      /**
+       * Change edit cron
+       */
+      changeEditCron(value) {
+        this.edit.params.spec = value;
       },
       /**
        * Show create pipeline dialog
