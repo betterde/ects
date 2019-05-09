@@ -27,7 +27,8 @@
     "vue-cli-plugin-axios": "^0.0.4",
     "vue-cli-plugin-element": "^1.0.1",
     "vue-cron": "^1.0.9",
-    "vue-template-compiler": "^2.5.21"
+    "vue-template-compiler": "^2.5.21",
+    "vuepress": "^0.14.11"
   },
   "eslintConfig": {
     "root": true,
