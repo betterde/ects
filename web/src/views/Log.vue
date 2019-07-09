@@ -5,7 +5,6 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-button type="primary" plain>Create</el-button>
             </el-col>
             <el-col :span="8">
               <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
