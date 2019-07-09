@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/reflection"
 	"log"
 	"net"
+	"runtime"
 )
 
 // workerCmd represents the worker command
@@ -39,6 +40,7 @@ type (
 )
 
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(workerCmd)
 	workerCmd.PersistentFlags().StringVar(&worker.Name, "name", "", "Set worker node name")
 	workerCmd.PersistentFlags().StringVar(&worker.Host, "host", "0.0.0.0", "Set listen on IP")

@@ -17,6 +17,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"runtime"
 	"time"
 )
 
@@ -28,7 +29,7 @@ var (
 		Long:  "Run a master node service on this server",
 		Run: func(cmd *cobra.Command, args []string) {
 			bootstrap()
-			go watch()
+			watch()
 			start()
 		},
 	}
@@ -43,6 +44,7 @@ var (
 )
 
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(masterCmd)
 	config.Conf = config.Init()
 	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
@@ -61,7 +63,7 @@ func bootstrap() {
 	}
 
 	client, err := clientv3.New(clientv3.Config{
-		Endpoints:   config.Conf.EndPoints,
+		Endpoints:   config.Conf.Etcd.EndPoints,
 		DialTimeout: 10 * time.Second,
 	})
 
@@ -95,7 +97,7 @@ func bootstrap() {
 
 func watch() {
 	discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
-	discover.ServiceCluster.WatchNodes(ctx)
+	go discover.ServiceCluster.WatchNodes(ctx)
 }
 
 // Service registry
