@@ -10,6 +10,7 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/spf13/cobra"
 	"log"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -28,9 +29,10 @@ var (
 )
 
 func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	config.Conf = config.Init()
 	system.Info = &system.Information{
-			Version: rootCmd.Version,
+		Version: rootCmd.Version,
 	}
 	rootCmd.AddCommand(initializeCmd)
 }
@@ -60,7 +62,7 @@ func startInitialize() {
 	iris.RegisterOnInterrupt(func() {
 		sg.Add(1)
 		defer sg.Done()
-		sctx, cancel := context.WithTimeout(context.Background(), 20 * time.Second)
+		sctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 		if err := app.Shutdown(sctx); err != nil {
 			log.Println(err)
