@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/routes"
@@ -9,6 +10,8 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/spf13/cobra"
 	"log"
+	"sync"
+	"time"
 )
 
 // installCmd represents the install command
@@ -50,7 +53,21 @@ func startInitialize() {
 
 	assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
 	app.SPA(assetHandler).AddIndexName("initialize.html")
-	if err := app.Run(iris.Addr(":9701"), iris.WithOptimizations, iris.WithCharset("UTF-8")); err != nil {
+
+	sg := new(sync.WaitGroup)
+	defer sg.Wait()
+
+	iris.RegisterOnInterrupt(func() {
+		sg.Add(1)
+		defer sg.Done()
+		sctx, cancel := context.WithTimeout(context.Background(), 20 * time.Second)
+		defer cancel()
+		if err := app.Shutdown(sctx); err != nil {
+			log.Println(err)
+		}
+	})
+
+	if err := app.Run(iris.Addr(":9701"), iris.WithOptimizations, iris.WithCharset("UTF-8"), iris.WithoutInterruptHandler); err != nil {
 		log.Println(err)
 	}
 }
