@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	DB *sql.DB
+	DB  *sql.DB
 	err error
 )
 
@@ -35,7 +35,7 @@ func IsDatabaseExist(name string) bool {
 	statement := fmt.Sprintf("SHOW DATABASES LIKE '%s'", config.Conf.Database.Name)
 
 	var (
-		rows *sql.Rows
+		rows     *sql.Rows
 		Database string
 	)
 

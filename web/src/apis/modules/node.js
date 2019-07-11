@@ -7,7 +7,7 @@ export default {
    * @returns {*}
    */
   fetch(params) {
-    return Vue.axios.get('/api/worker', {
+    return Vue.axios.get('/api/node', {
       params: params
     });
   },
@@ -17,7 +17,7 @@ export default {
    * @returns {*}
    */
   create(params) {
-    return Vue.axios.post('/api/worker', params);
+    return Vue.axios.post('/api/node', params);
   },
   /**
    * 删除节点
@@ -25,6 +25,6 @@ export default {
    * @returns {*}
    */
   delete(params) {
-    return Vue.axios.delete(`/api/worker/${params.id}`);
+    return Vue.axios.delete(`/api/node/${params.id}`);
   }
 }

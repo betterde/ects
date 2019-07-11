@@ -4,6 +4,6 @@ import (
 	"github.com/betterde/ects/cmd"
 )
 
-func main()  {
+func main() {
 	cmd.Execute()
 }

@@ -1,9 +1,5 @@
 package models
 
-import (
-	"time"
-)
-
 const (
 	TASK_STATUS_NORMAL   = "normal"
 	TASK_STATUS_DISABLED = "disabled"
@@ -15,14 +11,14 @@ const (
 
 type (
 	Task struct {
-		Id          string    `xorm:"not null pk comment('用户ID') CHAR(36)"`
-		TeamId      string    `xorm:"not null comment('团队ID') index CHAR(36)"`
-		Name        string    `xorm:"not null comment('名称') VARCHAR(255)"`
-		Content     string    `xorm:"not null comment('内容') TEXT"`
-		Mode        string    `xorm:"not null comment('执行方式') VARCHAR(255)"`
-		Description string    `xorm:"comment('描述') VARCHAR(255)"`
-		CreatedAt   time.Time `xorm:"not null created comment('创建于') DATETIME"`
-		UpdatedAt   time.Time `xorm:"not null updated comment('更新于') DATETIME"`
+		Id          string `json:"id" validate:"-" xorm:"not null pk comment('用户ID') CHAR(36)"`
+		TeamId      string `json:"team_id" validate:"required" xorm:"not null comment('团队ID') index CHAR(36)"`
+		Name        string `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
+		Content     string `json:"content" validate:"required" xorm:"not null comment('内容') TEXT"`
+		Mode        string `json:"mode" validate:"required" xorm:"not null comment('执行方式') VARCHAR(255)"`
+		Description string `json:"description" validate:"-" xorm:"comment('描述') VARCHAR(255)"`
+		CreatedAt   string `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
+		UpdatedAt   string `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
 	}
 )
 

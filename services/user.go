@@ -117,8 +117,7 @@ func (service *UserService) FindByEmail(email string) (*models.User, error) {
 
 	if result {
 		// 如果用户已经被删除则
-		undeleted := time.Time{}
-		if user.DeletedAt != undeleted {
+		if user.DeletedAt != "" {
 			return &user, errors.New("用户已禁用")
 		}
 		return &user, err

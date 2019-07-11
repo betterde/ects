@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import axios from 'axios'
 import store from '../store'
+import router from '../router'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -10,17 +11,14 @@ import store from '../store'
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 let config = {
-  // baseURL: process.env.baseURL || process.env.apiUrl || ""
-  // timeout: 60 * 1000, // Timeout
-  // withCredentials: true, // Check cross-site Access-Control
+  baseURL: process.env.baseURL || process.env.apiUrl || "",
+  timeout: 60 * 1000, // Timeout
+  withCredentials: true, // Check cross-site Access-Control
 };
 
-const _axios = axios.create(config);
+const request = axios.create(config);
 
-_axios.interceptors.request.use(config => {
-  /**
-   * 过滤空参
-   */
+request.interceptors.request.use(config => {
   for(let key in config.params) {
     if (config.params.hasOwnProperty(key) && (config.params[key] === "" || config.params[key] === null)) {
       delete config.params[key];
@@ -36,29 +34,32 @@ _axios.interceptors.request.use(config => {
 });
 
 // Add a response interceptor
-_axios.interceptors.response.use(
-  function(response) {
-    // Do something with response data
+request.interceptors.response.use(
+  response => {
     return response.data;
   },
-  function(error) {
-    // Do something with response error
+  error => {
+    if (error.response.status === 401) {
+      store.commit('SET_PROFILE', false);
+      store.commit('SET_ACCESS_TOKEN', false);
+      router.push("/signin");
+    }
     return Promise.reject(error.response);
   }
 );
 
 Plugin.install = function(Vue) {
-  Vue.axios = _axios;
-  window.axios = _axios;
+  Vue.axios = request;
+  window.axios = request;
   Object.defineProperties(Vue.prototype, {
     axios: {
       get() {
-        return _axios;
+        return request;
       }
     },
     $axios: {
       get() {
-        return _axios;
+        return request;
       }
     },
   });

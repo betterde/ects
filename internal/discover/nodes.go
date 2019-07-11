@@ -19,6 +19,9 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 		DialTimeout: 5 * time.Second,
 	})
 
+	// 监听后续的PUT与DELETE事件
+	watcher := clientv3.NewWatcher(client)
+
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
@@ -26,6 +29,9 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 
 	defer func() {
 		if err := client.Close(); err != nil {
+			log.Println(err)
+		}
+		if err := watcher.Close(); err != nil {
 			log.Println(err)
 		}
 	}()
@@ -43,20 +49,12 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 		break
 	}
 
-	// 监听后续的PUT与DELETE事件
-	watcher := clientv3.NewWatcher(client)
-	defer func() {
-		if err := watcher.Close(); err != nil {
-			log.Println(err)
-		}
-	}()
-
 	nodeService := services.NewNodeService()
 
 	watchNodes := watcher.Watch(ctx, config.Conf.Etcd.Service, clientv3.WithPrefix(), clientv3.WithRev(curRevision))
 	for watchResp := range watchNodes {
 		for _, event := range watchResp.Events {
-			switch (event.Type) {
+			switch event.Type {
 			case mvccpb.PUT:
 				var node models.Node
 				if err := json.Unmarshal(event.Kv.Value, &node); err != nil {

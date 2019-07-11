@@ -110,8 +110,8 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		Description: params.Remark,
 		Status: models.ONLINE,
 		Host: "",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
+		UpdatedAt: time.Now().Format("2006-01-02 15:04:05"),
 	}
 	if err := worker.Store(); err != nil {
 		return response.InternalServerError("创建节点失败", err)
