@@ -2,14 +2,12 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
-	"github.com/coreos/etcd/clientv3"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
@@ -62,31 +60,9 @@ func bootstrap() {
 		Version: rootCmd.Version,
 	}
 
-	client, err := clientv3.New(clientv3.Config{
-		Endpoints:   config.Conf.Etcd.EndPoints,
-		DialTimeout: 10 * time.Second,
-	})
+	discover.NewClient()
 
-	defer func() {
-		if err := client.Close(); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	requestctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	res, err := client.Get(requestctx, confKey)
-	cancel()
-
-	if res != nil {
-		if err := json.Unmarshal(res.Kvs[0].Value, &config.Conf); err != nil {
-			log.Println(err)
-			os.Exit(1)
-		}
-	}
+	discover.GetConf(confKey)
 
 	models.Engine, err = models.Connection()
 	if err != nil {
@@ -96,7 +72,6 @@ func bootstrap() {
 }
 
 func watch() {
-	discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
 	go discover.ServiceCluster.WatchNodes(ctx)
 }
 
@@ -113,12 +88,12 @@ func register() {
 		master.Name = "master-" + master.Id
 	}
 
-	service, err := discover.NewService(master, EndPoints)
+	service, err := discover.NewService(master)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
-	if err := service.Register(2); err != nil {
+	if err := service.Register(5); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
