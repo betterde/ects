@@ -244,9 +244,9 @@
             confirm: "George@1994"
           },
           etcd: {
-            service: "ects_service",
-            pipeline: "ects_pipeline",
-            config: "ects_config",
+            service: "/ects/nodes",
+            pipeline: "/ects/pipelines",
+            config: "/ects/config",
             timeout: 5,
             endpoints: ["localhost:2379"]
           }
