@@ -86,10 +86,8 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to put config to etcd", err)
 	}
 
-	if utils.IsDatabaseExist(config.Conf.Database.Name) == false {
-		if err := utils.CreateDatabase(); err != nil {
-			return response.InternalServerError("Failed to create database", err)
-		}
+	if err := utils.CreateDatabase(); err != nil {
+		return response.InternalServerError("Failed to create database", err)
 	}
 
 	if models.Engine == nil {
@@ -118,8 +116,8 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		Email:     params.User.Email,
 		Password:  string(pass),
 		Manager:   true,
-		CreatedAt: time.Now().Format("2016-01-02 15:04:05"),
-		UpdatedAt: time.Now().Format("2016-01-02 15:04:05"),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	if _, err := models.Engine.Insert(user); err != nil {

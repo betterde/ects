@@ -10,7 +10,7 @@ type PipelineTaskPivot struct {
 	Dependence string `json:"dependence" validate:"required" xorm:"not null default 'strong' comment('依赖') VARCHAR(255)"`
 	CreatedAt  string `json:"-" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt  string `json:"-" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
-	Task       *Task  `json:"task" xorm:"task_id"`
+	Task       *Task  `json:"task" xorm:"-"`
 }
 
 // 定义模型的数据表名称

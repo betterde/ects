@@ -36,9 +36,8 @@ func Connection() (*xorm.Engine, error) {
 	if engine != nil {
 		engine.SetMaxIdleConns(10)
 		engine.SetMaxOpenConns(30)
+		engine.SetLogLevel(core.LOG_OFF)
 	}
-
-	engine.SetLogLevel(core.LOG_OFF)
 
 	go keepAlived()
 

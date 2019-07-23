@@ -2,7 +2,6 @@ package routes
 
 import (
 	"github.com/betterde/ects/internal/middleware"
-	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/web"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -67,24 +66,7 @@ func Register(app *iris.Application) {
 
 	// 页面路由
 	app.Get("/", func(ctx iris.Context) {
-		// 如果系统未安装则跳转到安装页面
-		if system.Info.Installed == false {
-			ctx.Redirect("/install")
-		}
-
 		if err := ctx.View("index.html"); err != nil {
-			log.Println(err)
-		}
-	})
-
-	// 页面路由
-	app.Get("/install", func(ctx iris.Context) {
-		// 如果已经安装则跳转到首页
-		if system.Info.Installed {
-			ctx.Redirect("/")
-		}
-
-		if err := ctx.View("install.html"); err != nil {
 			log.Println(err)
 		}
 	})
