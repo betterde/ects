@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"github.com/go-xorm/builder"
+	"time"
 )
 
 type Pipeline struct {
@@ -15,8 +16,8 @@ type Pipeline struct {
 	Finished    string               `json:"finished" validate:"omitempty,uuid4" xorm:"comment('成功时执行') CHAR(36)"`
 	Failed      string               `json:"failed" validate:"omitempty,uuid4" xorm:"comment('失败时执行') CHAR(36)"`
 	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
-	CreatedAt   string               `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-	UpdatedAt   string               `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
+	CreatedAt   time.Time            `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt   time.Time            `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
 	Nodes       map[string]*Node     `json:"nodes" validate:"-" xorm:"-"`
 	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
 }

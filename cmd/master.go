@@ -32,7 +32,7 @@ var (
 		},
 	}
 	master = &models.Node{
-		Mode:   models.MODE_MASTER,
+		Mode:   models.MASTER,
 		Status: models.ONLINE,
 	}
 

@@ -27,7 +27,7 @@ var (
 	}
 
 	worker = &models.Node{
-		Mode: models.MODE_WORKER,
+		Mode: models.WORKER,
 		Status: models.ONLINE,
 	}
 

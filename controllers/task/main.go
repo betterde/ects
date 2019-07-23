@@ -138,7 +138,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 		Content:     params.Content,
 		Mode:        params.Mode,
 		Description: params.Description,
-		UpdatedAt:   time.Now().Format("2016-01-02 15:04:05"),
+		UpdatedAt:   time.Now(),
 	}
 
 	if err := task.Update(); err != err {
