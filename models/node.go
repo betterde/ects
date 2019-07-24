@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/go-xorm/builder"
 	"time"
 )
@@ -67,4 +68,17 @@ func (node *Node) CreateOrUpdate() error {
 	}
 
 	return node.Store()
+}
+
+func (node *Node) MarshalJSON() ([]byte, error) {
+	type Alias Node
+	return json.Marshal(&struct {
+		Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     Alias(*node),
+		CreatedAt: node.CreatedAt.Format(DefaultTimeFormat),
+		UpdatedAt: node.UpdatedAt.Format(DefaultTimeFormat),
+	})
 }

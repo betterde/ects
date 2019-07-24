@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 )
@@ -49,4 +50,19 @@ func (user *User) ModifyEmail(email string) (*User, error) {
 	user.Email = email
 	err := user.Save()
 	return user, err
+}
+
+func (user *User) MarshalJSON() ([]byte, error) {
+	type Alias User
+	return json.Marshal(&struct {
+		Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+		DeletedAt string `json:"deleted_at"`
+	}{
+		Alias:     Alias(*user),
+		CreatedAt: user.CreatedAt.Format(DefaultTimeFormat),
+		UpdatedAt: user.UpdatedAt.Format(DefaultTimeFormat),
+		DeletedAt: user.DeletedAt.Format(DefaultTimeFormat),
+	})
 }

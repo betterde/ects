@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 const (
 	TASK_STATUS_NORMAL   = "normal"
@@ -45,4 +48,17 @@ func (task *Task) Update() error {
 func (task *Task) Destroy() error {
 	_, err := Engine.Delete(task)
 	return err
+}
+
+func (task *Task) MarshalJSON() ([]byte, error) {
+	type Alias Task
+	return json.Marshal(&struct {
+		Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     Alias(*task),
+		CreatedAt: task.CreatedAt.Format(DefaultTimeFormat),
+		UpdatedAt: task.UpdatedAt.Format(DefaultTimeFormat),
+	})
 }

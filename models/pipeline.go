@@ -78,3 +78,16 @@ func (pipeline *Pipeline) Build() (origin string, err error) {
 	origin = string(ob)
 	return
 }
+
+func (pipeline *Pipeline) MarshalJSON() ([]byte, error) {
+	type Alias Pipeline
+	return json.Marshal(&struct {
+		Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     Alias(*pipeline),
+		CreatedAt: pipeline.CreatedAt.Format(DefaultTimeFormat),
+		UpdatedAt: pipeline.UpdatedAt.Format(DefaultTimeFormat),
+	})
+}

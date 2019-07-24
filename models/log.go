@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // 用户操作日志
 type Log struct {
@@ -14,4 +17,15 @@ type Log struct {
 // 定义模型的数据表名称
 func (log *Log) TableName() string {
 	return "logs"
+}
+
+func (log *Log) MarshalJSON() ([]byte, error) {
+	type Alias Log
+	return json.Marshal(&struct {
+		Alias
+		CreatedAt string `json:"created_at"`
+	}{
+		Alias:     Alias(*log),
+		CreatedAt: log.CreatedAt.Format(DefaultTimeFormat),
+	})
 }
