@@ -72,6 +72,18 @@ func (node *Node) CreateOrUpdate() error {
 
 func (node *Node) MarshalJSON() ([]byte, error) {
 	type Alias Node
+
+	//CreatedAt := ""
+	//UpdatedAt := ""
+	//
+	//if !node.CreatedAt.IsZero() {
+	//	CreatedAt = node.CreatedAt.Format(DefaultTimeFormat)
+	//}
+	//
+	//if !node.UpdatedAt.IsZero() {
+	//	UpdatedAt = node.UpdatedAt.Format(DefaultTimeFormat)
+	//}
+
 	return json.Marshal(&struct {
 		Alias
 		CreatedAt string `json:"created_at"`
@@ -82,3 +94,7 @@ func (node *Node) MarshalJSON() ([]byte, error) {
 		UpdatedAt: node.UpdatedAt.Format(DefaultTimeFormat),
 	})
 }
+
+//func (node *Node) UnmarshalJSON([]byte) error {
+//
+//}

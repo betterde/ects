@@ -1,6 +1,11 @@
 package pipeline
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
@@ -10,6 +15,7 @@ import (
 	"github.com/kataras/iris/mvc"
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
+	"log"
 )
 
 type (
@@ -78,6 +84,18 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	err := pipeline.Store()
 	if err != nil {
 		return response.InternalServerError("Failed to create pipeline", err)
+	}
+
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
+
+	bytes, err := json.Marshal(&pipeline)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
+		log.Println(err)
 	}
 
 	return response.Success("Pipelines created successfully", response.Payload{"data": pipeline})

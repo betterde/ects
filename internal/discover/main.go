@@ -59,7 +59,23 @@ func (service *Service) Register(ttlSecond int64) error {
 
 	service.leaseID = res.ID
 
-	val, err := json.Marshal(&service.node)
+	val, err := json.Marshal(&struct {
+		Id          string    `json:"id"`
+		Name        string    `json:"name"`
+		Host        string    `json:"host"`
+		Port        int       `json:"port"`
+		Mode        string    `json:"mode"`
+		Status      string    `json:"status"`
+		Description string    `json:"description"`
+	}{
+		service.node.Id,
+		service.node.Name,
+		service.node.Host,
+		service.node.Port,
+		service.node.Mode,
+		service.node.Status,
+		service.node.Description,
+	})
 	if err != nil {
 		log.Println(err)
 	}
