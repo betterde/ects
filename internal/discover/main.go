@@ -64,7 +64,7 @@ func (service *Service) Register(ttlSecond int64) error {
 		log.Println(err)
 	}
 
-	key := fmt.Sprintf("%s_%s", config.Conf.Etcd.Service, service.node.Id)
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Service, service.node.Id)
 
 	if _, err = Client.Put(context.TODO(), key, string(val), clientv3.WithLease(service.leaseID)); err != nil {
 		return err

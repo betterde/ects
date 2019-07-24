@@ -43,7 +43,7 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 
 				log.Printf("节点：%s 注册成功", node.Id)
 			case mvccpb.DELETE:
-				id := string(event.Kv.Key)[13:]
+				id := string(event.Kv.Key)[12:]
 				node, err := nodeService.FindByID(id)
 
 				if err != nil {

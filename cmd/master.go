@@ -50,8 +50,8 @@ func init() {
 	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
 	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
-	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "", "Set master node description")
-	masterCmd.PersistentFlags().StringVar(&confKey, "config", "ects_config", "Set the key used to get configuration information")
+	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "worker node", "Set master node description")
+	masterCmd.PersistentFlags().StringVar(&confKey, "config", "/ects/config", "Set the key used to get configuration information")
 }
 
 func bootstrap() {
