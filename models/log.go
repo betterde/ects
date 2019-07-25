@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-// User operation log struct
 type Log struct {
 	Id        int64     `json:"id" xorm:"pk autoincr comment('ID') BIGINT(20)"`
 	UserId    string    `json:"user_id" xorm:"not null comment('用户ID') index CHAR(36)"`

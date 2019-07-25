@@ -20,7 +20,7 @@ type User struct {
 	DeletedAt time.Time `json:"deleted_at" xorm:"null comment('删除于') DATETIME"`
 }
 
-// 定义模型的数据表名称
+// Define table name
 func (user *User) TableName() string {
 	return "users"
 }
@@ -54,6 +54,13 @@ func (user *User) ModifyEmail(email string) (*User, error) {
 
 func (user *User) MarshalJSON() ([]byte, error) {
 	type Alias User
+
+	var DeletedAt = ""
+
+	if !user.DeletedAt.IsZero() {
+		DeletedAt = user.DeletedAt.Format(DefaultTimeFormat)
+	}
+
 	return json.Marshal(&struct {
 		Alias
 		CreatedAt string `json:"created_at"`
@@ -63,6 +70,6 @@ func (user *User) MarshalJSON() ([]byte, error) {
 		Alias:     Alias(*user),
 		CreatedAt: user.CreatedAt.Format(DefaultTimeFormat),
 		UpdatedAt: user.UpdatedAt.Format(DefaultTimeFormat),
-		DeletedAt: user.DeletedAt.Format(DefaultTimeFormat),
+		DeletedAt: DeletedAt,
 	})
 }
