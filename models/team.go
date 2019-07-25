@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type (
 	Team struct {
@@ -30,4 +33,17 @@ func (team *Team) Update() error {
 func (team *Team) Destroy() error {
 	_, err := Engine.Delete(team)
 	return err
+}
+
+func (team *Team) MarshalJSON() ([]byte, error) {
+	type Alias Team
+	return json.Marshal(&struct {
+		Alias
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
+	}{
+		Alias:     Alias(*team),
+		CreatedAt: team.CreatedAt.Format(DefaultTimeFormat),
+		UpdatedAt: team.UpdatedAt.Format(DefaultTimeFormat),
+	})
 }

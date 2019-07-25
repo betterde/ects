@@ -58,19 +58,15 @@ func Migrate() error {
 	tables := []interface{}{
 		&User{},
 		&Node{},
-		&Role{},
 		&Task{},
-		&Permission{},
 		&Log{},
 		&Team{},
 		&Configuration{},
-		&Menu{},
 		&PasswordResets{},
 		&Pipeline{},
 		&PipelineRecords{},
 		&PipelineTaskPivot{},
 		&PipelineNodePivot{},
-		&RolePermissionPivot{},
 		&TaskRecords{},
 	}
 

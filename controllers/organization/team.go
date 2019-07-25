@@ -66,9 +66,14 @@ func (instance *TeamController) Post(ctx iris.Context) mvc.Result {
 	}
 
 	team.Id = uuid.NewV4().String()
-	err := team.Store()
-	if err != nil {
+
+	if err := team.Store(); err != nil {
 		return response.InternalServerError("Failed to create team", err)
+	}
+
+	// Create operation log
+	if err := models.CreateLog(team, ctx, "CREATE TEAM"); err != nil {
+		return response.InternalServerError("Failed to create log", err)
 	}
 
 	return response.Success("Team created successfully", response.Payload{"data": team})
@@ -93,17 +98,32 @@ func (instance *TeamController) PutBy(id string, ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to update team", err)
 	}
 
+	// Create operation log
+	if err := models.CreateLog(team, ctx, "MODIFY TEAM"); err != nil {
+		return response.InternalServerError("Failed to create log", err)
+	}
+
 	return response.Success("Team updated successfully", response.Payload{"data": team})
 }
 
 // Delete team by id
-func (instance *TeamController) DeleteBy(id string) mvc.Result {
+func (instance *TeamController) DeleteBy(id string, ctx iris.Context) mvc.Result {
 	team := &models.Team{
 		Id: id,
+	}
+
+	if _, err := models.Engine.Get(team); err != nil {
+		return response.InternalServerError("Failed to delete team", err)
 	}
 
 	if err := team.Destroy(); err != nil {
 		return response.InternalServerError("Failed to delete team", err)
 	}
+
+	// Create operation log
+	if err := models.CreateLog(*team, ctx, "DELETE TEAM"); err != nil {
+		return response.InternalServerError("Failed to create log", err)
+	}
+
 	return response.Success("Team deleted successfully", response.Payload{"data": make(map[string]interface{})})
 }
