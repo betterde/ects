@@ -220,7 +220,7 @@
           </el-table-column>
         </el-table>
         <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :total="meta.total"></el-pagination>
+          <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
         </div>
       </div>
     </div>
@@ -421,6 +421,14 @@
           this.$message.error(err.data.message);
         });
         this.loading = false;
+      },
+      /**
+       * Change page
+       */
+      changePage(page) {
+        this.meta.page = page;
+        this.params.page = page;
+        this.fetchPipelines();
       },
       /**
        * Submit create pipeline form

@@ -68,7 +68,7 @@
           </el-table-column>
         </el-table>
         <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :total="11"></el-pagination>
+          <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
         </div>
       </div>
     </div>
@@ -111,7 +111,12 @@
           this.$message.warning(err.message)
         });
         this.loading = false;
-      }
+      },
+      changePage(page) {
+        this.meta.page = page;
+        this.params.page = page;
+        this.fetchUsers();
+      },
     },
     mounted() {
       this.fetchUsers()
