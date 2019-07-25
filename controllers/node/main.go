@@ -83,7 +83,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		log.Println(err)
 	}
 
-	return response.Success("请求成功", response.Payload{
+	return response.Success("Success", response.Payload{
 		"data": workers,
 		"meta": &response.Meta{
 			Limit: limit,

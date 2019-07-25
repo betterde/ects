@@ -98,6 +98,10 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		log.Println(err)
 	}
 
+	if err := models.CreateLog(pipeline, ctx, "CREATE PIPELINE"); err != nil {
+		return response.InternalServerError("Failed to create log", err)
+	}
+
 	return response.Success("Pipelines created successfully", response.Payload{"data": pipeline})
 }
 

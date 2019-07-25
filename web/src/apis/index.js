@@ -4,6 +4,7 @@ import node from './modules/node'
 import user from './modules/user'
 import account from './modules/account'
 import pipeline from './modules/pipeline'
+import log from './modules/log'
 
 export default {
   task,
@@ -11,5 +12,6 @@ export default {
   user,
   system,
   account,
-  pipeline
+  pipeline,
+  log
 }
