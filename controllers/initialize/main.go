@@ -9,7 +9,6 @@ import (
 	"github.com/betterde/ects/internal/system"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
-	"github.com/betterde/ects/seeds"
 	"github.com/betterde/ects/services"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/kataras/iris"
@@ -100,12 +99,6 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 
 	if err := models.Migrate(); err != nil {
 		return response.InternalServerError("Failed to migrate the table", err)
-	}
-
-	// Seed system data to database
-	seedService := seeds.Seeder{}
-	if err := seedService.Run(); err != nil {
-		return response.InternalServerError("Failed to seed system data", err)
 	}
 
 	pass, err := models.GeneratePassword(params.User.Pass)

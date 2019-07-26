@@ -11,7 +11,6 @@ type User struct {
 	Email     string     `json:"email" xorm:"not null comment('邮箱') unique VARCHAR(255)"`
 	Password  string     `json:"-" xorm:"not null comment('密码') VARCHAR(255)"`
 	Avatar    string     `json:"avatar" xorm:"null comment('头像') VARCHAR(255)"`
-	TeamId    string     `json:"team_id" xorm:"not null default '' comment('团队ID') index CHAR(36)"`
 	RoleId    string     `json:"role_id" xorm:"not null default '' comment('角色ID') index CHAR(36)"`
 	Manager   bool       `json:"manager" xorm:"not null default 0 comment('管理员') TINYINT(1)"`
 	CreatedAt utils.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`

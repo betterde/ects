@@ -36,7 +36,6 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
-		TeamId:  user.TeamId,
 		Manager: user.Manager,
 	}})
 }

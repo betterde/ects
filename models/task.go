@@ -16,7 +16,6 @@ const (
 type (
 	Task struct {
 		Id          string     `json:"id" validate:"-" xorm:"not null pk comment('用户ID') CHAR(36)"`
-		TeamId      string     `json:"team_id" validate:"required" xorm:"not null comment('团队ID') index CHAR(36)"`
 		Name        string     `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
 		Content     string     `json:"content" validate:"required" xorm:"not null comment('内容') TEXT"`
 		Mode        string     `json:"mode" validate:"required" xorm:"not null comment('执行方式') VARCHAR(255)"`

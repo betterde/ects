@@ -5,7 +5,6 @@ import "github.com/betterde/ects/internal/utils"
 type TaskRecords struct {
 	Id               int64      `xorm:"pk autoincr comment('ID') BIGINT(20)"`
 	PipelineRecordId string     `xorm:"not null comment('流水线记录ID') index CHAR(36)"`
-	TeamId           string     `xorm:"not null comment('团队ID') index CHAR(36)"`
 	TaskId           string     `xorm:"not null comment('任务ID') index CHAR(36)"`
 	NodeId           string     `xorm:"not null comment('节点ID') index CHAR(36)"`
 	TaskName         string     `xorm:"not null comment('任务名称') VARCHAR(255)"`

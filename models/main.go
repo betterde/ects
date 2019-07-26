@@ -60,7 +60,6 @@ func Migrate() error {
 		&Node{},
 		&Task{},
 		&Log{},
-		&Team{},
 		&Configuration{},
 		&PasswordResets{},
 		&Pipeline{},

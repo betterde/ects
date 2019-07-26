@@ -73,7 +73,6 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 		Name:      params.Name,
 		Email:     params.Email,
 		Password:  string(pass),
-		TeamId:    params.TeamId,
 		Manager:   params.Manager,
 		CreatedAt: utils.Time(time.Now()),
 		UpdatedAt: utils.Time(time.Now()),
@@ -109,7 +108,6 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	if result {
 		user.Name = params.Name
 		user.Email = params.Email
-		user.TeamId = params.TeamId
 		user.Manager = params.Manager
 		if _, err := models.Engine.Id(id).Update(user); err != nil {
 			return response.Send(iris.StatusInternalServerError, "Failed to update user", make(map[string]interface{}))

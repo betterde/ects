@@ -32,10 +32,6 @@ func CreateLog(v interface{}, uid string, operation string) error {
 	)
 
 	switch reflect.TypeOf(v).String() {
-	case "models.Team":
-		obj := reflect.ValueOf(v).Interface().(Team)
-		result, err = json.Marshal(&obj)
-		break
 	case "models.User":
 		obj := reflect.ValueOf(v).Interface().(User)
 		result, err = json.Marshal(&obj)

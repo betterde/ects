@@ -8,7 +8,6 @@ import (
 
 type Pipeline struct {
 	Id          string               `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
-	TeamId      string               `json:"team_id" validate:"required,uuid4" xorm:"not null comment('团队ID') index CHAR(36)"`
 	Name        string               `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
 	Description string               `json:"description" validate:"-" xorm:"not null comment('描述') VARCHAR(255)"`
 	Spec        string               `json:"spec" validate:"required" xorm:"not null comment('定时器') CHAR(64)"`
