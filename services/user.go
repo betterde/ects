@@ -83,13 +83,19 @@ func (service *UserService) Users(params map[string]string) (*[]models.User, *re
 
 // 验证用户凭证
 func (service *UserService) Attempt(username, passwod string) (token string, err error) {
-	user, err := service.RetrieveByCredentials(username, passwod)
+	var user *models.User
+	user, err = service.RetrieveByCredentials(username, passwod)
 
 	if err != nil {
 		return "", err
 	}
 
 	token, err = IssueToken(user)
+
+	if err := models.CreateLog(*user, user.Id, "USER SIGN IN"); err != nil {
+		log.Println(err)
+	}
+
 	return token, err
 }
 

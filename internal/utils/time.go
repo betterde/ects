@@ -17,6 +17,9 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 }
 
 func (t *Time) MarshalJSON() ([]byte, error) {
+	if time.Time(*t).IsZero() {
+		return []byte("null"), nil
+	}
 	b := make([]byte, 0, len(DefaultTimeFormat)+2)
 	b = append(b, '"')
 	b = time.Time(*t).AppendFormat(b, DefaultTimeFormat)

@@ -61,11 +61,10 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	logs := make([]models.Log, 0)
 
 	if search == "" {
-		total, err = models.Engine.Count(&models.Log{})
-		err = models.Engine.Limit(limit, start).Find(&logs)
+		total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&logs)
+
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Log{})
-		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&logs)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&logs)
 	}
 
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
@@ -48,9 +49,9 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	start = (page - 1) * limit
 
 	if search != "" {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&pipelines)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
 	} else {
-		total, err = models.Engine.Limit(limit, start).FindAndCount(&pipelines)
+		total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
 	}
 
 	if err != nil {
@@ -97,7 +98,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		log.Println(err)
 	}
 
-	if err := models.CreateLog(pipeline, ctx, "CREATE PIPELINE"); err != nil {
+	if err := models.CreateLog(pipeline, utils.GetUID(ctx), "CREATE PIPELINE"); err != nil {
 		return response.InternalServerError("Failed to create log", err)
 	}
 

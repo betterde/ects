@@ -3,6 +3,7 @@ package organization
 import (
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
@@ -72,7 +73,7 @@ func (instance *TeamController) Post(ctx iris.Context) mvc.Result {
 	}
 
 	// Create operation log
-	if err := models.CreateLog(team, ctx, "CREATE TEAM"); err != nil {
+	if err := models.CreateLog(team, utils.GetUID(ctx), "CREATE TEAM"); err != nil {
 		return response.InternalServerError("Failed to create log", err)
 	}
 
@@ -99,7 +100,7 @@ func (instance *TeamController) PutBy(id string, ctx iris.Context) mvc.Result {
 	}
 
 	// Create operation log
-	if err := models.CreateLog(team, ctx, "MODIFY TEAM"); err != nil {
+	if err := models.CreateLog(team, utils.GetUID(ctx), "MODIFY TEAM"); err != nil {
 		return response.InternalServerError("Failed to create log", err)
 	}
 
@@ -121,7 +122,7 @@ func (instance *TeamController) DeleteBy(id string, ctx iris.Context) mvc.Result
 	}
 
 	// Create operation log
-	if err := models.CreateLog(*team, ctx, "DELETE TEAM"); err != nil {
+	if err := models.CreateLog(*team, utils.GetUID(ctx), "DELETE TEAM"); err != nil {
 		return response.InternalServerError("Failed to create log", err)
 	}
 

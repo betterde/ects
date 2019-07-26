@@ -2,8 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/kataras/iris"
 	"reflect"
 	"time"
 )
@@ -27,11 +25,7 @@ func (log *Log) Store() error {
 }
 
 // Create operation log
-func CreateLog(v interface{}, ctx iris.Context, operation string) error {
-	token := ctx.Values().Get("jwt").(*jwt.Token)
-	claims, _ := token.Claims.(jwt.MapClaims)
-	id := claims["sub"]
-
+func CreateLog(v interface{}, uid string, operation string) error {
 	var (
 		result []byte
 		err error
@@ -65,7 +59,7 @@ func CreateLog(v interface{}, ctx iris.Context, operation string) error {
 	}
 
 	log := &Log{
-		UserId:    id.(string),
+		UserId:    uid,
 		Operation: operation,
 		Result:    string(result),
 		CreatedAt: time.Now(),
