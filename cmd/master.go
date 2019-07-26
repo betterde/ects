@@ -6,6 +6,7 @@ import (
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
 	"github.com/kataras/iris"
@@ -79,6 +80,13 @@ func watch() {
 func register() {
 	master.Host = config.Conf.Service.Host
 	master.Port = config.Conf.Service.Port
+
+	if master.Host == "0.0.0.0" {
+		ips := utils.GetIPs()
+		if len(ips) > 0 {
+			master.Host = ips[0]
+		}
+	}
 
 	if master.Id == "" {
 		master.Id = uuid.NewV4().String()

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/rpc"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
@@ -74,6 +75,13 @@ func listen() {
 
 	discover.NewClient()
 	discover.GetConf(confKey)
+
+	if worker.Host == "0.0.0.0" {
+		ips := utils.GetIPs()
+		if len(ips) > 0 {
+			worker.Host = ips[0]
+		}
+	}
 
 	service, err := discover.NewService(worker)
 	if err != nil {
