@@ -57,7 +57,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to query pipelines list", err)
 	}
 
-	return response.Success("Success", response.Payload{
+	return response.Success("Successful", response.Payload{
 		"data": pipelines,
 		"meta": &response.Meta{
 			Limit: limit,
@@ -89,7 +89,6 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
 
 	bytes, err := json.Marshal(&pipeline)
-
 	if err != nil {
 		log.Println(err)
 	}
@@ -102,7 +101,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to create log", err)
 	}
 
-	return response.Success("Pipelines created successfully", response.Payload{"data": pipeline})
+	return response.Success("Created successfully", response.Payload{"data": pipeline})
 }
 
 // Update pipeline attributes by id
@@ -123,7 +122,18 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to update pipeline", err)
 	}
 
-	return response.Success("Pipeline updated successfully", response.Payload{"data": pipeline})
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
+
+	bytes, err := json.Marshal(&pipeline)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
+		return response.InternalServerError("Failed to delete pipeline", err)
+	}
+
+	return response.Success("Updated successfully", response.Payload{"data": pipeline})
 }
 
 // Delete pipeline by id
@@ -132,10 +142,16 @@ func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Result {
 		Id: id,
 	}
 
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
+
+	if _, err := discover.Client.Delete(context.TODO(), key); err != nil {
+		return response.InternalServerError("Failed to delete pipeline", err)
+	}
+
 	if err := pipeline.Destroy(); err != nil {
 		return response.InternalServerError("Failed to delete pipeline", err)
 	}
-	return response.Success("Pipeline deleted successfully", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("Deleted successfully", response.Payload{"data": make(map[string]interface{})})
 }
 
 // Get pipeline binding nodes
@@ -164,7 +180,7 @@ func (instance *Controller) GetNodes(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
-	return response.Success("Success", response.Payload{"data": nodes})
+	return response.Success("Successful", response.Payload{"data": nodes})
 }
 
 // Bind pipeline to node
@@ -227,7 +243,7 @@ func (instance * Controller) GetTasks(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
-	return response.Success("Success", response.Payload{"data": tasks})
+	return response.Success("Successful", response.Payload{"data": tasks})
 }
 
 // Bind the task to pipeline

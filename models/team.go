@@ -1,17 +1,16 @@
 package models
 
 import (
-	"encoding/json"
-	"time"
+	"github.com/betterde/ects/internal/utils"
 )
 
 type (
 	Team struct {
-		Id          string    `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
-		Name        string    `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
-		Description string    `json:"description" validate:"-" xorm:"not null comment('描述') VARCHAR(255)"`
-		CreatedAt   time.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
-		UpdatedAt   time.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
+		Id          string     `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
+		Name        string     `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
+		Description string     `json:"description" validate:"-" xorm:"not null comment('描述') VARCHAR(255)"`
+		CreatedAt   utils.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
+		UpdatedAt   utils.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
 	}
 )
 
@@ -33,17 +32,4 @@ func (team *Team) Update() error {
 func (team *Team) Destroy() error {
 	_, err := Engine.Delete(team)
 	return err
-}
-
-func (team *Team) MarshalJSON() ([]byte, error) {
-	type Alias Team
-	return json.Marshal(&struct {
-		Alias
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
-	}{
-		Alias:     Alias(*team),
-		CreatedAt: team.CreatedAt.Format(DefaultTimeFormat),
-		UpdatedAt: team.UpdatedAt.Format(DefaultTimeFormat),
-	})
 }

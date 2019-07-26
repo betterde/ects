@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-button type="primary" plain>Create</el-button>
+              <el-button type="primary" plain @click="handleCreate">Create</el-button>
             </el-col>
             <el-col :span="8">
               <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
@@ -13,6 +13,15 @@
           </el-row>
         </div>
       </div>
+      <el-dialog title="Create pipeline" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
+        <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="create.dialog = false">Cancel</el-button>
+          <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
+        </div>
+      </el-dialog>
       <div class="panel-body" :class="classes">
         <el-table :data="users" style="width: 100%">
           <el-table-column type="expand">
@@ -87,6 +96,16 @@
         params: {
           search: ""
         },
+        create: {
+          dialog: false,
+          params: {},
+          rules: {}
+        },
+        edit: {
+          dialog: false,
+          params: {},
+          rules: {}
+        },
         users: [],
         meta: {
           limit: 10,
@@ -96,11 +115,57 @@
       }
     },
     methods: {
+      handleCreate() {
+        this.create.dialog = true;
+      },
+      submitCreateForm() {
+        this.$refs.create.validate((valid) => {
+          if (valid) {
+            if (this.profile.team_id.length === 36) {
+              this.create.params.team_id = this.profile.team_id;
+              api.pipeline.create(this.create.params).then(res => {
+                this.meta.total += 1;
+                // 判断是否需要跳转到最后一页
+                if (this.meta.total > (this.meta.limit * this.meta.page)) {
+                  this.changePage(Math.ceil(this.meta.total / this.meta.limit));
+                } else {
+                  // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
+                  this.pipelines.push(res.data);
+                }
+                this.handleClose('create');
+                this.$message.success(res.message);
+              }).catch(err => {
+                this.$message.warning(err.message);
+              });
+            } else {
+              this.$message.warning('You can\'t create it until you join a team');
+            }
+          } else {
+            return false;
+          }
+        });
+      },
       handleEdit(index, row) {
         window.console.log(index, row);
       },
       handleDelete(index, row) {
         window.console.log(index, row);
+      },
+      /**
+       * Close create or edit dialog handler
+       * @param form
+       */
+      handleClose(form) {
+        switch (form) {
+          case 'create':
+            this.$refs.create.resetFields();
+            this.create.dialog = false;
+            break;
+          case 'edit':
+            this.$refs.edit.resetFields();
+            this.edit.dialog = false;
+            break;
+        }
       },
       fetchUsers() {
         this.loading = true;

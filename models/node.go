@@ -1,9 +1,8 @@
 package models
 
 import (
-	"encoding/json"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
-	"time"
 )
 
 const (
@@ -15,15 +14,15 @@ const (
 
 type (
 	Node struct {
-		Id          string    `json:"id" xorm:"not null pk comment('用户ID') CHAR(36)"`
-		Name        string    `json:"name" xorm:"not null comment('名称') VARCHAR(255)"`
-		Host        string    `json:"host" xorm:"not null comment('主机地址') VARCHAR(255)"`
-		Port        int       `json:"port" xorm:"not null comment('端口') SMALLINT(5)"`
-		Mode        string    `json:"mode" xorm:"not null comment('节点类型') CHAR(6)"`
-		Status      string    `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"`
-		Description string    `json:"description" xorm:"comment('描述') VARCHAR(255)"`
-		CreatedAt   time.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-		UpdatedAt   time.Time `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
+		Id          string     `json:"id" xorm:"not null pk comment('用户ID') CHAR(36)"`
+		Name        string     `json:"name" xorm:"not null comment('名称') VARCHAR(255)"`
+		Host        string     `json:"host" xorm:"not null comment('主机地址') VARCHAR(255)"`
+		Port        int        `json:"port" xorm:"not null comment('端口') SMALLINT(5)"`
+		Mode        string     `json:"mode" xorm:"not null comment('节点类型') CHAR(6)"`
+		Status      string     `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"`
+		Description string     `json:"description" xorm:"comment('描述') VARCHAR(255)"`
+		CreatedAt   utils.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
+		UpdatedAt   utils.Time `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
 	}
 )
 
@@ -69,32 +68,3 @@ func (node *Node) CreateOrUpdate() error {
 
 	return node.Store()
 }
-
-func (node *Node) MarshalJSON() ([]byte, error) {
-	type Alias Node
-
-	//CreatedAt := ""
-	//UpdatedAt := ""
-	//
-	//if !node.CreatedAt.IsZero() {
-	//	CreatedAt = node.CreatedAt.Format(DefaultTimeFormat)
-	//}
-	//
-	//if !node.UpdatedAt.IsZero() {
-	//	UpdatedAt = node.UpdatedAt.Format(DefaultTimeFormat)
-	//}
-
-	return json.Marshal(&struct {
-		Alias
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
-	}{
-		Alias:     Alias(*node),
-		CreatedAt: node.CreatedAt.Format(DefaultTimeFormat),
-		UpdatedAt: node.UpdatedAt.Format(DefaultTimeFormat),
-	})
-}
-
-//func (node *Node) UnmarshalJSON([]byte) error {
-//
-//}

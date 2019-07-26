@@ -1,7 +1,6 @@
 package response
 
 import (
-	"github.com/betterde/ects/models"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"reflect"
@@ -34,75 +33,6 @@ func Success(message string, payload map[string]interface{}) mvc.Response {
 				Message: message,
 				Data: data,
 				Meta: reflect.ValueOf(meta).Interface().(*Meta),
-			},
-		}
-	}
-
-	switch reflect.TypeOf(data).String() {
-	case "models.Pipeline":
-		pipeline := reflect.ValueOf(data).Interface().(models.Pipeline)
-
-		return mvc.Response{
-			Code: iris.StatusOK,
-			Object: Response{
-				Code: iris.StatusOK,
-				Message: message,
-				Data: &pipeline,
-			},
-		}
-	case "models.Node":
-		node := reflect.ValueOf(data).Interface().(models.Node)
-
-		return mvc.Response{
-			Code: iris.StatusOK,
-			Object: Response{
-				Code: iris.StatusOK,
-				Message: message,
-				Data: &node,
-			},
-		}
-	case "models.User":
-		user := reflect.ValueOf(data).Interface().(models.User)
-
-		return mvc.Response{
-			Code: iris.StatusOK,
-			Object: Response{
-				Code: iris.StatusOK,
-				Message: message,
-				Data: &user,
-			},
-		}
-	case "models.Task":
-		task := reflect.ValueOf(data).Interface().(models.Task)
-
-		return mvc.Response{
-			Code: iris.StatusOK,
-			Object: Response{
-				Code: iris.StatusOK,
-				Message: message,
-				Data: &task,
-			},
-		}
-	case "models.Log":
-		log := reflect.ValueOf(data).Interface().(models.Log)
-
-		return mvc.Response{
-			Code: iris.StatusOK,
-			Object: Response{
-				Code: iris.StatusOK,
-				Message: message,
-				Data: &log,
-			},
-		}
-	case "models.Team":
-		team := reflect.ValueOf(data).Interface().(models.Team)
-
-		return mvc.Response{
-			Code: iris.StatusOK,
-			Object: Response{
-				Code: iris.StatusOK,
-				Message: message,
-				Data: &team,
 			},
 		}
 	}

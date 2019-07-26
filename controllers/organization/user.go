@@ -3,6 +3,7 @@ package organization
 import (
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/kataras/iris"
@@ -38,7 +39,7 @@ type (
 func (instance *UserController) Get(ctx iris.Context) mvc.Result {
 	params := ctx.URLParams()
 	users, meta := instance.Service.Users(params)
-	return response.Success("请求成功", response.Payload{"data": users, "meta": meta})
+	return response.Success("Successful", response.Payload{"data": users, "meta": meta})
 }
 
 // 创建用户
@@ -50,7 +51,7 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("解析参数失败", err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -60,11 +61,11 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 
 	pass, err := models.GeneratePassword(params.Pass)
 	if err != nil {
-		return response.InternalServerError("用户密码加密失败", err)
+		return response.InternalServerError("Failed to encryption user password", err)
 	}
 
 	if user, _ := instance.Service.FindByEmail(params.Email); user != nil {
-		return response.Send(400, "用户邮箱已经存在", make(map[string]interface{}))
+		return response.Send(400, "This mail address already exists", make(map[string]interface{}))
 	}
 
 	user := &models.User{
@@ -74,15 +75,15 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 		Password:  string(pass),
 		TeamId:    params.TeamId,
 		Manager:   params.Manager,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: utils.Time(time.Now()),
+		UpdatedAt: utils.Time(time.Now()),
 	}
 
 	if err := user.Store(); err != nil {
-		return response.InternalServerError("创建用户失败", err)
+		return response.InternalServerError("Failed to create user", err)
 	}
 
-	return response.Success("创建用户成功", response.Payload{"data": user})
+	return response.Success("Created successful", response.Payload{"data": user})
 }
 
 // 更新用户信息
@@ -97,12 +98,12 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	}
 
 	if err := validate.Struct(params); err != nil {
-		return response.ValidationError("请填写名称")
+		return response.ValidationError("Failed to validate params")
 	}
 
 	result, err := models.Engine.Id(id).Get(&user)
 	if err != nil {
-		return response.InternalServerError("用户ID不存在", err)
+		return response.InternalServerError("User does not exist", err)
 	}
 
 	if result {
@@ -111,11 +112,11 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 		user.TeamId = params.TeamId
 		user.Manager = params.Manager
 		if _, err := models.Engine.Id(id).Update(user); err != nil {
-			return response.Send(iris.StatusInternalServerError, "更新失败", make(map[string]interface{}))
+			return response.Send(iris.StatusInternalServerError, "Failed to update user", make(map[string]interface{}))
 		}
 	}
 
-	return response.Success("更新用户信息成功", response.Payload{"data": user})
+	return response.Success("Updated successful", response.Payload{"data": user})
 }
 
 // 删除用户
@@ -129,5 +130,5 @@ func (instance *UserController) DeleteBy(id string) mvc.Result {
 
 	}
 
-	return response.Success("删除用户成功", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("Deleted successful", response.Payload{"data": make(map[string]interface{})})
 }

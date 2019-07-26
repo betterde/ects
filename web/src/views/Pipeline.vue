@@ -18,17 +18,14 @@
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Name" prop="name">
-                <el-input v-model="create.params.name" autocomplete="off"></el-input>
+                <el-input v-model="create.params.name" autocomplete="off" placeholder="Please enter a name"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Spec" prop="spec">
-                <el-popover v-model="cronPopover">
-                  <cron-expression @change="changeCreateCron" @close="cronPopover=false" i18n="en"></cron-expression>
-                  <el-input slot="reference" @click="cronPopover=true" v-model="create.params.spec" placeholder="Please enter a cron expression"></el-input>
-                </el-popover>
+                <el-input v-model="create.params.spec" placeholder="Please enter a cron expression"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -85,7 +82,7 @@
         </div>
       </el-dialog>
       <el-dialog title="Edit pipeline" :visible.sync="edit.dialog" @close="handleClose('edit')" width="40%" :close-on-click-modal="false">
-        <el-form :model="edit.params" :rules="edit.rules" ref="edit">
+        <el-form :model="edit.params" :rules="edit.rules" ref="edit" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Name" prop="name">
@@ -96,10 +93,7 @@
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Spec" prop="spec">
-                <el-popover v-model="cronPopover">
-                  <cron-expression @change="changeEditCron" @close="cronPopover=false" i18n="en"></cron-expression>
-                  <el-input slot="reference" @click="cronPopover=true" v-model="edit.params.spec" placeholder="Please enter a cron expression"></el-input>
-                </el-popover>
+                <el-input v-model="edit.params.spec" placeholder="Please enter a cron expression"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -152,7 +146,7 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="edit.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
+          <el-button type="primary" @click="submitEditForm">Confirm</el-button>
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
@@ -187,7 +181,7 @@
                 <el-row :gutter="10">
                   <el-col :span="12">
                     <el-form-item label="Overlap">
-                      <span>{{ props.row.overlap }}</span>
+                      <span>{{ props.row.overlap === 1 }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
@@ -230,7 +224,6 @@
 <script>
   import api from '../apis'
   import {mapState} from 'vuex'
-  import CronExpression from '../components/CronExpression'
 
   export default {
     name: "Pipeline",
@@ -241,7 +234,6 @@
         params: {
           search: ''
         },
-        cronPopover: false,
         create: {
           dialog: false,
           params: {
@@ -259,7 +251,7 @@
               {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
             ],
             spec: [
-              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'change'}
+              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'blur'}
             ],
             finished: [
               {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
@@ -292,7 +284,7 @@
               {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
             ],
             spec: [
-              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'change'}
+              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'blur'}
             ],
             finished: [
               {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
@@ -318,18 +310,6 @@
       }
     },
     methods: {
-      /**
-       * Change create cron
-       */
-      changeCreateCron(value) {
-        this.create.params.spec = value;
-      },
-      /**
-       * Change edit cron
-       */
-      changeEditCron(value) {
-        this.edit.params.spec = value;
-      },
       /**
        * Show create pipeline dialog
        */
@@ -383,11 +363,11 @@
           cancelButtonText: 'Cancel',
           type: 'warning'
         }).then(() => {
-          api.pipeline.delete(row.id).then(() => {
+          api.pipeline.delete(row.id).then(res => {
             this.fetchPipelines();
             this.$message({
               type: 'success',
-              message: 'Pipeline deleted!'
+              message: res.message
             });
           }).catch(err => {
             this.$message.error(err.message)
@@ -460,6 +440,23 @@
           }
         });
       },
+      /**
+       * Submit edit pipeline form
+       */
+      submitEditForm() {
+        this.$refs.edit.validate((valid) => {
+          if (valid) {
+            api.pipeline.update(this.edit.params.id, this.edit.params).then(res => {
+              this.handleClose('edit');
+              this.$message.success(res.message);
+            }).catch(err => {
+              this.$message.warning(err.message);
+            });
+          } else {
+            return false;
+          }
+        });
+      }
     },
     computed: {
       ...mapState({
@@ -468,9 +465,6 @@
     },
     mounted() {
       this.fetchPipelines();
-    },
-    components: {
-      CronExpression
     },
     /**
      * Modify the class name before entering the current component

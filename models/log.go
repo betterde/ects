@@ -40,23 +40,23 @@ func CreateLog(v interface{}, ctx iris.Context, operation string) error {
 	switch reflect.TypeOf(v).String() {
 	case "models.Team":
 		obj := reflect.ValueOf(v).Interface().(Team)
-		result, err = obj.MarshalJSON()
+		result, err = json.Marshal(&obj)
 		break
 	case "models.User":
 		obj := reflect.ValueOf(v).Interface().(User)
-		result, err = obj.MarshalJSON()
+		result, err = json.Marshal(&obj)
 		break
 	case "models.Task":
 		obj := reflect.ValueOf(v).Interface().(Task)
-		result, err = obj.MarshalJSON()
+		result, err = json.Marshal(&obj)
 		break
 	case "models.Node":
 		obj := reflect.ValueOf(v).Interface().(Node)
-		result, err = obj.MarshalJSON()
+		result, err = json.Marshal(&obj)
 		break
 	case "models.Pipeline":
 		obj := reflect.ValueOf(v).Interface().(Pipeline)
-		result, err = obj.MarshalJSON()
+		result, err = json.Marshal(&obj)
 		break
 	}
 

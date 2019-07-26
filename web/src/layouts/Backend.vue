@@ -63,7 +63,7 @@
       signOut(){
         this.$store.commit('SET_PROFILE', false);
         this.$store.commit('SET_ACCESS_TOKEN', false);
-        this.$message.success("注销成功");
+        this.$message.success("Sign out successful");
         this.$router.push("/signin");
       }
     },

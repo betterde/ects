@@ -2,8 +2,8 @@ package models
 
 import (
 	"encoding/json"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
-	"time"
 )
 
 type Pipeline struct {
@@ -16,8 +16,8 @@ type Pipeline struct {
 	Finished    string               `json:"finished" validate:"omitempty,uuid4" xorm:"comment('成功时执行') CHAR(36)"`
 	Failed      string               `json:"failed" validate:"omitempty,uuid4" xorm:"comment('失败时执行') CHAR(36)"`
 	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
-	CreatedAt   time.Time            `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-	UpdatedAt   time.Time            `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
+	CreatedAt   utils.Time           `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt   utils.Time           `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
 	Nodes       map[string]*Node     `json:"nodes" validate:"-" xorm:"-"`
 	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
 }
@@ -77,17 +77,4 @@ func (pipeline *Pipeline) Build() (origin string, err error) {
 	ob, err := json.Marshal(pipeline)
 	origin = string(ob)
 	return
-}
-
-func (pipeline *Pipeline) MarshalJSON() ([]byte, error) {
-	type Alias Pipeline
-	return json.Marshal(&struct {
-		Alias
-		CreatedAt string `json:"created_at"`
-		UpdatedAt string `json:"updated_at"`
-	}{
-		Alias:     Alias(*pipeline),
-		CreatedAt: pipeline.CreatedAt.Format(DefaultTimeFormat),
-		UpdatedAt: pipeline.UpdatedAt.Format(DefaultTimeFormat),
-	})
 }

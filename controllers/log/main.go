@@ -17,6 +17,7 @@ type (
 	}
 )
 
+// Query user operation log
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
 		page   int

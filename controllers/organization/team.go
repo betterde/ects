@@ -103,7 +103,7 @@ func (instance *TeamController) PutBy(id string, ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to create log", err)
 	}
 
-	return response.Success("Team updated successfully", response.Payload{"data": team})
+	return response.Success("Updated successfully", response.Payload{"data": team})
 }
 
 // Delete team by id
@@ -113,7 +113,7 @@ func (instance *TeamController) DeleteBy(id string, ctx iris.Context) mvc.Result
 	}
 
 	if _, err := models.Engine.Get(team); err != nil {
-		return response.InternalServerError("Failed to delete team", err)
+		return response.NotFound("Team does not exist")
 	}
 
 	if err := team.Destroy(); err != nil {
@@ -125,5 +125,5 @@ func (instance *TeamController) DeleteBy(id string, ctx iris.Context) mvc.Result
 		return response.InternalServerError("Failed to create log", err)
 	}
 
-	return response.Success("Team deleted successfully", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("Deleted successfully", response.Payload{"data": make(map[string]interface{})})
 }

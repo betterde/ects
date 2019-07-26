@@ -3,6 +3,7 @@ package task
 import (
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
@@ -38,7 +39,7 @@ var (
 	validate = validator.New()
 )
 
-// 获取任务俩表
+// Get tasks list
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
 		page   = 1
@@ -87,7 +88,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		log.Println(err)
 	}
 
-	return response.Success("请求成功", response.Payload{
+	return response.Success("Successful", response.Payload{
 		"data": tasks,
 		"meta": &response.Meta{
 			Limit: limit,
@@ -96,12 +97,12 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		}})
 }
 
-// 创建任务
+// Create task
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task := models.Task{}
 
 	if err := ctx.ReadJSON(&task); err != nil {
-		return response.InternalServerError("解析参数失败", err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
 	if err := validate.Struct(task); err != nil {
@@ -112,19 +113,19 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task.Id = uuid.NewV4().String()
 
 	if err := task.Store(); err != nil {
-		return response.InternalServerError("创建任务失败", err)
+		return response.InternalServerError("Failed to create taks", err)
 	}
 
-	return response.Success("创建任务成功", response.Payload{"data": task})
+	return response.Success("Created successful", response.Payload{"data": task})
 }
 
-// 更新任务
+// Modify task
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("解析参数失败", err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -138,25 +139,25 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 		Content:     params.Content,
 		Mode:        params.Mode,
 		Description: params.Description,
-		UpdatedAt:   time.Now(),
+		UpdatedAt:   utils.Time(time.Now()),
 	}
 
 	if err := task.Update(); err != err {
-		return response.InternalServerError("创建任务失败", err)
+		return response.InternalServerError("Failed to update task", err)
 	}
 
-	return response.Success("更新任务成功", response.Payload{"data": task})
+	return response.Success("Updated successful", response.Payload{"data": task})
 }
 
-// 删除任务
+// Delete task
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	task := &models.Task{
 		Id: id,
 	}
 
 	if err := task.Destroy(); err != nil {
-		return response.InternalServerError("删除任务失败", err)
+		return response.InternalServerError("Failed to deleted task", err)
 	}
 
-	return response.Success("删除任务成功", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("Deleted successful", response.Payload{"data": make(map[string]interface{})})
 }

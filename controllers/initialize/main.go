@@ -116,8 +116,8 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		Email:     params.User.Email,
 		Password:  string(pass),
 		Manager:   true,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: utils.Time(time.Now()),
+		UpdatedAt: utils.Time(time.Now()),
 	}
 
 	if _, err := models.Engine.Insert(user); err != nil {

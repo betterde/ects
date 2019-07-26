@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="16">
-              <el-button type="primary" plain>Create</el-button>
+              <el-button type="primary" plain @click="handleCreate">Create</el-button>
             </el-col>
             <el-col :span="8">
               <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix"
@@ -77,6 +77,16 @@
         params: {
           search: ""
         },
+        create: {
+          dialog: false,
+          params: {},
+          rules: {}
+        },
+        edit: {
+          dialog: false,
+          params: {},
+          rules: {}
+        },
         tasks: [],
         meta: {
           limit: 10,
@@ -86,6 +96,9 @@
       }
     },
     methods: {
+      handleCreate() {
+        this.create.dialog = true;
+      },
       handleEdit(index, row) {
         window.console.log(index, row);
       },
