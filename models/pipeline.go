@@ -17,7 +17,7 @@ type Pipeline struct {
 	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
 	CreatedAt   utils.Time           `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt   utils.Time           `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
-	Nodes       map[string]*Node     `json:"nodes" validate:"-" xorm:"-"`
+	Nodes       []string             `json:"nodes" validate:"-" xorm:"-"`
 	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
 }
 
@@ -65,7 +65,9 @@ func (pipeline *Pipeline) Build() (origin string, err error) {
 		return
 	}
 
-	pipeline.Nodes = nodes
+	for _, node := range nodes {
+		pipeline.Nodes = append(pipeline.Nodes, node.Id)
+	}
 
 	// Load binded tasks
 	err = Engine.Where(builder.Eq{"pipeline_id": pipeline.Id}).Find(&pipeline.Steps)

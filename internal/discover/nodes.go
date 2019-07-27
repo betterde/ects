@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/models"
-	"github.com/betterde/ects/services"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"log"
@@ -25,14 +24,12 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 		break
 	}
 
-	nodeService := services.NewNodeService()
-
-	watchChan := Client.Watch(ctx, config.Conf.Etcd.Service, clientv3.WithPrefix(), clientv3.WithRev(curRevision))
+	watchChan := Client.Watch(ctx, config.Conf.Etcd.Service, clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
 	for watchResp := range watchChan {
 		for _, event := range watchResp.Events {
+			var node models.Node
 			switch event.Type {
 			case mvccpb.PUT:
-				var node models.Node
 				if err := json.Unmarshal(event.Kv.Value, &node); err != nil {
 					log.Println(err)
 				}
@@ -43,10 +40,7 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 
 				log.Printf("节点：%s 注册成功", node.Id)
 			case mvccpb.DELETE:
-				id := string(event.Kv.Key)[12:]
-				node, err := nodeService.FindByID(id)
-
-				if err != nil {
+				if err := json.Unmarshal(event.PrevKv.Value, &node); err != nil {
 					log.Println(err)
 				}
 

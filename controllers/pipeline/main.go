@@ -11,6 +11,7 @@ import (
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
+	"github.com/coreos/etcd/clientv3"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -27,6 +28,9 @@ type (
 		PipelineId string   `json:"pipeline_id" validate:"required,uuid4"`
 		NodesId    []string `json:"nodes_id" validate:"required"`
 	}
+	KillPipelineRequest struct {
+		PipelineId string `json:"pipeline_id" validate:"required,uuid4"`
+	}
 )
 
 var (
@@ -34,19 +38,14 @@ var (
 )
 
 // Get pipelines list
-func (instance *Controller) Get(ctx iris.Context) mvc.Result {
+func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
-		page   = 1
-		limit  = 10
-		start  int
-		search = ctx.URLParam("name")
 		total  int64
 		err    error
 	)
-
+	search := ctx.Params().GetStringDefault("search", "")
+	page, limit, start := utils.Pagination(ctx)
 	pipelines := make([]models.Pipeline, 0)
-
-	start = (page - 1) * limit
 
 	if search != "" {
 		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
@@ -69,7 +68,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 }
 
 // Create a pipeline
-func (instance *Controller) Post(ctx iris.Context) mvc.Result {
+func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{}
 
 	if err := ctx.ReadJSON(&pipeline); err != nil {
@@ -106,7 +105,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 }
 
 // Update pipeline attributes by id
-func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
+func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{}
 
 	if err := ctx.ReadJSON(&pipeline); err != nil {
@@ -138,7 +137,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 }
 
 // Delete pipeline by id
-func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Result {
+func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{
 		Id: id,
 	}
@@ -156,7 +155,7 @@ func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Result {
 }
 
 // Get pipeline binding nodes
-func (instance *Controller) GetNodes(ctx iris.Context) mvc.Result {
+func (instance *Controller) GetNodes(ctx iris.Context) mvc.Response {
 	id := ctx.URLParam("pipeline_id")
 
 	if id == "" {
@@ -171,7 +170,7 @@ func (instance *Controller) GetNodes(ctx iris.Context) mvc.Result {
 
 	ids := make([]string, 0)
 
-	for _, pivot := range relations{
+	for _, pivot := range relations {
 		ids = append(ids, pivot.NodeId)
 	}
 
@@ -185,7 +184,7 @@ func (instance *Controller) GetNodes(ctx iris.Context) mvc.Result {
 }
 
 // Bind pipeline to node
-func (instance *Controller) PostNodes(ctx iris.Context) mvc.Result {
+func (instance *Controller) PostNodes(ctx iris.Context) mvc.Response {
 	params := BindNodeRequest{}
 
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -206,7 +205,7 @@ func (instance *Controller) PostNodes(ctx iris.Context) mvc.Result {
 	for _, id := range params.NodesId {
 		relations = append(relations, &models.PipelineNodePivot{
 			PipelineId: params.PipelineId,
-			NodeId: id,
+			NodeId:     id,
 		})
 	}
 
@@ -215,11 +214,30 @@ func (instance *Controller) PostNodes(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to bind pipeline to node", err)
 	}
 
+	pipeline := &models.Pipeline{
+		Id: params.PipelineId,
+	}
+
+	if _, err := models.Engine.Get(pipeline); err != nil {
+		return response.InternalServerError("Failed to bind pipeline to node", err)
+	}
+
+	pipeline.Nodes = params.NodesId
+	bytes, err := json.Marshal(pipeline)
+	if err != nil {
+		log.Println(err)
+	}
+	// Update etcd pipeline nodes
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
+	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
+		log.Println(err)
+	}
+
 	return response.Success("Bind successfully", response.Payload{"data": relations})
 }
 
 // Get pipeline tasks
-func (instance * Controller) GetTasks(ctx iris.Context) mvc.Result {
+func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 	id := ctx.URLParam("pipeline_id")
 
 	if id == "" {
@@ -234,7 +252,7 @@ func (instance * Controller) GetTasks(ctx iris.Context) mvc.Result {
 
 	ids := make([]string, 0)
 
-	for _, pivot := range relations{
+	for _, pivot := range relations {
 		ids = append(ids, pivot.TaskId)
 	}
 
@@ -248,7 +266,7 @@ func (instance * Controller) GetTasks(ctx iris.Context) mvc.Result {
 }
 
 // Bind the task to pipeline
-func (instance * Controller) PostTask(ctx iris.Context) mvc.Result {
+func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
 	pivot := models.PipelineTaskPivot{}
 
 	if err := ctx.ReadJSON(&pivot); err != nil {
@@ -269,7 +287,7 @@ func (instance * Controller) PostTask(ctx iris.Context) mvc.Result {
 }
 
 // Get pipeline detail by id
-func (instance *Controller) GetBy(id string) mvc.Result {
+func (instance *Controller) GetBy(id string) mvc.Response {
 	pipeline := models.Pipeline{
 		Id: id,
 	}
@@ -287,4 +305,28 @@ func (instance *Controller) GetBy(id string) mvc.Result {
 	}
 
 	return response.Success("", response.Payload{"data": pipeline})
+}
+
+func (instance *Controller) PostKiller(ctx iris.Context) mvc.Response {
+	params := KillPipelineRequest{}
+
+	if err := ctx.ReadJSON(&params); err != nil {
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
+	}
+
+	if err := validate.Struct(params); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		return response.ValidationError(message.Get("pipeline", validationErrors))
+	}
+
+	res, err := discover.Client.Grant(context.TODO(), 2)
+	if err != nil {
+		log.Println(err)
+	}
+
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Killer, params.PipelineId)
+	if _, err := discover.Client.Put(context.TODO(), key, "pipeline", clientv3.WithLease(res.ID)); err != nil {
+		log.Println(err)
+	}
+	return response.Success("", response.Payload{"data": make(map[string]interface{})})
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -34,44 +33,13 @@ type (
 // Get nodes list
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
-		page   int
-		limit  int
-		start  int
-		search string
 		total  int64
 		err    error
 	)
-	page = 1
-	limit = 10
-	search = ""
-	params := ctx.URLParams()
-
-	if value, exist := params["page"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			page = v
-		}
-	}
-
-	if value, exist := params["limit"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			limit = v
-		}
-	}
-
-	if value, exist := params["search"]; exist == true {
-		search = value
-	}
-
-	start = (page - 1) * limit
+	search := ctx.Params().GetStringDefault("search", "")
+	page, limit, start := utils.Pagination(ctx)
 	workers := make([]models.Node, 0)
+
 	if search == "" {
 		total, err = models.Engine.Count(&models.Node{})
 		err = models.Engine.Limit(limit, start).Find(&workers)

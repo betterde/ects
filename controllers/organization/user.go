@@ -6,6 +6,7 @@ import (
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
+	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"github.com/satori/go.uuid"
@@ -35,14 +36,37 @@ type (
 	}
 )
 
-// 获取用户列表
+// Get users list
 func (instance *UserController) Get(ctx iris.Context) mvc.Result {
-	params := ctx.URLParams()
-	users, meta := instance.Service.Users(params)
-	return response.Success("Successful", response.Payload{"data": users, "meta": meta})
+	var (
+		total  int64
+		err    error
+	)
+	search := ctx.Params().GetStringDefault("search", "")
+	page, limit, start := utils.Pagination(ctx)
+	users := make([]models.User, 0)
+
+	if search == "" {
+		total, err = models.Engine.Limit(limit, start).Count(&users)
+	} else {
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Count(&users)
+	}
+
+	if err != nil {
+		return response.InternalServerError("Failed to query pipelines list", err)
+	}
+
+	return response.Success("Successful", response.Payload{
+		"data": users,
+		"meta": &response.Meta{
+			Limit: limit,
+			Page:  page,
+			Total: int(total),
+		},
+	})
 }
 
-// 创建用户
+// Create user
 func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	var (
 		params CreateRequest
@@ -85,7 +109,7 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	return response.Success("Created successful", response.Payload{"data": user})
 }
 
-// 更新用户信息
+// Modify user attribute
 func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	var user models.User
@@ -117,7 +141,7 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	return response.Success("Updated successful", response.Payload{"data": user})
 }
 
-// 删除用户
+// Delete user
 func (instance *UserController) DeleteBy(id string) mvc.Result {
 	user := &models.User{
 		Id: id,

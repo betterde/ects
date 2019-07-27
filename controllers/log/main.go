@@ -2,13 +2,13 @@ package log
 
 import (
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
 	"log"
-	"strconv"
 )
 
 type (
@@ -18,46 +18,14 @@ type (
 )
 
 // Query user operation log
-func (instance *Controller) Get(ctx iris.Context) mvc.Result {
+func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
-		page   int
-		limit  int
-		start  int
-		search string
 		total  int64
 		err    error
 	)
-	page = 1
-	limit = 10
-	search = ""
-	params := ctx.URLParams()
 
-	if value, exist := params["page"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			page = v
-		}
-	}
-
-	if value, exist := params["limit"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			limit = v
-		}
-	}
-
-	if value, exist := params["search"]; exist == true {
-		search = value
-	}
-
-	start = (page - 1) * limit
-
+	search := ctx.Params().GetStringDefault("search", "")
+	page, limit, start := utils.Pagination(ctx)
 	logs := make([]models.Log, 0)
 
 	if search == "" {
