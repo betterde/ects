@@ -29,7 +29,7 @@ func NewUserService() UserInterface {
 	return &UserService{}
 }
 
-// 获取用户信息
+// Get users list
 func (service *UserService) Users(params map[string]string) (*[]models.User, *response.Meta) {
 	var (
 		page  = 1
@@ -63,11 +63,9 @@ func (service *UserService) Users(params map[string]string) (*[]models.User, *re
 	users := make([]models.User, 0)
 
 	if search, exist := params["search"]; exist && search != "" {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.User{})
-		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&users)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Count(&users)
 	} else {
-		total, err = models.Engine.Count(&models.User{})
-		err = models.Engine.Limit(limit, start).Find(&users)
+		total, err = models.Engine.Limit(limit, start).Count(&users)
 	}
 
 	if err != nil {
@@ -81,7 +79,7 @@ func (service *UserService) Users(params map[string]string) (*[]models.User, *re
 	}
 }
 
-// 验证用户凭证
+// Attempt user credentials
 func (service *UserService) Attempt(username, passwod string) (token string, err error) {
 	var user *models.User
 	user, err = service.RetrieveByCredentials(username, passwod)
@@ -99,7 +97,7 @@ func (service *UserService) Attempt(username, passwod string) (token string, err
 	return token, err
 }
 
-// 根据用户凭证获取用户模型
+// Get user by credentials
 func (service *UserService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
 	user, err = service.FindByEmail(username)
 
@@ -116,7 +114,7 @@ func (service *UserService) RetrieveByCredentials(username, password string) (us
 	return nil, errors.New("用户名或密码错误")
 }
 
-// 根据用户邮箱查询用户信息
+// Get user by email
 func (service *UserService) FindByEmail(email string) (*models.User, error) {
 	var user models.User
 	result, err := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
@@ -132,7 +130,7 @@ func (service *UserService) FindByEmail(email string) (*models.User, error) {
 	return &user, errors.New("用户不存在")
 }
 
-// 根据用户ID获取用户信息
+// Get user
 func (service *UserService) FindByID(id string) (*models.User, error) {
 	var user models.User
 	result, err := models.Engine.Id(id).Get(&user)
@@ -147,7 +145,7 @@ func (service *UserService) FindByID(id string) (*models.User, error) {
 	return &user, errors.New("用户不存在")
 }
 
-// 删除用户信息
+// Delete user
 func (service *UserService) Destroy(id string, force bool) (err error) {
 	var result int64
 	if force {
@@ -163,7 +161,7 @@ func (service *UserService) Destroy(id string, force bool) (err error) {
 	return errors.New("用户删除失败")
 }
 
-// 为用户颁发Access Token
+// Issue access token
 func IssueToken(user *models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
