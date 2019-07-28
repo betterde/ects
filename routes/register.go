@@ -17,8 +17,6 @@ func Register(app *iris.Application) {
 		}
 	})
 
-	mvc.Configure(app.Party("/websocket"), registerWebSocket)
-
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
 		mvc.Configure(api.Party("/auth"), authentication)
 		api.Use(middleware.JWTHandler.Serve)

@@ -39,6 +39,7 @@ func init() {
 
 func startInitialize() {
 	app := iris.New()
+	app.Logger().SetLevel("disable")
 	app.OnErrorCode(404, func(ctx iris.Context) {
 		ctx.Redirect("/", iris.StatusMovedPermanently)
 	})

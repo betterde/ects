@@ -24,22 +24,32 @@
                                  placeholder="Endpoints" style="width: 100%"></el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
                     <el-form-item prop="service" label-width="80px" label="Service key">
                       <el-input v-model="config.etcd.service" placeholder="Service discover key"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
                     <el-form-item prop="pipeline" label-width="80px" label="Pipeline key">
                       <el-input v-model="config.etcd.pipeline" placeholder="Pipeline key"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
                     <el-form-item prop="config" label-width="80px" label="Config key">
                       <el-input v-model="config.etcd.config" placeholder="System config key"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
+                    <el-form-item prop="killer" label-width="80px" label="Killer">
+                      <el-input v-model="config.etcd.killer" label="Timeout"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="locker" label-width="80px" label="Locker">
+                      <el-input v-model="config.etcd.locker" label="Timeout"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
                     <el-form-item prop="timeout" label-width="80px" label="Timeout">
                       <el-input v-model="config.etcd.timeout" label="Timeout"></el-input>
                     </el-form-item>
@@ -188,9 +198,9 @@
 </template>
 
 <script>
-  import api from '../apis'
+    import api from '../apis'
 
-  export default {
+    export default {
     name: "Install",
     data() {
       let validatePass = (rule, value, callback) => {
@@ -247,6 +257,8 @@
             service: "/ects/nodes",
             pipeline: "/ects/pipelines",
             config: "/ects/config",
+            killer: "/ects/killer",
+            locker: "/ects/locker",
             timeout: 5,
             endpoints: ["localhost:2379"]
           }
