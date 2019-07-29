@@ -66,7 +66,7 @@ func init() {
 		Version: rootCmd.Version,
 	}
 	rootCmd.AddCommand(initializeCmd)
-	initializeCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "web", "Set initialize mode")
+	initializeCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "web", "Set initialize mode with web ui or json, yaml config file")
 	initializeCmd.PersistentFlags().StringVarP(&path, "path", "p", "", "Set config file path")
 	initializeCmd.PersistentFlags().StringVarP(&user.Name, "name", "n", "", "Set admin name")
 	initializeCmd.PersistentFlags().StringVarP(&user.Email, "email", "e", "", "Set admin email")
@@ -150,7 +150,7 @@ func startInitializeByConfigFile() {
 		os.Exit(1)
 	} else {
 		if len(res.PrevKv.Value) > 0 {
-			log.Printf("%s %s \n", "OLD CONFIG IS",string(res.PrevKv.Value))
+			log.Printf("%s %s \n", "OLD CONFIG IS", string(res.PrevKv.Value))
 		}
 	}
 

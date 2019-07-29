@@ -25,13 +25,11 @@ type (
 		Email   string `json:"email" validate:"required,email"`
 		Pass    string `json:"pass" validate:"required"`
 		Confirm string `json:"confirm" validate:"eqfield=Pass"`
-		TeamId  string `json:"team_id" validate:"omitempty,uuid4"`
 		Manager bool   `json:"manager" validate:"required"`
 	}
 	UpdateRequest struct {
 		Name    string `json:"name" validate:"required"`
 		Email   string `json:"email" validate:"required,email"`
-		TeamId  string `json:"team_id" validate:"omitempty,uuid4"`
 		Manager bool   `json:"manager" validate:"required"`
 	}
 )
@@ -39,17 +37,17 @@ type (
 // Get users list
 func (instance *UserController) Get(ctx iris.Context) mvc.Result {
 	var (
-		total  int64
-		err    error
+		total int64
+		err   error
 	)
 	search := ctx.Params().GetStringDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
 	users := make([]models.User, 0)
 
 	if search == "" {
-		total, err = models.Engine.Limit(limit, start).Count(&users)
+		total, err = models.Engine.Limit(limit, start).FindAndCount(&users)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Count(&users)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&users)
 	}
 
 	if err != nil {
