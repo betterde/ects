@@ -46,8 +46,8 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(masterCmd)
 	config.Conf = config.Init()
-	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
-	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
+	masterCmd.PersistentFlags().StringVar(&master.Host, "host", "0.0.0.0", "Set listen on IP")
+	masterCmd.PersistentFlags().IntVar(&master.Port, "port", 9701, "Set listen on port")
 	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
 	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
@@ -78,9 +78,6 @@ func watch() {
 
 // Service registry
 func register() {
-	master.Host = config.Conf.Service.Host
-	master.Port = config.Conf.Service.Port
-
 	if master.Host == "0.0.0.0" {
 		ips := utils.GetIPs()
 		if len(ips) > 0 {
@@ -108,7 +105,7 @@ func register() {
 }
 
 func start() {
-	addr := fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port)
+	addr := fmt.Sprintf("%s:%d", master.Host, master.Port)
 	app := iris.New()
 	app.Use(recover.New())
 	app.Use(logger.New())

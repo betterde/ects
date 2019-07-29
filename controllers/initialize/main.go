@@ -16,7 +16,6 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -25,7 +24,6 @@ type (
 	}
 	PostRequest struct {
 		Etcd     config.Etcd     `json:"etcd"`
-		Service  config.Service  `json:"service"`
 		Database config.Database `json:"database"`
 		User     config.User     `json:"user"`
 		Auth     config.Auth     `json:"auth"`
@@ -70,7 +68,6 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 
 	requestctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	config.Conf.Etcd = params.Etcd
-	config.Conf.Service = params.Service
 	config.Conf.Database = params.Database
 	config.Conf.Auth = params.Auth
 
@@ -137,8 +134,7 @@ func (instance *Controller) GetDatabase(ctx iris.Context) mvc.Result {
 	config.Conf.Database.User = ctx.URLParam("user")
 	config.Conf.Database.Pass = ctx.URLParam("pass")
 	config.Conf.Database.Host = ctx.URLParam("host")
-	port, _ := strconv.Atoi(ctx.URLParam("port"))
-	config.Conf.Database.Port = port
+	config.Conf.Database.Port = ctx.Params().GetIntDefault("port", 3306)
 	config.Conf.Database.Char = ctx.URLParam("char")
 	return response.Success("Success", response.Payload{"data": utils.IsDatabaseExist(name)})
 }

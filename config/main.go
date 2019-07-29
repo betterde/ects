@@ -16,10 +16,6 @@ type (
 		EndPoints []string `json:"endpoints" yaml:"endpoints" validate:"required"`
 		Timeout   int64    `json:"timeout" yaml:"timeout" validate:"required"`
 	}
-	Service struct {
-		Host string `json:"host" yaml:"host" validate:"required"`
-		Port int    `json:"port" yaml:"port" validate:"required"`
-	}
 	Database struct {
 		Host string `json:"host" yaml:"host" validate:"required"`
 		Port int    `json:"port" yaml:"port" validate:"required"`
@@ -39,7 +35,6 @@ type (
 		TTL    int64  `json:"ttl" yaml:"ttl" validate:"required"`
 	}
 	Config struct {
-		Service  `json:"service"`
 		Database `json:"database"`
 		Auth     `json:"auth"`
 		Etcd     `json:"etcd"`
