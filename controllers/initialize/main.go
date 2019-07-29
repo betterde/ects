@@ -66,19 +66,16 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		}
 	}()
 
-	requestctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	config.Conf.Etcd = params.Etcd
 	config.Conf.Database = params.Database
 	config.Conf.Auth = params.Auth
 
-	bites, err := json.Marshal(config.Conf)
+	buf, err := json.Marshal(config.Conf)
 	if err != nil {
 		return response.InternalServerError("Failed to Marshal JSON", err)
 	}
 
-	_, err = client.Put(requestctx, params.Etcd.Config, string(bites))
-	cancel()
-	if err != nil {
+	if _, err = client.Put(context.TODO(), params.Etcd.Config, string(buf)); err != nil {
 		return response.InternalServerError("Failed to put config to etcd", err)
 	}
 

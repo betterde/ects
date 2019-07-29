@@ -209,10 +209,10 @@
         loading: false,
         config: {
           database: {
-            host: "localhost",
+            host: "",
             port: 3306,
-            user: "root",
-            pass: "George@1994",
+            user: "",
+            pass: "",
             name: "ects",
             char: "utf8mb4"
           },
@@ -221,10 +221,10 @@
             ttl: 86400
           },
           user: {
-            name: "George",
-            email: "george@betterde.com",
-            pass: "George@1994",
-            confirm: "George@1994"
+            name: "",
+            email: "",
+            pass: "",
+            confirm: ""
           },
           etcd: {
             service: "/ects/nodes",
