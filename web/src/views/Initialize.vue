@@ -98,8 +98,7 @@
                 </el-col>
                 <el-col :span="14">
                   <el-form-item prop="name" label="Database">
-                    <el-input v-model="config.database.name" placeholder="Database name"
-                              @blur="fetchDatabaseIsExist"></el-input>
+                    <el-input v-model="config.database.name" placeholder="Database name"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 10px"></el-col>
@@ -330,7 +329,28 @@
         } else {
           this.$refs[form].validate((valid) => {
             if (valid) {
-              this.next();
+              if (form === 'database') {
+                api.system.database(this.config.database).then(res => {
+                  if (res.data.exist) {
+                    this.$confirm('The database already exists and will overwrite the original data if it continues!', 'Warning', {
+                      confirmButtonText: 'Continue',
+                      cancelButtonText: 'Cancel',
+                      type: 'warning'
+                    }).then(() => {
+                      this.next();
+                    }).catch(() => {
+                      this.$message({
+                        type: 'info',
+                        message: 'Canceled'
+                      });
+                    });
+                  } else {
+                    this.next();
+                  }
+                })
+              } else {
+                this.next();
+              }
             } else {
               return false;
             }
@@ -376,14 +396,6 @@
             title: "Error",
             message: err.message,
           })
-        })
-      },
-      fetchDatabaseIsExist() {
-        api.system.database(this.config.database).then(res => {
-          let exist = res.data;
-          if (exist) {
-            this.$notify.warning("The database already exists and will overwrite the original data if it continues!")
-          }
         })
       },
       generateCommand() {

@@ -24,7 +24,7 @@ func Init() {
 	DB, err = sql.Open("mysql", dsn)
 }
 
-func IsDatabaseExist(name string) bool {
+func IsDatabaseExist() bool {
 	Init()
 	defer func() {
 		if err := DB.Close(); err != nil {
@@ -45,13 +45,15 @@ func IsDatabaseExist(name string) bool {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&Database)
-		if err != nil {
-			// TODO
+		if err := rows.Scan(&Database); err != nil {
+			log.Println(err)
+		}
+		if Database == config.Conf.Database.Name {
+			return true
 		}
 	}
 
-	return Database == name
+	return false
 }
 
 func CreateDatabase() error {

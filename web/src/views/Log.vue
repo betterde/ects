@@ -20,7 +20,7 @@
               <pre v-else><div style="text-align: center; color: #909399">No Content</div></pre>
             </template>
           </el-table-column>
-          <el-table-column prop="user_id" label="User" width="280"></el-table-column>
+          <el-table-column prop="user_id" label="User" width="300"></el-table-column>
           <el-table-column prop="operation" label="Operation"></el-table-column>
           <el-table-column prop="created_at" label="Created at" width="160"></el-table-column>
         </el-table>

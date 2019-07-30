@@ -127,11 +127,11 @@ func (instance *Controller) GetSecret(ctx iris.Context) mvc.Result {
 
 // Validate database exist
 func (instance *Controller) GetDatabase(ctx iris.Context) mvc.Result {
-	name := ctx.URLParam("name")
 	config.Conf.Database.User = ctx.URLParam("user")
 	config.Conf.Database.Pass = ctx.URLParam("pass")
 	config.Conf.Database.Host = ctx.URLParam("host")
 	config.Conf.Database.Port = ctx.Params().GetIntDefault("port", 3306)
 	config.Conf.Database.Char = ctx.URLParam("char")
-	return response.Success("Success", response.Payload{"data": utils.IsDatabaseExist(name)})
+	config.Conf.Database.Name = ctx.URLParam("name")
+	return response.Success("Success", response.Payload{"data": map[string]bool{"exist": utils.IsDatabaseExist()}})
 }

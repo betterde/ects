@@ -416,25 +416,21 @@
       submitCreateForm() {
         this.$refs.create.validate((valid) => {
           if (valid) {
-            if (this.profile.team_id.length === 36) {
-              this.create.params.team_id = this.profile.team_id;
-              api.pipeline.create(this.create.params).then(res => {
-                this.meta.total += 1;
-                // 判断是否需要跳转到最后一页
-                if (this.meta.total > (this.meta.limit * this.meta.page)) {
-                  this.changePage(Math.ceil(this.meta.total / this.meta.limit));
-                } else {
-                  // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                  this.pipelines.push(res.data);
-                }
-                this.handleClose('create');
-                this.$message.success(res.message);
-              }).catch(err => {
-                this.$message.warning(err.message);
-              });
-            } else {
-              this.$message.warning('You can\'t create it until you join a team');
-            }
+            this.create.params.team_id = this.profile.team_id;
+            api.pipeline.create(this.create.params).then(res => {
+              this.meta.total += 1;
+              // 判断是否需要跳转到最后一页
+              if (this.meta.total > (this.meta.limit * this.meta.page)) {
+                this.changePage(Math.ceil(this.meta.total / this.meta.limit));
+              } else {
+                // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
+                this.pipelines.push(res.data);
+              }
+              this.handleClose('create');
+              this.$message.success(res.message);
+            }).catch(err => {
+              this.$message.warning(err.message);
+            });
           } else {
             return false;
           }

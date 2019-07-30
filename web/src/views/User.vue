@@ -13,7 +13,7 @@
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create pipeline" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="Create user" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
 
         </el-form>
@@ -31,18 +31,6 @@
                   <el-col :span="12">
                     <el-form-item label="ID">
                       <span>{{ props.row.id }}</span>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="12">
-                    <el-form-item label="Team">
-                      <span>{{ props.row.team_id === "" ? "Not on any team" : props.row.team_id }}</span>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-                <el-row :gutter="10">
-                  <el-col :span="12">
-                    <el-form-item label="Role">
-                      <span>{{ props.row.role_id === "" ? "Unspecified role" : props.row.role_id}}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
