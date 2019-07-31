@@ -161,8 +161,8 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item label="TeamID">
-                      <span>{{ props.row.team_id }}</span>
+                    <el-form-item label="Overlap">
+                      <span>{{ props.row.overlap === 1 }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -178,18 +178,6 @@
                     </el-form-item>
                   </el-col>
                 </el-row>
-                <el-row :gutter="10">
-                  <el-col :span="12">
-                    <el-form-item label="Overlap">
-                      <span>{{ props.row.overlap === 1 }}</span>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="12">
-                    <el-form-item label="Create at">
-                      <span>{{ props.row.created_at }}</span>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
               </el-form>
             </template>
           </el-table-column>
@@ -202,6 +190,7 @@
             </template>
           </el-table-column>
           <el-table-column prop="description" label="Description"></el-table-column>
+          <el-table-column prop="created_at" label="Created At" width="160"></el-table-column>
           <el-table-column prop="option" label="Action" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle
