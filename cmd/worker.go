@@ -9,7 +9,9 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 )
 
 // workerCmd represents the worker command
@@ -24,7 +26,7 @@ var (
 	}
 
 	worker = &models.Node{
-		Mode: models.WORKER,
+		Mode:   models.WORKER,
 		Status: models.ONLINE,
 	}
 
@@ -79,4 +81,20 @@ func listen() {
 	}(service)
 
 	go pipeline.WatchPipelines(worker.Id)
+
+	sign := make(chan os.Signal, 1)
+
+	signal.Notify(sign)
+
+	for {
+		receiver := <-sign
+		log.Printf("get a signal %s", receiver.String())
+		switch receiver {
+		case syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL:
+			service.Stop()
+			return
+		default:
+			return
+		}
+	}
 }

@@ -23,7 +23,7 @@ type (
 )
 
 var (
-	err error
+	err    error
 	Client *clientv3.Client
 )
 
@@ -43,14 +43,14 @@ func NewService(node *models.Node) (*Service, error) {
 	}
 
 	service := &Service{
-		close:  make(chan struct{}),
-		node:   node,
+		close: make(chan struct{}),
+		node:  node,
 	}
 
 	return service, nil
 }
 
-// 注册服务
+// Register service
 func (service *Service) Register(ttlSecond int64) error {
 	res, err := Client.Grant(context.TODO(), ttlSecond)
 	if err != nil {
@@ -60,13 +60,13 @@ func (service *Service) Register(ttlSecond int64) error {
 	service.leaseID = res.ID
 
 	val, err := json.Marshal(&struct {
-		Id          string    `json:"id"`
-		Name        string    `json:"name"`
-		Host        string    `json:"host"`
-		Port        int       `json:"port"`
-		Mode        string    `json:"mode"`
-		Status      string    `json:"status"`
-		Description string    `json:"description"`
+		Id          string `json:"id"`
+		Name        string `json:"name"`
+		Host        string `json:"host"`
+		Port        int    `json:"port"`
+		Mode        string `json:"mode"`
+		Status      string `json:"status"`
+		Description string `json:"description"`
 	}{
 		service.node.Id,
 		service.node.Name,
@@ -110,7 +110,7 @@ func (service *Service) Register(ttlSecond int64) error {
 	}
 }
 
-// 停止服务
+// Stop service
 func (service *Service) Stop() {
 	close(service.close)
 	service.wg.Wait()
@@ -119,12 +119,13 @@ func (service *Service) Stop() {
 	}
 }
 
+// Revoke service leaseID
 func (service *Service) revoke() error {
 	_, err := Client.Revoke(context.TODO(), service.leaseID)
 	if err != nil {
-		log.Printf("[discovery] Service revoke key:[%s] error:[%s]", service.node.Id, err.Error())
+		log.Printf("[discovery] Service revoke %s error: %s", service.node.Id, err.Error())
 	} else {
-		log.Printf("[discovery] Service revoke successfully key:[%s]", service.node.Id)
+		log.Printf("[discovery] Service revoke successfully %s", service.node.Id)
 	}
 
 	return err

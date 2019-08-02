@@ -28,12 +28,13 @@ func WatchPipelines(local string) {
 		break
 	}
 
-	watchChan := discover.Client.Watch(context.TODO(), "", clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
+	watchChan := discover.Client.Watch(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
 	for watchResp := range watchChan {
 		for _, event := range watchResp.Events {
 			var pipeline models.Pipeline
 			switch event.Type {
 			case mvccpb.PUT:
+				log.Printf("%s", event.Kv.Value)
 				if err := json.Unmarshal(event.Kv.Value, &pipeline); err != nil {
 					log.Println(err)
 				}
