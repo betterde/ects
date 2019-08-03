@@ -9,7 +9,7 @@ var rootCmd = &cobra.Command{
 	Use:     "ects",
 	Short:   "Elastic Crontab System",
 	Long:    "Elastic Crontab System",
-	Version: "0.1.6",
+	Version: "0.2.0",
 }
 
 func Execute() {
