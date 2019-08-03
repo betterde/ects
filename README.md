@@ -46,7 +46,7 @@ Application started. Press CMD+C to shut down.
 
 #### Open your browser
 
-Point your browser to http://localhost:9701
+Open your browser and go to http://localhost:9701
 
 #### Config ETCD
 
