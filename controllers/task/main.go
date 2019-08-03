@@ -3,6 +3,7 @@ package task
 import (
 	"github.com/betterde/ects/internal/message"
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
@@ -11,7 +12,6 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -23,13 +23,6 @@ type (
 	UpdateRequest struct {
 		Name        string `json:"name" validate:"required"`
 		Content     string `json:"content" validate:"required"`
-		Event       string `json:"event" validate:"required"`
-		Mode        string `json:"mode" validate:"required"`
-		Overlap     bool   `json:"overlap" validate:"required"`
-		Timeout     int    `json:"timeout" validate:"gte=0"`
-		Interval    int    `json:"interval" validate:"gte=0"`
-		Retries     int    `json:"retries" validate:"gte=0"`
-		Status      string `json:"status" validate:"required"`
 		Description string `json:"description"`
 	}
 )
@@ -38,56 +31,27 @@ var (
 	validate = validator.New()
 )
 
-// 获取任务俩表
+// Get tasks list
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
-		page   = 1
-		limit  = 10
-		start  int
-		search string
 		total  int64
 		err    error
 	)
-	search = ""
-	params := ctx.URLParams()
-
-	if value, exist := params["page"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			page = v
-		}
-	}
-
-	if value, exist := params["limit"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			limit = v
-		}
-	}
-
-	start = (page - 1) * limit
-
+	search := ctx.Params().GetStringDefault("search", "")
+	page, limit, start := utils.Pagination(ctx)
 	tasks := make([]models.Task, 0)
 
 	if search == "" {
-		total, err = models.Engine.Count(&models.Task{})
-		err = models.Engine.Limit(limit, start).Find(&tasks)
+		total, err = models.Engine.Limit(limit, start).FindAndCount(&tasks)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Task{})
-		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&tasks)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&tasks)
 	}
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	return response.Success("请求成功", response.Payload{
+	return response.Success("Successful", response.Payload{
 		"data": tasks,
 		"meta": &response.Meta{
 			Limit: limit,
@@ -96,12 +60,12 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		}})
 }
 
-// 创建任务
+// Create task
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task := models.Task{}
 
 	if err := ctx.ReadJSON(&task); err != nil {
-		return response.InternalServerError("解析参数失败", err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
 	if err := validate.Struct(task); err != nil {
@@ -112,19 +76,19 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task.Id = uuid.NewV4().String()
 
 	if err := task.Store(); err != nil {
-		return response.InternalServerError("创建任务失败", err)
+		return response.InternalServerError("Failed to create taks", err)
 	}
 
-	return response.Success("创建任务成功", response.Payload{"data": task})
+	return response.Success("Created successful", response.Payload{"data": task})
 }
 
-// 更新任务
+// Modify task
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("解析参数失败", err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -136,27 +100,26 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 		Id:          id,
 		Name:        params.Name,
 		Content:     params.Content,
-		Mode:        params.Mode,
 		Description: params.Description,
-		UpdatedAt:   time.Now().Format("2016-01-02 15:04:05"),
+		UpdatedAt:   utils.Time(time.Now()),
 	}
 
 	if err := task.Update(); err != err {
-		return response.InternalServerError("创建任务失败", err)
+		return response.InternalServerError("Failed to update task", err)
 	}
 
-	return response.Success("更新任务成功", response.Payload{"data": task})
+	return response.Success("Updated successful", response.Payload{"data": task})
 }
 
-// 删除任务
+// Delete task
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	task := &models.Task{
 		Id: id,
 	}
 
 	if err := task.Destroy(); err != nil {
-		return response.InternalServerError("删除任务失败", err)
+		return response.InternalServerError("Failed to deleted task", err)
 	}
 
-	return response.Success("删除任务成功", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("Deleted successful", response.Payload{"data": make(map[string]interface{})})
 }

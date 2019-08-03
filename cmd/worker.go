@@ -1,18 +1,17 @@
 package cmd
 
 import (
-	"context"
-	"fmt"
 	"github.com/betterde/ects/internal/discover"
-	"github.com/betterde/ects/internal/rpc"
+	"github.com/betterde/ects/internal/pipeline"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"log"
-	"net"
+	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 )
 
 // workerCmd represents the worker command
@@ -27,7 +26,7 @@ var (
 	}
 
 	worker = &models.Node{
-		Mode: models.MODE_WORKER,
+		Mode:   models.WORKER,
 		Status: models.ONLINE,
 	}
 
@@ -43,26 +42,13 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(workerCmd)
 	workerCmd.PersistentFlags().StringVar(&worker.Name, "name", "", "Set worker node name")
-	workerCmd.PersistentFlags().StringVar(&worker.Host, "host", "0.0.0.0", "Set listen on IP")
-	workerCmd.PersistentFlags().IntVar(&worker.Port, "port", 9412, "Set listen on port")
 	workerCmd.PersistentFlags().StringSliceVar(&EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
-	workerCmd.PersistentFlags().StringVarP(&worker.Id, "node", "n", "6d037444-8667-4364-848b-0b3b79e9044b", "Set node id")
-	workerCmd.PersistentFlags().StringVar(&worker.Description, "desc", "", "Set worker node description")
-}
-
-func (server *Server) Run(ctx context.Context, request *rpc.Request) (*rpc.Response, error) {
-	return &rpc.Response{
-		Output: "Hello",
-	}, nil
+	workerCmd.PersistentFlags().StringVarP(&worker.Id, "node", "n", "", "Set node id")
+	workerCmd.PersistentFlags().StringVar(&worker.Description, "desc", "worker node", "Set worker node description")
+	workerCmd.PersistentFlags().StringVar(&confKey, "config", "/ects/config", "Set the key used to get configuration information")
 }
 
 func listen() {
-	addr := fmt.Sprintf("%s:%d", worker.Host, worker.Port)
-	lis, err := net.Listen("tcp", addr)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
 	if worker.Id == "" {
 		worker.Id = uuid.NewV4().String()
 	}
@@ -71,15 +57,44 @@ func listen() {
 		worker.Name = "worker-" + worker.Id
 	}
 
-	service, err := discover.NewService(worker, EndPoints)
-	if err := service.Register(5); err != nil {
-		log.Println(err)
+	discover.NewClient()
+	discover.GetConf(confKey)
+
+	if worker.Host == "0.0.0.0" {
+		ips := utils.GetIPs()
+		if len(ips) > 0 {
+			worker.Host = ips[0]
+		}
 	}
 
-	server := grpc.NewServer()
-	rpc.RegisterTaskServer(server, &Server{})
-	reflection.Register(server)
-	if err := server.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	service, err := discover.NewService(worker)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+
+	go func(service *discover.Service) {
+		if err := service.Register(5); err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+	}(service)
+
+	go pipeline.WatchPipelines(worker.Id)
+
+	sign := make(chan os.Signal, 1)
+
+	signal.Notify(sign)
+
+	for {
+		receiver := <-sign
+		log.Printf("get a signal %s", receiver.String())
+		switch receiver {
+		case syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL:
+			service.Stop()
+			return
+		default:
+			return
+		}
 	}
 }

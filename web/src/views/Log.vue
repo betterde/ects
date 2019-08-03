@@ -13,21 +13,19 @@
         </div>
       </div>
       <div class="panel-body" :class="classes">
-        <el-table :data="workers" style="width: 100%" height="100%" empty-text="No more data">
-          <el-table-column prop="name" label="Pipeline" width="200"></el-table-column>
-          <el-table-column prop="ip" label="Node" width="140"></el-table-column>
-          <el-table-column prop="status" label="Level" width="120"></el-table-column>
-          <el-table-column prop="remark" label="Created at"></el-table-column>
-          <el-table-column prop="option" label="Action" width="130">
-            <template slot-scope="scope">
-              <el-button size="mini" icon="el-icon-edit" circle @click="handleEdit(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-tickets" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-delete" type="danger" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
+        <el-table :data="logs" style="width: 100%" empty-text="No more data">
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
+              <pre v-else><div style="text-align: center; color: #909399">No Content</div></pre>
             </template>
           </el-table-column>
+          <el-table-column prop="user_id" label="User" width="300"></el-table-column>
+          <el-table-column prop="operation" label="Operation"></el-table-column>
+          <el-table-column prop="created_at" label="Created at" width="160"></el-table-column>
         </el-table>
         <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :total="0"></el-pagination>
+          <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
         </div>
       </div>
     </div>
@@ -35,15 +33,26 @@
 </template>
 
 <script>
+  import api from '../apis'
+  import Vue from 'vue'
+  import JsonViewer from 'vue-json-viewer'
+  Vue.use(JsonViewer);
+
   export default {
     name: "Log",
     data() {
       return {
         classes: ['animated', 'fade-in', 'fast'],
         params: {
-          search: ""
+          search: "",
+          page: 1
         },
-        workers: []
+        logs: [],
+        meta: {
+          limit: 10,
+          page: 1,
+          total: 0
+        }
       }
     },
     methods: {
@@ -52,7 +61,25 @@
       },
       handleDelete(index, row) {
         window.console.log(index, row)
-      }
+      },
+      fetchLogs () {
+        this.loading = true;
+        api.log.fetch(this.params).then(res => {
+          this.logs = res.data;
+          this.meta = res.meta;
+        }).catch(err => {
+          this.$message.warning(err.message)
+        });
+        this.loading = false;
+      },
+      changePage(page) {
+        this.meta.page = page;
+        this.params.page = page;
+        this.fetchLogs();
+      },
+    },
+    mounted() {
+      this.fetchLogs()
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {

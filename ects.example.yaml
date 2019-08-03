@@ -1,0 +1,19 @@
+database:
+  host: localhost
+  port: 3306
+  name: ects
+  user: root
+  pass: PASSWORD
+  char: utf8mb4
+auth:
+  secret: SECRET
+  ttl: 86400
+etcd:
+  killer: /ects/killer
+  locker: /ects/locker
+  service: /ects/service
+  pipeline: /ects/pipeline
+  config: /ects/config
+  endpoints:
+    - localhost:2379
+  timeout: 5

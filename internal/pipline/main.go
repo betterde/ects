@@ -1,5 +1,0 @@
-package pipline
-
-func BuildPipeline() {
-
-}

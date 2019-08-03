@@ -19,7 +19,7 @@ func NewNodeService() NodeInterface {
 	return &NodeService{}
 }
 
-// 根据ID获取节点信息
+// Get node by id
 func (service *NodeService) FindByID(id string) (*models.Node, error) {
 	var node models.Node
 	result, err := models.Engine.Id(id).Get(&node)

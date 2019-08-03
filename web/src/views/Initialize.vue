@@ -8,7 +8,6 @@
           </div>
           <el-steps :active="step" finish-status="success" simple style="margin-top: 20px">
             <el-step title="ETCD"></el-step>
-            <el-step title="Service"></el-step>
             <el-step title="JWT"></el-step>
             <el-step title="DB"></el-step>
             <el-step title="User"></el-step>
@@ -24,22 +23,32 @@
                                  placeholder="Endpoints" style="width: 100%"></el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
                     <el-form-item prop="service" label-width="80px" label="Service key">
                       <el-input v-model="config.etcd.service" placeholder="Service discover key"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
                     <el-form-item prop="pipeline" label-width="80px" label="Pipeline key">
                       <el-input v-model="config.etcd.pipeline" placeholder="Pipeline key"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
                     <el-form-item prop="config" label-width="80px" label="Config key">
                       <el-input v-model="config.etcd.config" placeholder="System config key"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="6">
+                  <el-col :span="12">
+                    <el-form-item prop="killer" label-width="80px" label="Killer">
+                      <el-input v-model="config.etcd.killer" label="Timeout"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item prop="locker" label-width="80px" label="Locker">
+                      <el-input v-model="config.etcd.locker" label="Timeout"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
                     <el-form-item prop="timeout" label-width="80px" label="Timeout">
                       <el-input v-model="config.etcd.timeout" label="Timeout"></el-input>
                     </el-form-item>
@@ -47,32 +56,10 @@
                 </el-row>
               </el-form>
               <div class="footer">
-                <el-button type="primary" plain @click="confirm('etcd')">Fore</el-button>
+                <el-button type="primary" plain @click="confirm('etcd')">Next</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 1">
-              <el-form :model="config.service" :rules="rules.service" ref="service" label-width="100px"
-                       label-position="top">
-                <el-row :gutter="10">
-                  <el-col :span="14">
-                    <el-form-item prop="host" label="Host">
-                      <el-input v-model="config.service.host" placeholder="Host"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col class="line" :span="2">:</el-col>
-                  <el-col :span="8">
-                    <el-form-item prop="port" label="Port">
-                      <el-input v-model="config.service.port" placeholder="Port"></el-input>
-                    </el-form-item>
-                  </el-col>
-                </el-row>
-              </el-form>
-              <div class="footer">
-                <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('service')">Fore</el-button>
-              </div>
-            </div>
-            <div class="install-form-container" v-show="step === 2">
               <el-form :model="config.auth" :rules="rules.auth" ref="auth" label-width="100px" label-position="top">
                 <el-row :gutter="20">
                   <el-col :span="20">
@@ -93,10 +80,10 @@
               </el-form>
               <div class="footer">
                 <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('auth')">Fore</el-button>
+                <el-button type="primary" plain @click="confirm('auth')">Next</el-button>
               </div>
             </div>
-            <div class="install-form-container" v-show="step === 3">
+            <div class="install-form-container" v-show="step === 2">
               <el-form :model="config.database" :rules="rules.database" ref="database">
                 <el-col :span="14">
                   <el-form-item prop="host" label="Host">
@@ -111,8 +98,7 @@
                 </el-col>
                 <el-col :span="14">
                   <el-form-item prop="name" label="Database">
-                    <el-input v-model="config.database.name" placeholder="Database name"
-                              @blur="fetchDatabaseIsExist"></el-input>
+                    <el-input v-model="config.database.name" placeholder="Database name"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 10px"></el-col>
@@ -137,10 +123,10 @@
               </el-form>
               <div class="footer">
                 <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('database')">Fore</el-button>
+                <el-button type="primary" plain @click="confirm('database')">Next</el-button>
               </div>
             </div>
-            <div class="install-form-container" v-show="step === 4">
+            <div class="install-form-container" v-show="step === 3">
               <el-form :model="config.user" :rules="rules.user" ref="user">
                 <el-form-item prop="name">
                   <el-input v-model="config.user.name" placeholder="Name"></el-input>
@@ -160,8 +146,8 @@
                 <el-button type="primary" plain @click="confirm('user')">Submit</el-button>
               </div>
             </div>
-            <div class="install-form-container" style="text-align: center" v-show="step === 5">
-              <el-progress type="circle" :percentage="100" status="text">
+            <div class="install-form-container" style="text-align: center" v-show="step >= 4">
+              <el-progress type="circle" :percentage="100" status="success">
                 <i class="el-icon-check" style="color: #409EFF; font-size: 48px"></i>
               </el-progress>
               <h2 style="color: #8c939d; margin: 40px 0;">System initialization complete</h2>
@@ -188,9 +174,9 @@
 </template>
 
 <script>
-  import api from '../apis'
+    import api from '../apis'
 
-  export default {
+    export default {
     name: "Install",
     data() {
       let validatePass = (rule, value, callback) => {
@@ -221,15 +207,11 @@
         env: "etcd",
         loading: false,
         config: {
-          service: {
-            host: "0.0.0.0",
-            port: 9701
-          },
           database: {
-            host: "localhost",
+            host: "",
             port: 3306,
-            user: "root",
-            pass: "George@1994",
+            user: "",
+            pass: "",
             name: "ects",
             char: "utf8mb4"
           },
@@ -238,28 +220,22 @@
             ttl: 86400
           },
           user: {
-            name: "George",
-            email: "george@betterde.com",
-            pass: "George@1994",
-            confirm: "George@1994"
+            name: "",
+            email: "",
+            pass: "",
+            confirm: ""
           },
           etcd: {
-            service: "ects_service",
-            pipeline: "ects_pipeline",
-            config: "ects_config",
+            service: "/ects/nodes",
+            pipeline: "/ects/pipelines",
+            config: "/ects/config",
+            killer: "/ects/killer",
+            locker: "/ects/locker",
             timeout: 5,
             endpoints: ["localhost:2379"]
           }
         },
         rules: {
-          service: {
-            host: [
-              {type: "string", required: true, message: 'Please enter a host', trigger: 'blur'}
-            ],
-            port: [
-              {type: "integer", required: true, message: 'Please enter a port', trigger: 'blur'}
-            ]
-          },
           database: {
             host: [
               {type: "string", required: true, message: 'Please enter a host', trigger: 'blur'}
@@ -312,6 +288,12 @@
             pipeline: [
               {type: "string", required: true, message: 'Please enter a pipeline key', trigger: 'blur'}
             ],
+            killer: [
+              {type: "string", required: true, message: 'Please enter a killer key', trigger: 'blur'}
+            ],
+            locker: [
+              {type: "string", required: true, message: 'Please enter a locker key', trigger: 'blur'}
+            ],
             config: [
               {type: "string", required: true, message: 'Please enter a system config key', trigger: 'blur'}
             ],
@@ -347,7 +329,28 @@
         } else {
           this.$refs[form].validate((valid) => {
             if (valid) {
-              this.next();
+              if (form === 'database') {
+                api.system.database(this.config.database).then(res => {
+                  if (res.data.exist) {
+                    this.$confirm('The database already exists and will overwrite the original data if it continues!', 'Warning', {
+                      confirmButtonText: 'Continue',
+                      cancelButtonText: 'Cancel',
+                      type: 'warning'
+                    }).then(() => {
+                      this.next();
+                    }).catch(() => {
+                      this.$message({
+                        type: 'info',
+                        message: 'Canceled'
+                      });
+                    });
+                  } else {
+                    this.next();
+                  }
+                })
+              } else {
+                this.next();
+              }
             } else {
               return false;
             }
@@ -358,7 +361,7 @@
        * Next
        */
       next() {
-        if (this.step < 4) {
+        if (this.step < 3) {
           this.step += 1;
         } else {
           this.submit();
@@ -373,7 +376,7 @@
             message: res.message,
             type: 'success'
           });
-          this.step += 1;
+          this.step += 2;
           this.generateCommand()
         }).catch(err => {
           this.$notify.error({
@@ -393,14 +396,6 @@
             title: "Error",
             message: err.message,
           })
-        })
-      },
-      fetchDatabaseIsExist() {
-        api.system.database(this.config.database).then(res => {
-          let exist = res.data;
-          if (exist) {
-            this.$notify.warning("The database already exists and will overwrite the original data if it continues!")
-          }
         })
       },
       generateCommand() {
@@ -468,6 +463,12 @@
         padding: 40px 40px 18px 40px;
         background-color: #FFFFFF;
         box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);
+
+        .el-progress__text {
+          .el-icon-check {
+            font-size: 48px;
+          }
+        }
 
         .system-info {
           margin-bottom: 30px;

@@ -41,14 +41,6 @@ const router = new Router({
       component: () => import('../views/Node.vue')
     },
     {
-      path: '/team',
-      name: 'team',
-      meta: {
-        requiresAuth: true
-      },
-      component: () => import('../views/Team.vue')
-    },
-    {
       path: '/user',
       name: 'user',
       meta: {
@@ -93,7 +85,7 @@ const router = new Router({
 });
 
 /**
- * 路由拦截
+ * Routing to intercept
  */
 router.beforeEach((to, from, next) => {
   // 如果跳转到NotFound页面则提前设置视图的Layout 为 guest
@@ -113,7 +105,7 @@ router.beforeEach((to, from, next) => {
   }
 
   /**
-   * 判断前往的路由是否需要身份验证
+   * Determine if auth is required
    */
   if (to.matched.some(record => record.meta.requiresAuth)) {
     const access_token = store.state.account.access_token;

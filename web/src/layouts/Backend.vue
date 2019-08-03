@@ -24,7 +24,6 @@
             <div class="avatar grid-content" v-html="profile.name.slice(0,1)"></div>
           </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="a">Message</el-dropdown-item>
               <el-dropdown-item command="a">Profile</el-dropdown-item>
               <el-dropdown-item command="signOut">Sign out</el-dropdown-item>
             </el-dropdown-menu>
@@ -63,7 +62,7 @@
       signOut(){
         this.$store.commit('SET_PROFILE', false);
         this.$store.commit('SET_ACCESS_TOKEN', false);
-        this.$message.success("注销成功");
+        this.$message.success("Sign out successful");
         this.$router.push("/signin");
       }
     },

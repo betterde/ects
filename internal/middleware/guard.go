@@ -19,7 +19,7 @@ var (
 			ctx.StatusCode(iris.StatusUnauthorized)
 			if _, err := ctx.JSON(response.Response{
 				Code: iris.StatusUnauthorized,
-				Message: "用户凭证无效",
+				Message: "Unauthenticated.",
 				Data: make(map[string]interface{}),
 			}); err != nil {
 				log.Println(err)

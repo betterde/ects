@@ -5,41 +5,16 @@ import (
 	"encoding/json"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/models"
-	"github.com/betterde/ects/services"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"log"
-	"os"
-	"time"
 )
 
 func (cluster *Cluster) WatchNodes(ctx context.Context) {
-	client, err := clientv3.New(clientv3.Config{
-		Endpoints: config.Conf.Etcd.EndPoints,
-		DialTimeout: 5 * time.Second,
-	})
-
-	// 监听后续的PUT与DELETE事件
-	watcher := clientv3.NewWatcher(client)
-
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-
-	defer func() {
-		if err := client.Close(); err != nil {
-			log.Println(err)
-		}
-		if err := watcher.Close(); err != nil {
-			log.Println(err)
-		}
-	}()
-
 	var curRevision int64 = 0
 
 	for {
-		rangeResp, err := client.Get(context.TODO(), config.Conf.Etcd.Service, clientv3.WithPrefix())
+		rangeResp, err := Client.Get(context.TODO(), config.Conf.Etcd.Service, clientv3.WithPrefix())
 
 		if err != nil {
 			continue
@@ -49,14 +24,12 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 		break
 	}
 
-	nodeService := services.NewNodeService()
-
-	watchNodes := watcher.Watch(ctx, config.Conf.Etcd.Service, clientv3.WithPrefix(), clientv3.WithRev(curRevision))
-	for watchResp := range watchNodes {
+	watchChan := Client.Watch(ctx, config.Conf.Etcd.Service, clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
+	for watchResp := range watchChan {
 		for _, event := range watchResp.Events {
+			var node models.Node
 			switch event.Type {
 			case mvccpb.PUT:
-				var node models.Node
 				if err := json.Unmarshal(event.Kv.Value, &node); err != nil {
 					log.Println(err)
 				}
@@ -67,10 +40,7 @@ func (cluster *Cluster) WatchNodes(ctx context.Context) {
 
 				log.Printf("节点：%s 注册成功", node.Id)
 			case mvccpb.DELETE:
-				id := string(event.Kv.Key)[12:]
-				node, err := nodeService.FindByID(id)
-
-				if err != nil {
+				if err := json.Unmarshal(event.PrevKv.Value, &node); err != nil {
 					log.Println(err)
 				}
 

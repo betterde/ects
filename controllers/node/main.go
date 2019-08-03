@@ -2,6 +2,7 @@ package node
 
 import (
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
@@ -10,7 +11,6 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
-	"strconv"
 	"time"
 )
 
@@ -30,47 +30,16 @@ type (
 	}
 )
 
-// 获取节点列表
+// Get nodes list
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
-		page   int
-		limit  int
-		start  int
-		search string
 		total  int64
 		err    error
 	)
-	page = 1
-	limit = 10
-	search = ""
-	params := ctx.URLParams()
-
-	if value, exist := params["page"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			page = v
-		}
-	}
-
-	if value, exist := params["limit"]; exist == true {
-		v, err := strconv.Atoi(value)
-		if err != nil {
-
-		}
-		if v >= 0 {
-			limit = v
-		}
-	}
-
-	if value, exist := params["search"]; exist == true {
-		search = value
-	}
-
-	start = (page - 1) * limit
+	search := ctx.Params().GetStringDefault("search", "")
+	page, limit, start := utils.Pagination(ctx)
 	workers := make([]models.Node, 0)
+
 	if search == "" {
 		total, err = models.Engine.Count(&models.Node{})
 		err = models.Engine.Limit(limit, start).Find(&workers)
@@ -83,7 +52,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		log.Println(err)
 	}
 
-	return response.Success("请求成功", response.Payload{
+	return response.Success("Success", response.Payload{
 		"data": workers,
 		"meta": &response.Meta{
 			Limit: limit,
@@ -92,16 +61,16 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		}})
 }
 
-// 创建节点
+// Create node
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	var params CreateRequest
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("解析参数失败", err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
-		return response.ValidationError("请填写名称")
+		return response.ValidationError("Please fill in the name")
 	}
 
 	worker := models.Node{
@@ -110,49 +79,47 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 		Description: params.Remark,
 		Status: models.ONLINE,
 		Host: "",
-		CreatedAt: time.Now().Format("2006-01-02 15:04:05"),
-		UpdatedAt: time.Now().Format("2006-01-02 15:04:05"),
+		CreatedAt: utils.Time(time.Now()),
+		UpdatedAt: utils.Time(time.Now()),
 	}
 	if err := worker.Store(); err != nil {
-		return response.InternalServerError("创建节点失败", err)
+		return response.InternalServerError("Failed to create node", err)
 	}
 
-	return response.Success("创建节点成功", response.Payload{"data": worker})
+	return response.Success("Created successful", response.Payload{"data": worker})
 }
 
-// 更新节点信息
+// Modify node attribute
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	var worker models.Node
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		log.Println(err)
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
-	err := validate.Struct(params)
-
-	if err != nil {
-		return response.ValidationError("请填写名称")
+	if err := validate.Struct(params); err != nil {
+		return response.ValidationError("Failed to validate params")
 	}
 
 	result, err := models.Engine.Id(id).Get(&worker)
 
 	if err != nil {
-
+		return response.NotFound("Node does not exist")
 	}
 
 	if result {
 		worker.Name = params.Name
 		worker.Description = params.Remark
-		if _, err := models.Engine.Id(id).Update(worker); err != nil {
-			return response.Send(iris.StatusInternalServerError, "更新失败", make(map[string]interface{}))
+		if _, err := models.Engine.Id(id).Update(&worker); err != nil {
+			return response.Send(iris.StatusInternalServerError, "Failed to update node", err)
 		}
 	}
 
-	return response.Success("更新节点成功", response.Payload{"data": worker})
+	return response.Success("Updated successful", response.Payload{"data": worker})
 }
 
-// 删除指定ID
+// Delete node
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	worker := &models.Node{
 		Id: id,
@@ -163,5 +130,5 @@ func (instance *Controller) DeleteBy(id string) mvc.Result {
 
 	}
 
-	return response.Success("删除节点成功", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("Deleted successful", response.Payload{"data": make(map[string]interface{})})
 }

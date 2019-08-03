@@ -4,7 +4,7 @@
       <div class="page-content">
         <header>
           <h1 class="code animation-slide-top">404</h1>
-          <p>您访问的页面不存在，<span v-html="second"></span> 秒后自动返回{{ access_token ? '首页' : '登录' }}</p>
+          <p>The page does not exist，redirect to {{ access_token ? 'Index' : 'Sign In' }} page after <span v-html="second"></span> seconds</p>
         </header>
       </div>
     </div>
@@ -86,7 +86,7 @@
     }
     .page-content {
       left: 50%;
-      margin-left: -282px;
+      margin-left: -580px;
       position: absolute;
     }
   }

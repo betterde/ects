@@ -2,14 +2,13 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
-	"github.com/coreos/etcd/clientv3"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
@@ -34,7 +33,7 @@ var (
 		},
 	}
 	master = &models.Node{
-		Mode:   models.MODE_MASTER,
+		Mode:   models.MASTER,
 		Status: models.ONLINE,
 	}
 
@@ -47,13 +46,13 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(masterCmd)
 	config.Conf = config.Init()
-	masterCmd.PersistentFlags().StringVar(&config.Conf.Service.Host, "host", "0.0.0.0", "Set listen on IP")
-	masterCmd.PersistentFlags().IntVar(&config.Conf.Service.Port, "port", 9701, "Set listen on port")
+	masterCmd.PersistentFlags().StringVar(&master.Host, "host", "0.0.0.0", "Set listen on IP")
+	masterCmd.PersistentFlags().IntVar(&master.Port, "port", 9701, "Set listen on port")
 	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
 	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
-	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "", "Set master node description")
-	masterCmd.PersistentFlags().StringVar(&confKey, "config", "ects_config", "Set the key used to get configuration information")
+	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "master node", "Set master node description")
+	masterCmd.PersistentFlags().StringVar(&confKey, "config", "/ects/config", "Set the key used to get configuration information")
 }
 
 func bootstrap() {
@@ -62,31 +61,9 @@ func bootstrap() {
 		Version: rootCmd.Version,
 	}
 
-	client, err := clientv3.New(clientv3.Config{
-		Endpoints:   config.Conf.Etcd.EndPoints,
-		DialTimeout: 10 * time.Second,
-	})
+	discover.NewClient()
 
-	defer func() {
-		if err := client.Close(); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	requestctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	res, err := client.Get(requestctx, confKey)
-	cancel()
-
-	if res != nil {
-		if err := json.Unmarshal(res.Kvs[0].Value, &config.Conf); err != nil {
-			log.Println(err)
-			os.Exit(1)
-		}
-	}
+	discover.GetConf(confKey)
 
 	models.Engine, err = models.Connection()
 	if err != nil {
@@ -96,14 +73,17 @@ func bootstrap() {
 }
 
 func watch() {
-	discover.ServiceCluster = discover.NewCluster(config.Conf.Etcd.EndPoints)
 	go discover.ServiceCluster.WatchNodes(ctx)
 }
 
 // Service registry
 func register() {
-	master.Host = config.Conf.Service.Host
-	master.Port = config.Conf.Service.Port
+	if master.Host == "0.0.0.0" {
+		ips := utils.GetIPs()
+		if len(ips) > 0 {
+			master.Host = ips[0]
+		}
+	}
 
 	if master.Id == "" {
 		master.Id = uuid.NewV4().String()
@@ -113,22 +93,23 @@ func register() {
 		master.Name = "master-" + master.Id
 	}
 
-	service, err := discover.NewService(master, EndPoints)
+	service, err := discover.NewService(master)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
-	if err := service.Register(2); err != nil {
+	if err := service.Register(5); err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}
 }
 
 func start() {
-	addr := fmt.Sprintf("%s:%d", config.Conf.Service.Host, config.Conf.Service.Port)
+	addr := fmt.Sprintf("%s:%d", master.Host, master.Port)
 	app := iris.New()
 	app.Use(recover.New())
 	app.Use(logger.New())
+	app.Logger().SetLevel("disable")
 
 	routes.Register(app)
 

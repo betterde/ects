@@ -36,9 +36,9 @@ func Connection() (*xorm.Engine, error) {
 	if engine != nil {
 		engine.SetMaxIdleConns(10)
 		engine.SetMaxOpenConns(30)
+		engine.SetLogLevel(core.LOG_OFF)
+		engine.SetConnMaxLifetime(time.Second * 30)
 	}
-
-	engine.SetLogLevel(core.LOG_OFF)
 
 	go keepAlived()
 
@@ -59,19 +59,14 @@ func Migrate() error {
 	tables := []interface{}{
 		&User{},
 		&Node{},
-		&Role{},
 		&Task{},
-		&Permission{},
 		&Log{},
-		&Team{},
 		&Configuration{},
-		&Menu{},
 		&PasswordResets{},
 		&Pipeline{},
 		&PipelineRecords{},
 		&PipelineTaskPivot{},
 		&PipelineNodePivot{},
-		&RolePermissionPivot{},
 		&TaskRecords{},
 	}
 

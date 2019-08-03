@@ -40,7 +40,7 @@ func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signout", "SignOutHandler")
 }
 
-// 用户登录逻辑
+// User sign in
 func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
 	var params SignIn
 	validate := validator.New()
@@ -66,12 +66,12 @@ func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
 	}})
 }
 
-// 用户注销登陆
+// User sign out
 func (instance *Controller) SignOutHandler(ctx iris.Context) {
 
 }
 
-// 用户注册
+// User register
 func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Result {
 	var params SignUp
 	validate := validator.New()

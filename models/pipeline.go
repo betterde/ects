@@ -2,12 +2,12 @@ package models
 
 import (
 	"encoding/json"
+	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
 )
 
 type Pipeline struct {
 	Id          string               `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
-	TeamId      string               `json:"team_id" validate:"required,uuid4" xorm:"not null comment('团队ID') index CHAR(36)"`
 	Name        string               `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
 	Description string               `json:"description" validate:"-" xorm:"not null comment('描述') VARCHAR(255)"`
 	Spec        string               `json:"spec" validate:"required" xorm:"not null comment('定时器') CHAR(64)"`
@@ -15,9 +15,9 @@ type Pipeline struct {
 	Finished    string               `json:"finished" validate:"omitempty,uuid4" xorm:"comment('成功时执行') CHAR(36)"`
 	Failed      string               `json:"failed" validate:"omitempty,uuid4" xorm:"comment('失败时执行') CHAR(36)"`
 	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
-	CreatedAt   string               `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-	UpdatedAt   string               `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
-	Nodes       map[string]*Node     `json:"nodes" validate:"-" xorm:"-"`
+	CreatedAt   utils.Time           `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt   utils.Time           `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
+	Nodes       []string             `json:"nodes" validate:"-" xorm:"-"`
 	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
 }
 
@@ -65,7 +65,9 @@ func (pipeline *Pipeline) Build() (origin string, err error) {
 		return
 	}
 
-	pipeline.Nodes = nodes
+	for _, node := range nodes {
+		pipeline.Nodes = append(pipeline.Nodes, node.Id)
+	}
 
 	// Load binded tasks
 	err = Engine.Where(builder.Eq{"pipeline_id": pipeline.Id}).Find(&pipeline.Steps)

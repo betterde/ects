@@ -8,9 +8,7 @@ Elastic Crontab System
 
 ### Master 
 * RESTful API Server
-* Scheduler Service
 * Web UI
-* HTTP task actuator
 
 ### Worker
 * Shell task actuator
@@ -32,47 +30,71 @@ cd ../ && go get -u github.com/shuLhan/go-bindata/...
 # package resource file
 go-bindata -pkg web -o web/bindata.go web/dist/...
 
-go build main.go -o ects
+go build -o ects main.go
 
 ```
 
 ## Initialization
 
-### Run initialization service
+### Run initialization web service
 ```bash
-$ ects init
+$ ects init -m web
 
 Now listening on: http://localhost:9701
 Application started. Press CMD+C to shut down.
 ```
 
-### Open your browser
+#### Open your browser
 
 Point your browser to http://localhost:9701
 
-### Config ETCD
+#### Config ETCD
 
-![install](docs/overview/initialization/step_1.png)
+![etcd](docs/overview/initialization/init-etcd.png)
 
-### Config Service
+#### Config JWT
 
-![install](docs/overview/initialization/step_2.png)
+![jwt](docs/overview/initialization/init-jwt.png)
 
-### Config JWT
+#### Config DB
 
-![install](docs/overview/initialization/step_3.png)
+![db](docs/overview/initialization/init-db.png)
 
-### Config DB
+#### Config User
 
-![install](docs/overview/initialization/step_4.png)
+![user](docs/overview/initialization/init-user.png)
 
-### Config User
+#### Complete
 
-![install](docs/overview/initialization/step_5.png)
+![finish](docs/overview/initialization/init-complete.png)
 
-### Complete
+### Init with config file
+```bash
+ects init -m json -p CONFIG_FILE_PATH -n ADMIN_NAME -P ADMIN_PASS -e ADMIN_MAIL
+ects init -m yaml -p CONFIG_FILE_PATH -n ADMIN_NAME -P ADMIN_PASS -e ADMIN_MAIL
+```
 
-![install](docs/overview/initialization/step_6.png)
+## Web UI
+
+### Pipeline list
+
+![pipeline](docs/overview/pipeline.png)
+
+### Task list
+
+![pipeline](docs/overview/task.png)
+
+### Node list
+
+![pipeline](docs/overview/node.png)
+
+### User list
+
+![pipeline](docs/overview/user.png)
+
+### User log
+
+![pipeline](docs/overview/user-log.png)
 
 ## LICENSE
 ECTS is open-sourced software licensed under the MIT license.

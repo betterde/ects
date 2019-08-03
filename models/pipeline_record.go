@@ -7,7 +7,6 @@ import (
 type PipelineRecords struct {
 	Id         string    `xorm:"not null pk comment('ID') CHAR(36)"`
 	PipelineId string    `xorm:"not null comment('流水线ID') index CHAR(36)"`
-	TeamId     string    `xorm:"not null comment('团队ID') index CHAR(36)"`
 	NodeId     string    `xorm:"not null comment('节点ID') index CHAR(36)"`
 	WorkerName string    `xorm:"not null comment('节点名称') VARCHAR(255)"`
 	Spec       string    `xorm:"comment('定时器') CHAR(64)"`

@@ -1,24 +1,21 @@
 package models
 
 import (
+	"github.com/betterde/ects/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Id        string `json:"id" xorm:"not null pk comment('用户ID') CHAR(36)"`
-	Name      string `json:"name" xorm:"not null comment('姓名') VARCHAR(255)"`
-	Email     string `json:"email" xorm:"not null comment('邮箱') unique VARCHAR(255)"`
-	Password  string `json:"-" xorm:"not null comment('密码') VARCHAR(255)"`
-	Avatar    string `json:"avatar" xorm:"comment('头像') VARCHAR(255)"`
-	TeamId    string `json:"team_id" xorm:"not null default '' comment('团队ID') index CHAR(36)"`
-	RoleId    string `json:"role_id" xorm:"not null default '' comment('角色ID') index CHAR(36)"`
-	Manager   bool   `json:"manager" xorm:"not null default 0 comment('管理员') TINYINT(1)"`
-	CreatedAt string `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-	UpdatedAt string `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
-	DeletedAt string `json:"deleted_at" xorm:"null comment('删除于') DATETIME"`
+	Id        string     `json:"id" xorm:"not null pk comment('用户ID') CHAR(36)"`
+	Name      string     `json:"name" xorm:"not null comment('姓名') VARCHAR(255)"`
+	Email     string     `json:"email" xorm:"not null comment('邮箱') unique VARCHAR(255)"`
+	Password  string     `json:"-" xorm:"not null comment('密码') VARCHAR(255)"`
+	Manager   bool       `json:"manager" xorm:"not null default 0 comment('管理员') TINYINT(1)"`
+	CreatedAt utils.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt utils.Time `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
 }
 
-// 定义模型的数据表名称
+// Define table name
 func (user *User) TableName() string {
 	return "users"
 }

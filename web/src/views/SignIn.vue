@@ -7,18 +7,18 @@
       <div class="panel-body">
         <el-form :model="credentials" :rules="rules" ref="signin">
           <el-form-item prop="username">
-            <el-input v-model="credentials.username" placeholder="账户"></el-input>
+            <el-input v-model="credentials.username" placeholder="Email"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password" v-model="credentials.password" @keyup.enter.native="submit('signin')"
-                      placeholder="密码" show-password></el-input>
+                      placeholder="Password" show-password></el-input>
           </el-form-item>
           <el-form-item class="login-button">
-            <el-button type="primary" plain class="pull-right" style="width: 100%" @click="submit('signin')" :loading="loading">登录
+            <el-button type="primary" plain class="pull-right" style="width: 100%" @click="submit('signin')" :loading="loading">Sign In
             </el-button>
           </el-form-item>
           <div class="tips">
-            <p>如果您忘记了密码，请点击这里</p>
+            <p>If you forget your password, click here</p>
           </div>
         </el-form>
       </div>
@@ -36,17 +36,15 @@
       return {
         loading: false,
         credentials: {
-          username: 'george@betterde.com',
-          password: 'George@1994'
+          username: '',
+          password: ''
         },
         rules: {
           username: [
-            {required: true, message: '请输入您的账户', trigger: 'blur'},
-            {min: 6, max: 25, message: '长度在 6 到 25 个字符之间', trigger: 'blur'}
+            {required: true, message: 'Enter your email address', trigger: 'blur'},
           ],
           password: [
-            {required: true, message: '请输入您的密码', trigger: 'blur'},
-            {min: 6, max: 25, message: '长度在 6 到 25 个字符之间', trigger: 'blur'}
+            {required: true, message: 'Enter your password', trigger: 'blur'},
           ]
         }
       }
@@ -75,9 +73,6 @@
         access_token: state => state.account.access_token,
         profile: state => state.account.profile,
       }),
-    },
-    mounted() {
-
     }
   }
 </script>

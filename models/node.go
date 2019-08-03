@@ -1,27 +1,28 @@
 package models
 
 import (
+	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
 )
 
 const (
-	ONLINE      = "online"
-	OFFLINE     = "offline"
-	MODE_MASTER = "master"
-	MODE_WORKER = "worker"
+	ONLINE  = "online"
+	OFFLINE = "offline"
+	MASTER  = "master"
+	WORKER  = "worker"
 )
 
 type (
 	Node struct {
-		Id          string `json:"id" xorm:"not null pk comment('用户ID') CHAR(36)"`
-		Name        string `json:"name" xorm:"not null comment('名称') VARCHAR(255)"`
-		Host        string `json:"host" xorm:"not null comment('主机地址') VARCHAR(255)"`
-		Port        int    `json:"port" xorm:"not null comment('端口') SMALLINT(5)"`
-		Mode        string `json:"mode" xorm:"not null comment('节点类型') CHAR(6)"`
-		Status      string `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"`
-		Description string `json:"description" xorm:"comment('描述') VARCHAR(255)"`
-		CreatedAt   string `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-		UpdatedAt   string `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
+		Id          string     `json:"id" xorm:"not null pk comment('用户ID') CHAR(36)"`
+		Name        string     `json:"name" xorm:"not null comment('名称') VARCHAR(255)"`
+		Host        string     `json:"host" xorm:"not null comment('主机地址') VARCHAR(255)"`
+		Port        int        `json:"port" xorm:"not null comment('端口') SMALLINT(5)"`
+		Mode        string     `json:"mode" xorm:"not null comment('节点类型') CHAR(6)"`
+		Status      string     `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"`
+		Description string     `json:"description" xorm:"comment('描述') VARCHAR(255)"`
+		CreatedAt   utils.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
+		UpdatedAt   utils.Time `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
 	}
 )
 

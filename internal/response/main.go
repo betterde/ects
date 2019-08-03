@@ -22,7 +22,8 @@ type (
 )
 
 // 发送成功响应
-func Success(message string, payload map[string]interface{}) mvc.Result {
+func Success(message string, payload map[string]interface{}) mvc.Response {
+	data := payload["data"]
 	meta, ok := payload["meta"]
 	if ok {
 		return mvc.Response{
@@ -30,7 +31,7 @@ func Success(message string, payload map[string]interface{}) mvc.Result {
 			Object: Response{
 				Code: iris.StatusOK,
 				Message: message,
-				Data: payload["data"],
+				Data: data,
 				Meta: reflect.ValueOf(meta).Interface().(*Meta),
 			},
 		}
@@ -41,13 +42,13 @@ func Success(message string, payload map[string]interface{}) mvc.Result {
 		Object: Response{
 			Code: iris.StatusOK,
 			Message: message,
-			Data: payload["data"],
+			Data: data,
 		},
 	}
 }
 
 // 认证失败响应
-func UnAuthenticated(message string) mvc.Result {
+func UnAuthenticated(message string) mvc.Response {
 	return mvc.Response{
 		Code: iris.StatusUnauthorized,
 		Object: Response{
@@ -58,7 +59,7 @@ func UnAuthenticated(message string) mvc.Result {
 	}
 }
 
-func NotFound(message string) mvc.Result {
+func NotFound(message string) mvc.Response {
 	return mvc.Response{
 		Code: iris.StatusNotFound,
 		Object: Response{
@@ -69,7 +70,7 @@ func NotFound(message string) mvc.Result {
 	}
 }
 
-func ValidationError(message string) mvc.Result {
+func ValidationError(message string) mvc.Response {
 	return mvc.Response{
 		Code: iris.StatusUnprocessableEntity,
 		Object: Response{
@@ -80,7 +81,7 @@ func ValidationError(message string) mvc.Result {
 	}
 }
 
-func InternalServerError(message string, err error) mvc.Result {
+func InternalServerError(message string, err error) mvc.Response {
 	return mvc.Response{
 		Code: iris.StatusInternalServerError,
 		Object: Response{
@@ -91,7 +92,7 @@ func InternalServerError(message string, err error) mvc.Result {
 	}
 }
 
-func Send(code int, message string, data interface{}) mvc.Result {
+func Send(code int, message string, data interface{}) mvc.Response {
 	return mvc.Response{
 		Code: code,
 		Object: Response{
