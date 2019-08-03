@@ -23,13 +23,6 @@ type (
 	UpdateRequest struct {
 		Name        string `json:"name" validate:"required"`
 		Content     string `json:"content" validate:"required"`
-		Event       string `json:"event" validate:"required"`
-		Mode        string `json:"mode" validate:"required"`
-		Overlap     bool   `json:"overlap" validate:"required"`
-		Timeout     int    `json:"timeout" validate:"gte=0"`
-		Interval    int    `json:"interval" validate:"gte=0"`
-		Retries     int    `json:"retries" validate:"gte=0"`
-		Status      string `json:"status" validate:"required"`
 		Description string `json:"description"`
 	}
 )
@@ -107,7 +100,6 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 		Id:          id,
 		Name:        params.Name,
 		Content:     params.Content,
-		Mode:        params.Mode,
 		Description: params.Description,
 		UpdatedAt:   utils.Time(time.Now()),
 	}

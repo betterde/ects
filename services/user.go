@@ -120,14 +120,10 @@ func (service *UserService) FindByEmail(email string) (*models.User, error) {
 	result, err := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
 
 	if result {
-		// 如果用户已经被删除则
-		if !user.DeletedAt.IsZero() {
-			return &user, errors.New("用户已禁用")
-		}
 		return &user, err
 	}
 
-	return &user, errors.New("用户不存在")
+	return nil, errors.New("User does not exist")
 }
 
 // Get user

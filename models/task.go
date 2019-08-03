@@ -18,7 +18,6 @@ type (
 		Id          string     `json:"id" validate:"-" xorm:"not null pk comment('用户ID') CHAR(36)"`
 		Name        string     `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
 		Content     string     `json:"content" validate:"required" xorm:"not null comment('内容') TEXT"`
-		Mode        string     `json:"mode" validate:"required" xorm:"not null comment('执行方式') VARCHAR(255)"`
 		Description string     `json:"description" validate:"-" xorm:"comment('描述') VARCHAR(255)"`
 		CreatedAt   utils.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
 		UpdatedAt   utils.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`

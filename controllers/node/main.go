@@ -111,8 +111,8 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	if result {
 		worker.Name = params.Name
 		worker.Description = params.Remark
-		if _, err := models.Engine.Id(id).Update(worker); err != nil {
-			return response.Send(iris.StatusInternalServerError, "Failed to update node", make(map[string]interface{}))
+		if _, err := models.Engine.Id(id).Update(&worker); err != nil {
+			return response.Send(iris.StatusInternalServerError, "Failed to update node", err)
 		}
 	}
 

@@ -25,12 +25,12 @@ type (
 		Email   string `json:"email" validate:"required,email"`
 		Pass    string `json:"pass" validate:"required"`
 		Confirm string `json:"confirm" validate:"eqfield=Pass"`
-		Manager bool   `json:"manager" validate:"required"`
+		Manager bool   `json:"manager"`
 	}
 	UpdateRequest struct {
 		Name    string `json:"name" validate:"required"`
 		Email   string `json:"email" validate:"required,email"`
-		Manager bool   `json:"manager" validate:"required"`
+		Manager bool   `json:"manager"`
 	}
 )
 
@@ -86,9 +86,11 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 		return response.InternalServerError("Failed to encryption user password", err)
 	}
 
-	if user, _ := instance.Service.FindByEmail(params.Email); user != nil {
+	if user, _ := instance.Service.FindByEmail(params.Email); user.Id != "" {
 		return response.Send(400, "This mail address already exists", make(map[string]interface{}))
 	}
+
+	log.Println(params.Manager)
 
 	user := &models.User{
 		Id:        uuid.NewV4().String(),
@@ -131,8 +133,8 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 		user.Name = params.Name
 		user.Email = params.Email
 		user.Manager = params.Manager
-		if _, err := models.Engine.Id(id).Update(user); err != nil {
-			return response.Send(iris.StatusInternalServerError, "Failed to update user", make(map[string]interface{}))
+		if _, err := models.Engine.Id(id).Update(&user); err != nil {
+			return response.Send(iris.StatusInternalServerError, "Failed to update user", err)
 		}
 	}
 
