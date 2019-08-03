@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 export default {
   /**
-   * 获取节点列表
+   * Fetch node list
    * @param params
    * @returns {*}
    */
@@ -12,7 +12,7 @@ export default {
     });
   },
   /**
-   * 创建节点
+   * Create node
    * @param params
    * @returns {*}
    */
@@ -20,11 +20,20 @@ export default {
     return Vue.axios.post('/api/node', params);
   },
   /**
-   * 删除节点
+   * Update node attributes
+   * @param id
    * @param params
    * @returns {*}
    */
-  delete(params) {
-    return Vue.axios.delete(`/api/node/${params.id}`);
+  update(id, params) {
+    return Vue.axios.put(`/api/node/${id}`, params)
+  },
+  /**
+   * Delete node
+   * @param id
+   * @returns {*}
+   */
+  delete(id) {
+    return Vue.axios.delete(`/api/node/${id}`);
   }
 }

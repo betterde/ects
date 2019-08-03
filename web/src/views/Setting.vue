@@ -3,69 +3,47 @@
     <div class="panel">
       <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
-          <el-tab-pane label="Basic" name="basic">
-            <el-form :model="basic" :rules="rules" ref="basic" label-width="100px" class="demo-ruleForm">
-              <el-col :span="6">
-                <el-form-item label="用户注册" prop="type">
-                  <el-switch v-model="basic.register"></el-switch>
-                </el-form-item>
-              </el-col>
-              <el-col :span="18">
-              </el-col>
-              <el-form-item label="特殊资源" prop="resource">
-                <el-radio-group v-model="basic.resource">
-                  <el-radio label="线上品牌商赞助"></el-radio>
-                  <el-radio label="线下场地免费"></el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="活动形式" prop="desc">
-                <el-input type="textarea" v-model="basic.desc"></el-input>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane label="Log" name="log">
-          </el-tab-pane>
           <el-tab-pane label="Nofification" name="notification">
             <el-form :model="notification" :rules="rules" ref="database">
-              <el-col :span="18">
+              <el-col :span="10">
                 <el-form-item prop="host">
-                  <el-input v-model="notification.host" placeholder="主机地址"></el-input>
+                  <el-input v-model="notification.host" placeholder="Host"></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="2">
+                <el-form-item prop="port" label-width="0">
+                  <el-input v-model="notification.port" placeholder="Port"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
-                <el-form-item prop="port" label-width="0">
-                  <el-input v-model="notification.port" placeholder="端口"></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.char" placeholder="请选择服务类型">
+                  <el-select v-model="notification.char" placeholder="Service protocol">
                     <el-option key="smtp" label="SMTP" value="smtp"></el-option>
                     <el-option key="pop3" label="POP3" value="pop3"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="12">
+              <el-col :span="6">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.encryption" placeholder="请选择加密类型">
+                  <el-select v-model="notification.encryption" placeholder="Encryption type">
                     <el-option key="tls" label="TLS" value="tls"></el-option>
                     <el-option key="ssl" label="SSL" value="ssl"></el-option>
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="24">
+              <el-col :span="12">
                 <el-form-item prop="user">
-                  <el-input v-model="notification.user" placeholder="用户名"></el-input>
+                  <el-input v-model="notification.user" placeholder="User"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="24">
+              <el-col :span="12">
                 <el-form-item prop="pass">
-                  <el-input v-model="notification.pass" placeholder="密码" show-password></el-input>
+                  <el-input v-model="notification.pass" placeholder="Password" show-password></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item prop="pass" style="text-align: right">
-                  <el-button type="primary" plain>更新配置</el-button>
+                  <el-button type="primary" plain>Upgrade</el-button>
                 </el-form-item>
               </el-col>
             </el-form>
@@ -73,11 +51,23 @@
           <el-tab-pane label="Upgrade" name="upgrade">
             <el-upload class="upgrade" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
               <i class="el-icon-upload"></i>
-              <div class="el-upload__text">将最新的ECTS可执行文件拖到此处，或<em>点击上传</em></div>
+              <div class="el-upload__text">Drag the latest ECTS binary executable file here，or <em>click to upload</em></div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="Information" name="info">系统信息</el-tab-pane>
-          <el-tab-pane label="Service" name="service">获得帮助</el-tab-pane>
+          <el-tab-pane label="Information" name="info">
+            <div class="information">
+              <h1 class="information-title">
+                系统信息
+              </h1>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="Service" name="service">
+            <div class="service-info">
+              <h1 class="service-info-title">
+                获得帮助
+              </h1>
+            </div>
+          </el-tab-pane>
         </el-tabs>
       </div>
     </div>
@@ -90,7 +80,7 @@
     data() {
       return {
         classes: ['animated', 'fade-in', 'fast'],
-        active: "basic",
+        active: "notification",
         basic: {
           name: 'ECTS',
           register: "",
@@ -195,14 +185,27 @@
       width: 100%;
       .el-upload-dragger {
         width: 100%;
-        height: 277px;
+        height: 220px;
         .el-icon-upload {
           margin: 80px 0 16px;
         }
       }
     }
   }
-
+  .information {
+    height: 220px;
+    .information-title {
+      color: #8c939d;
+      text-align: center;
+    }
+  }
+  .service-info {
+    height: 220px;
+    .service-info-title {
+      color: #8c939d;
+      text-align: center;
+    }
+  }
   .el-col {
     height: 100%;
     border-radius: 4px;

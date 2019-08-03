@@ -44,7 +44,7 @@ request.interceptors.response.use(
       store.commit('SET_ACCESS_TOKEN', false);
       router.push("/signin");
     }
-    return Promise.reject(error.response);
+    return Promise.reject(error.response.data);
   }
 );
 

@@ -44,7 +44,8 @@
       return {
         classes: ['animated', 'fade-in', 'fast'],
         params: {
-          search: ""
+          search: "",
+          page: 1
         },
         logs: [],
         meta: {

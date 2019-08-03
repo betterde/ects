@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 export default {
   /**
-   * 获取任务列表
+   * Fetch task list
    * @param parmas
    * @returns {*|AxiosInstance}
    */
@@ -12,7 +12,7 @@ export default {
     });
   },
   /**
-   * 创建任务
+   * Create task
    * @param params
    * @returns {*}
    */
@@ -20,11 +20,20 @@ export default {
     return Vue.axios.post('/api/task', params);
   },
   /**
-   * 删除任务
+   * Update task attribute
+   * @param id
    * @param params
+   * @returns {AxiosPromise<any> | IDBRequest<IDBValidKey> | Promise<void>}
+   */
+  update(id, params) {
+    return Vue.axios.put(`/api/task/${id}`, params);
+  },
+  /**
+   * Delete task
+   * @param id
    * @returns {*}
    */
-  delete(params) {
-    return Vue.axios.delete(`/api/task/${params.id}`);
+  delete(id) {
+    return Vue.axios.delete(`/api/task/${id}`);
   }
 }

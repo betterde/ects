@@ -59,7 +59,7 @@
             </el-col>
           </el-row>
           <el-form-item label="Description" prop="description">
-            <el-input v-model="create.params.description" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
+            <el-input v-model="create.params.description" autocomplete="off"></el-input>
           </el-form-item>
           <el-row :gutter="10">
             <el-col :span="12">
@@ -78,22 +78,22 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="create.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
+          <el-button type="primary" @click="submit('create')">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit pipeline" :visible.sync="edit.dialog" @close="handleClose('edit')" width="40%" :close-on-click-modal="false">
-        <el-form :model="edit.params" :rules="edit.rules" ref="edit" label-position="top">
+      <el-dialog title="Edit pipeline" :visible.sync="update.dialog" @close="handleClose('update')" width="40%" :close-on-click-modal="false">
+        <el-form :model="update.params" :rules="update.rules" ref="edit" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Name" prop="name">
-                <el-input v-model="edit.params.name" autocomplete="off"></el-input>
+                <el-input v-model="update.params.name" autocomplete="off"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Spec" prop="spec">
-                <el-input v-model="edit.params.spec" placeholder="Please enter a cron expression"></el-input>
+                <el-input v-model="update.params.spec" placeholder="Please enter a cron expression"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -113,40 +113,40 @@
           <el-row :gutter="10">
             <el-col :span="12">
               <el-form-item label="Finished" prop="finished">
-                <el-select v-model="edit.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                <el-select v-model="update.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Failed" prop="failed">
-                <el-select v-model="edit.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                <el-select v-model="update.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-form-item label="Description" prop="description">
-            <el-input v-model="edit.params.description" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
+            <el-input v-model="update.params.description" autocomplete="off"></el-input>
           </el-form-item>
           <el-row :gutter="10">
             <el-col :span="12">
               <el-form-item label="Status" prop="status">
-                <el-radio v-model="edit.params.status" :label="0" border>Disable</el-radio>
-                <el-radio v-model="edit.params.status" :label="1" border>Enable</el-radio>
+                <el-radio v-model="update.params.status" :label="0" border>Disable</el-radio>
+                <el-radio v-model="update.params.status" :label="1" border>Enable</el-radio>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Overlap" prop="overlap">
-                <el-radio v-model="edit.params.overlap" :label="0" border>Disable</el-radio>
-                <el-radio v-model="edit.params.overlap" :label="1" border>Enable</el-radio>
+                <el-radio v-model="update.params.overlap" :label="0" border>Disable</el-radio>
+                <el-radio v-model="update.params.overlap" :label="1" border>Enable</el-radio>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="edit.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submitEditForm">Confirm</el-button>
+          <el-button @click="update.dialog = false">Cancel</el-button>
+          <el-button type="primary" @click="submit('update')">Confirm</el-button>
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
@@ -196,7 +196,7 @@
               <el-button size="mini" icon="el-icon-edit" circle
                          @click="handleEdit(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-tickets" plain circle
-                         @click="queryLog(scope.row)"></el-button>
+                         @click="handleQueryLog(scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
                          @click="handleDelete(scope.$index, scope.row)"></el-button>
             </template>
@@ -211,6 +211,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import api from '../apis'
   import {mapState} from 'vuex'
 
@@ -221,7 +222,8 @@
         classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
-          search: ''
+          search: '',
+          page: 1
         },
         create: {
           dialog: false,
@@ -233,7 +235,6 @@
             finished: '',
             failed: '',
             overlap: 1,
-            team_id: "",
           },
           rules: {
             name: [
@@ -256,7 +257,9 @@
             ]
           }
         },
-        edit: {
+        update: {
+          id: null,
+          index: null,
           dialog: false,
           params: {
             name: '',
@@ -266,7 +269,6 @@
             finished: '',
             failed: '',
             overlap: 1,
-            team_id: "",
           },
           rules: {
             name: [
@@ -310,14 +312,16 @@
        * Show edit pipeline dialog
        */
       handleEdit(index, row) {
-        this.edit.dialog = true;
         this.fetchTasks();
-        this.edit.params = {...row};
+        this.update.id = row.id;
+        this.update.index = index;
+        this.update.params = {...row};
+        this.update.dialog = true;
       },
       /**
        * Get pipeline log
        */
-      queryLog(row) {
+      handleQueryLog(row) {
         this.$router.push({
           name: 'log',
           params: {
@@ -338,6 +342,56 @@
           case 'edit':
             this.$refs.edit.resetFields();
             this.edit.dialog = false;
+            this.update.id = null;
+            this.update.index = null;
+            break;
+        }
+      },
+      submit(form) {
+        switch (form) {
+          case "create":
+            this.$refs.create.validate((valid) => {
+              if (valid) {
+                this.create.params.team_id = this.profile.team_id;
+                api.pipeline.create(this.create.params).then(res => {
+                  this.meta.total += 1;
+                  // 判断是否需要跳转到最后一页
+                  if (this.meta.total > (this.meta.limit * this.meta.page)) {
+                    this.changePage(Math.ceil(this.meta.total / this.meta.limit));
+                  } else {
+                    // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
+                    this.pipelines.push(res.data);
+                  }
+                  this.handleClose('create');
+                  this.$message.success(res.message);
+                }).catch(err => {
+                  this.$message.warning(err.message);
+                });
+              } else {
+                return false;
+              }
+            });
+            break;
+          case "update":
+            this.$refs.update.validate((valid) => {
+              if (valid) {
+                api.pipeline.update(this.update.id, this.update.params).then(res => {
+                  Vue.set(this.pipelines[this.update.index], 'name', res.data.name);
+                  Vue.set(this.pipelines[this.update.index], 'spec', res.data.spec);
+                  Vue.set(this.pipelines[this.update.index], 'description', res.data.description);
+                  Vue.set(this.pipelines[this.update.index], 'status', res.data.status);
+                  Vue.set(this.pipelines[this.update.index], 'finished', res.data.finished);
+                  Vue.set(this.pipelines[this.update.index], 'failed', res.data.failed);
+                  Vue.set(this.pipelines[this.update.index], 'overlap', res.data.overlap);
+                  this.handleClose('update');
+                  this.$message.success(res.message);
+                }).catch(err => {
+                  this.$message.warning(err.message);
+                });
+              } else {
+                return false;
+              }
+            });
             break;
         }
       },
@@ -353,7 +407,7 @@
           type: 'warning'
         }).then(() => {
           api.pipeline.delete(row.id).then(res => {
-            this.fetchPipelines();
+            Vue.delete(this.users, index);
             this.$message({
               type: 'success',
               message: res.message
@@ -398,49 +452,6 @@
         this.meta.page = page;
         this.params.page = page;
         this.fetchPipelines();
-      },
-      /**
-       * Submit create pipeline form
-       */
-      submitCreateForm() {
-        this.$refs.create.validate((valid) => {
-          if (valid) {
-            this.create.params.team_id = this.profile.team_id;
-            api.pipeline.create(this.create.params).then(res => {
-              this.meta.total += 1;
-              // 判断是否需要跳转到最后一页
-              if (this.meta.total > (this.meta.limit * this.meta.page)) {
-                this.changePage(Math.ceil(this.meta.total / this.meta.limit));
-              } else {
-                // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                this.pipelines.push(res.data);
-              }
-              this.handleClose('create');
-              this.$message.success(res.message);
-            }).catch(err => {
-              this.$message.warning(err.message);
-            });
-          } else {
-            return false;
-          }
-        });
-      },
-      /**
-       * Submit edit pipeline form
-       */
-      submitEditForm() {
-        this.$refs.edit.validate((valid) => {
-          if (valid) {
-            api.pipeline.update(this.edit.params.id, this.edit.params).then(res => {
-              this.handleClose('edit');
-              this.$message.success(res.message);
-            }).catch(err => {
-              this.$message.warning(err.message);
-            });
-          } else {
-            return false;
-          }
-        });
       }
     },
     computed: {

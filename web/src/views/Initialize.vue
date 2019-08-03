@@ -56,7 +56,7 @@
                 </el-row>
               </el-form>
               <div class="footer">
-                <el-button type="primary" plain @click="confirm('etcd')">Fore</el-button>
+                <el-button type="primary" plain @click="confirm('etcd')">Next</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 1">
@@ -80,7 +80,7 @@
               </el-form>
               <div class="footer">
                 <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('auth')">Fore</el-button>
+                <el-button type="primary" plain @click="confirm('auth')">Next</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 2">
@@ -123,7 +123,7 @@
               </el-form>
               <div class="footer">
                 <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('database')">Fore</el-button>
+                <el-button type="primary" plain @click="confirm('database')">Next</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 3">

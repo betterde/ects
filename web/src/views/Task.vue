@@ -15,33 +15,38 @@
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create task" :visible.sync="create.dialog" @close="handleClose('create')" width="600px">
+      <el-dialog title="Create task" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
-          <el-row :gutter="10">
-           <el-col :span="12">
-             <el-form-item label="Name" prop="name">
-               <el-input v-model="create.params.name" autocomplete="off"></el-input>
-             </el-form-item>
-           </el-col>
-           <el-col :span="12">
-             <el-form-item label="Mode" prop="mode">
-               <el-select v-model="create.params.mode" placeholder="Please select a mode">
-                 <el-option label="shell" value="shell"></el-option>
-                 <el-option label="http" value="http"></el-option>
-               </el-select>
-             </el-form-item>
-           </el-col>
-          </el-row>
+          <el-form-item label="Name" prop="name">
+            <el-input v-model="create.params.name" autocomplete="off"></el-input>
+          </el-form-item>
           <el-form-item label="Description" prop="description">
             <el-input v-model="create.params.description" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="Content" prop="content">
-            <el-input v-model="create.params.content" autocomplete="off" @keyup.enter.native="submitCreateForm"></el-input>
+            <el-input v-model="create.params.content" autocomplete="off" @keyup.enter.native="submit('create')"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="create.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submitCreateForm">Confirm</el-button>
+          <el-button type="primary" @click="submit('create')">Confirm</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog title="Edit task" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
+        <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
+          <el-form-item label="Name" prop="name">
+            <el-input v-model="update.params.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="Description" prop="description">
+            <el-input v-model="update.params.description" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="Content" prop="content">
+            <el-input v-model="update.params.content" autocomplete="off" @keyup.enter.native="submit('update')"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="update.dialog = false">Cancel</el-button>
+          <el-button type="primary" @click="submit('update')">Confirm</el-button>
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
@@ -61,15 +66,15 @@
           </el-table-column>
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="mode" label="Mode" width="100"></el-table-column>
           <el-table-column prop="description" label="Description"></el-table-column>
           <el-table-column prop="created_at" label="CreatedAt" width="155"></el-table-column>
+          <el-table-column prop="updated_at" label="UpdatedAt" width="155"></el-table-column>
           <el-table-column prop="option" label="Action" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle
-                         @click="handleEdit(scope.$index, scope.row)"></el-button>
+                         @click="handleUpdate(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-tickets" plain circle
-                         @click="handleDelete(scope.$index, scope.row)"></el-button>
+                         @click="handleQueryLog(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
                          @click="handleDelete(scope.$index, scope.row)"></el-button>
             </template>
@@ -84,6 +89,7 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import api from '../apis'
 
   export default {
@@ -93,13 +99,13 @@
         classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
-          search: ""
+          search: "",
+          page: 1
         },
         create: {
           dialog: false,
           params: {
             name: '',
-            mode: '',
             description: '',
             content: ''
           },
@@ -109,20 +115,18 @@
             ],
             description: [
               {type: 'string', required: false, message: 'Please enter a task description', trigger: 'blur'}
-            ],
-            mode: [
-              {type: 'string', required: true, message: 'Please select a mode', trigger: 'change'}
             ],
             content: [
               {type: 'string', required: true, message: 'Please enter task command', trigger: 'blur'}
             ]
           }
         },
-        edit: {
+        update: {
+          id: null,
+          index: null,
           dialog: false,
           params: {
             name: '',
-            mode: '',
             description: '',
             content: ''
           },
@@ -132,9 +136,6 @@
             ],
             description: [
               {type: 'string', required: false, message: 'Please enter a task description', trigger: 'blur'}
-            ],
-            mode: [
-              {type: 'string', required: true, message: 'Please select a mode', trigger: 'change'}
             ],
             content: [
               {type: 'string', required: true, message: 'Please enter task command', trigger: 'blur'}
@@ -153,29 +154,59 @@
       handleCreate() {
         this.create.dialog = true;
       },
-      submitCreateForm() {
-        this.$refs.create.validate((valid) => {
-          if (valid) {
-            api.task.create(this.create.params).then(res => {
-              this.meta.total += 1;
-              // 判断是否需要跳转到最后一页
-              if (this.meta.total > (this.meta.limit * this.meta.page)) {
-                this.changePage(Math.ceil(this.meta.total / this.meta.limit));
+      submit(form) {
+        switch (form) {
+          case "create":
+            this.$refs.create.validate((valid) => {
+              if (valid) {
+                api.task.create(this.create.params).then(res => {
+                  this.meta.total += 1;
+                  // 判断是否需要跳转到最后一页
+                  if (this.meta.total > (this.meta.limit * this.meta.page)) {
+                    this.changePage(Math.ceil(this.meta.total / this.meta.limit));
+                  } else {
+                    // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
+                    this.tasks.push(res.data);
+                  }
+                  this.handleClose('create');
+                  this.$message.success(res.message);
+                }).catch(err => {
+                  this.$message.warning(err.message);
+                });
               } else {
-                // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                this.tasks.push(res.data);
+                return false;
               }
-              this.handleClose('create');
-              this.$message.success(res.message);
-            }).catch(err => {
-              this.$message.warning(err.message);
             });
-          } else {
-            return false;
-          }
-        });
+            break;
+          case "update":
+            this.$refs.update.validate((valid) => {
+              if (valid) {
+                api.task.update(this.update.params.id, this.update.params).then(res => {
+                  this.handleClose('update');
+                  this.tasks[this.update.index].name = res.data.name;
+                  this.tasks[this.update.index].description = res.data.description;
+                  this.tasks[this.update.index].content = res.data.content;
+                  this.tasks[this.update.index].updated_at = res.data.updated_at;
+                  this.$message.success(res.message);
+                  this.update.index = null;
+                }).catch(err => {
+                  this.$message.warning(err.message);
+                });
+              } else {
+                return false;
+              }
+            });
+            break;
+        }
       },
-      handleEdit(index, row) {
+      handleUpdate(index, row) {
+        this.update.id = row.id;
+        this.update.index = index;
+        this.update.params = {...row};
+        this.update.dialog = true;
+      },
+      handleQueryLog(index, row) {
+        // TODO Redirect to log view
         window.console.log(index, row);
       },
       /**
@@ -188,14 +219,33 @@
             this.$refs.create.resetFields();
             this.create.dialog = false;
             break;
-          case 'edit':
-            this.$refs.edit.resetFields();
-            this.edit.dialog = false;
+          case 'update':
+            this.$refs.update.resetFields();
+            this.update.dialog = false;
             break;
         }
       },
       handleDelete(index, row) {
-        window.console.log(index, row);
+        this.$confirm('This operation will delete the task, whether to continue?', 'Alert', {
+          confirmButtonText: 'Confirm',
+          cancelButtonText: 'Cancel',
+          type: 'warning'
+        }).then(() => {
+          api.task.delete(row.id).then(res => {
+            Vue.delete(this.tasks, index);
+            this.$message({
+              type: 'success',
+              message: res.message
+            });
+          }).catch(err => {
+            this.$message.error(err.message)
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Operation canceled!'
+          });
+        });
       },
       fetchTasks() {
         this.loading = true;
