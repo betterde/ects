@@ -20,6 +20,7 @@ type (
 		Port        int        `json:"port" xorm:"not null comment('端口') SMALLINT(5)"`
 		Mode        string     `json:"mode" xorm:"not null comment('节点类型') CHAR(6)"`
 		Status      string     `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"`
+		Version     string     `json:"version" xorm:"not null comment('版本') VARCHAR(255)"`
 		Description string     `json:"description" xorm:"comment('描述') VARCHAR(255)"`
 		CreatedAt   utils.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
 		UpdatedAt   utils.Time `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`

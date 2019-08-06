@@ -12,8 +12,8 @@ type PipelineTaskPivot struct {
 	Interval    int        `json:"interval" validate:"numeric" xorm:"not null default 0 comment('间隔时间') INT(10)"`
 	Retries     int        `json:"retries" validate:"numeric" xorm:"not null default 0 comment('重试次数') TINYINT(3)"`
 	Directory   string     `json:"directory" validate:"required" xorm:"null comment('工作目录') VARCHAR(255)"`
-	User        string     `json:"user" validate:"required" xorm:"null commend('运行用户') VARCHAR(255)"`
-	Environment string     `json:"environment" validate:"required" xorm:"null commend('环境变量') VARCHAR(255)"`
+	User        string     `json:"user" validate:"required" xorm:"null comment('运行用户') VARCHAR(255)"`
+	Environment string     `json:"environment" validate:"required" xorm:"null comment('环境变量') VARCHAR(255)"`
 	Dependence  string     `json:"dependence" validate:"required" xorm:"not null default 'strong' comment('依赖') VARCHAR(255)"`
 	CreatedAt   utils.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt   utils.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`

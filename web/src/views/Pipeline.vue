@@ -4,16 +4,16 @@
       <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
-            <el-col :span="16">
-              <el-button type="primary" plain @click="handleCreate">Create</el-button>
-            </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+            </el-col>
+            <el-col :span="16" style="text-align: right">
+              <el-button type="primary" plain @click="handleCreate">创建</el-button>
             </el-col>
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create pipeline" :visible.sync="create.dialog" @close="handleClose('create')" width="40%" :close-on-click-modal="false">
+      <el-dialog title="创建流水线" :visible.sync="create.dialog" @close="handleClose('create')" width="40%" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
@@ -81,7 +81,7 @@
           <el-button type="primary" @click="submit('create')">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit pipeline" :visible.sync="update.dialog" @close="handleClose('update')" width="40%" :close-on-click-modal="false">
+      <el-dialog title="编辑流水线" :visible.sync="update.dialog" @close="handleClose('update')" width="40%" :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="edit" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
@@ -149,54 +149,125 @@
           <el-button type="primary" @click="submit('update')">Confirm</el-button>
         </div>
       </el-dialog>
+      <el-dialog title="添加任务" :visible.sync="bind.dialog" @close="handleClose('bind')" width="40%" :close-on-click-modal="false">
+        <el-form :model="bind.params" :rules="bind.rules" ref="bind" label-position="top">
+          <el-row :gutter="10">
+            <el-col :span="12">
+              <el-form-item label="任务">
+                <el-select v-model="bind.params.task_id" placeholder="请选择任务" style="width: 100%">
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-form-item label="超时">
+                <el-input v-model="bind.params.timeout" placeholder="超时时间"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="3">
+              <el-form-item label="间隔">
+                <el-input v-model="bind.params.interval" placeholder="间隔时间"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="2">
+              <el-form-item label="重试">
+                <el-input v-model="bind.params.retries" placeholder="失败重试次数"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item label="用户">
+                <el-input v-model="bind.params.user" placeholder="执行命令的用户"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="工作目录">
+                <el-input v-model="bind.params.directory" placeholder="任务执行时的工作目录"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="环境变量">
+                <el-input v-model="bind.params.environment" placeholder="任务执行时的环境变量"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="bind.dialog = false">Cancel</el-button>
+          <el-button type="primary" @click="submit('bind')">Confirm</el-button>
+        </div>
+      </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="pipelines" style="width: 100%" empty-text="No more data">
+        <el-table :data="pipelines" style="width: 100%" @expand-change="handleTableExpand">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
                 <el-row :gutter="10">
-                  <el-col :span="12">
+                  <el-col :span="8">
                     <el-form-item label="ID">
                       <span>{{ props.row.id }}</span>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="12">
-                    <el-form-item label="Overlap">
-                      <span>{{ props.row.overlap === 1 }}</span>
+                  <el-col :span="8">
+                    <el-form-item label="成功">
+                      <span>{{ props.row.finished ? props.row.finished : "未设置" }}</span>
                     </el-form-item>
                   </el-col>
-                </el-row>
-                <el-row :gutter="10">
-                  <el-col :span="12">
-                    <el-form-item label="Finished">
-                      <span>{{ props.row.finished }}</span>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="12">
-                    <el-form-item label="Failed">
-                      <span>{{ props.row.failed }}</span>
+                  <el-col :span="8">
+                    <el-form-item label="失败">
+                      <span>{{ props.row.failed ? props.row.failed : "未设置" }}</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form>
+              <el-divider>·</el-divider>
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+                </el-col>
+                <el-col :span="16" style="text-align: right">
+                  <el-button type="primary" plain @click="handleBind(props.row)">添加任务</el-button>
+                </el-col>
+              </el-row>
+              <el-divider>关联任务</el-divider>
+              <el-table :data="props.row.steps" style="width: 100%">
+                <el-table-column type="index" width="50"></el-table-column>
+                <el-table-column prop="date" label="ID" width="180"></el-table-column>
+                <el-table-column prop="name" label="名称" width="180"></el-table-column>
+                <el-table-column prop="address" label="描述"></el-table-column>
+                <el-table-column prop="address" label="创建于"></el-table-column>
+                <el-table-column prop="option" label="Action" width="100">
+                  <template slot-scope="scope">
+                    <el-button size="mini" icon="el-icon-edit" circle
+                               @click="handleEdit(scope.$index, scope.row)"></el-button>
+                    <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
+                               @click="handleDelete(scope.$index, scope.row)"></el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="spec" label="Spec" width="100"></el-table-column>
-          <el-table-column label="Status" width="100">
+          <el-table-column prop="name" label="名称" width="200"></el-table-column>
+          <el-table-column prop="spec" label="表达式" width="130"></el-table-column>
+          <el-table-column label="状态" width="100">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.status === 0" size="medium" type="info">Disabled</el-tag>
               <el-tag v-else size="medium">Normal</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="description" label="Description"></el-table-column>
-          <el-table-column prop="created_at" label="Created At" width="160"></el-table-column>
-          <el-table-column prop="option" label="Action" width="130">
+          <el-table-column label="重复" width="100">
+            <template slot-scope="scope">
+              <el-tag v-if="scope.row.overlap === 0" size="medium" type="info">No</el-tag>
+              <el-tag v-else size="medium">Yes</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="description" label="描述"></el-table-column>
+          <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
+          <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle
                          @click="handleEdit(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-tickets" plain circle
-                         @click="handleQueryLog(scope.row)"></el-button>
+              <el-button size="mini" icon="el-icon-plus" plain circle
+                         @click="handleDetail(scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
                          @click="handleDelete(scope.$index, scope.row)"></el-button>
             </template>
@@ -231,7 +302,7 @@
             name: '',
             spec: '',
             description: '',
-            status: 1,
+            status: 0,
             finished: '',
             failed: '',
             overlap: 1,
@@ -291,6 +362,28 @@
             ]
           },
         },
+        bind: {
+          dialog: false,
+          pipeline_id: null,
+          params: {
+            pipeline_id: "",
+            task_id: "",
+            step: 1,
+            timeout: 0,
+            interval: 0,
+            retries: 0,
+            directory: "",
+            user: "",
+            environment: "",
+            dependence: "strong",
+          },
+          rules:{},
+        },
+        modify: {
+          dialog: false,
+          params: {},
+          rules:{}
+        },
         tasks: [],
         pipelines: [],
         meta: {
@@ -319,13 +412,21 @@
         this.update.dialog = true;
       },
       /**
+       * 展示绑定任务表单
+       */
+      handleBind(row) {
+        this.bind.pipeline_id = row.id;
+        this.bind.params.pipeline_id = row.id;
+        this.bind.dialog = true;
+      },
+      /**
        * Get pipeline log
        */
-      handleQueryLog(row) {
+      handleDetail(row) {
         this.$router.push({
-          name: 'log',
+          name: 'pipeline_detail',
           params: {
-            pipeline_id: row.id
+            id: row.id
           }
         });
       },
@@ -423,6 +524,26 @@
         });
       },
       /**
+       * 点击站看行的处理逻辑
+       * @param row
+       * @param rows
+       */
+      handleTableExpand(row, rows) {
+        if (rows.length === 0) {
+          // TODO
+        } else {
+          for (let index = 0; index < this.pipelines.length; index++) {
+            if (this.pipelines[index].id === row.id) {
+              api.pipeline.fetchTasks(row.id).then(res => {
+                Vue.set(this.pipelines[index], 'steps', res.data);
+              }).catch(err => {
+                this.$message.error(err.message);
+              });
+            }
+          }
+        }
+      },
+      /**
        * Fetch task data
        */
       fetchTasks() {
@@ -488,6 +609,9 @@
 </script>
 
 <style lang="scss">
+  .el-divider__text {
+    color: #99a9bf;
+  }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
   }

@@ -8,7 +8,7 @@
           </div>
         </el-col>
         <el-col :span="16">
-          <el-menu :default-active="menu.active" class="el-menu-nav" mode="horizontal" @select="handleSelect" router>
+          <el-menu :default-active="$route.path" class="el-menu-nav" mode="horizontal" router>
             <el-menu-item index="/">Dashboard</el-menu-item>
             <el-menu-item index="/pipeline">Pipeline</el-menu-item>
             <el-menu-item index="/task">Task</el-menu-item>
@@ -50,9 +50,6 @@
       return {}
     },
     methods: {
-      handleSelect(key){
-        this.$store.commit('SET_MENU_ACTIVE', key);
-      },
       handleCommand(command) {
         switch (command) {
           case 'signOut':
@@ -68,7 +65,6 @@
     },
     computed: {
       ...mapState({
-        menu: state => state.system.menu,
         profile: state => state.account.profile,
         access_token: state => state.account.access_token
       })

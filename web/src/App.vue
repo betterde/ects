@@ -59,12 +59,6 @@
         if (to.name === 'signin') {
           this.$store.commit('SET_LAYOUT_CURRENT', 'guest');
         }
-
-        if (from.name === 'notfound') {
-          this.$store.commit('SET_MENU_ACTIVE', to.path);
-        }
-
-        this.$store.commit('SET_MENU_ACTIVE', to.path);
       }
     }
   }
