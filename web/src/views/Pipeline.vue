@@ -244,10 +244,10 @@
               {type: 'string', required: true, message: 'Please enter a spec', trigger: 'blur'}
             ],
             finished: [
-              {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
+              {type: 'string', required: false, message: 'Please select a task', trigger: 'change'}
             ],
             failed: [
-              {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
+              {type: 'string', required: false, message: 'Please select a task', trigger: 'change'}
             ],
             status: [
               {type: 'number', required: true, message: 'Please select pipeline status', trigger: 'change'}

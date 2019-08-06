@@ -5,24 +5,24 @@ import (
 )
 
 const (
-	TASK_STATUS_NORMAL   = "normal"
-	TASK_STATUS_DISABLED = "disabled"
-	TASK_MODE_SHELL      = "shell"
-	TASK_MODE_REST       = "rest"
-	TASK_MODE_MAIL       = "mail"
-	TASK_MODE_HOOK       = "hook"
+	STATUSNORMAL   = "normal"
+	STATUSDISABLED = "disabled"
+	MODESHELL      = "shell"
+	MODEREST       = "rest"
+	MODEMAIL       = "mail"
+	MODEHOOK       = "hook"
 )
 
-type (
-	Task struct {
-		Id          string     `json:"id" validate:"-" xorm:"not null pk comment('用户ID') CHAR(36)"`
-		Name        string     `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
-		Content     string     `json:"content" validate:"required" xorm:"not null comment('内容') TEXT"`
-		Description string     `json:"description" validate:"-" xorm:"comment('描述') VARCHAR(255)"`
-		CreatedAt   utils.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
-		UpdatedAt   utils.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
-	}
-)
+// 任务模型
+type Task struct {
+	Id          string     `json:"id" validate:"-" xorm:"not null pk comment('用户ID') CHAR(36)"`
+	Name        string     `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
+	Mode        string     `json:"mode" validate:"required" xorm:"not null default('shell') comment('任务模式') VARCHAR(32)"`
+	Content     string     `json:"content" validate:"required" xorm:"not null comment('内容') TEXT"`
+	Description string     `json:"description" validate:"-" xorm:"null comment('描述') VARCHAR(255)"`
+	CreatedAt   utils.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt   utils.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
+}
 
 // 定义模型的数据表名称
 func (task *Task) TableName() string {

@@ -10,9 +10,11 @@ import (
 )
 
 type (
+	// 用于填充系统默认数据的接口
 	Seeder interface {
 		Seed() error
 	}
+	// 模型接口
 	Model interface {
 		Store() error
 		Update(id string) error
@@ -55,6 +57,7 @@ func keepAlived() {
 	}
 }
 
+// 迁移数据库
 func Migrate() error {
 	tables := []interface{}{
 		&User{},

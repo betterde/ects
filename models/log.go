@@ -14,17 +14,18 @@ type Log struct {
 	CreatedAt time.Time `json:"created_at" xorm:"not null comment('创建于') created DATETIME"`
 }
 
-// Define table name
+// 定义日志表名称
 func (log *Log) TableName() string {
 	return "logs"
 }
 
+// 保存日志
 func (log *Log) Store() error {
 	_, err := Engine.Insert(log)
 	return err
 }
 
-// Create operation log
+// 创建用户操作日志
 func CreateLog(v interface{}, uid string, operation string) error {
 	var (
 		result []byte

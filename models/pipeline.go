@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
+	"github.com/gorhill/cronexpr"
+	"time"
 )
 
+// 流水线模型
 type Pipeline struct {
 	Id          string               `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
 	Name        string               `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
@@ -15,10 +18,12 @@ type Pipeline struct {
 	Finished    string               `json:"finished" validate:"omitempty,uuid4" xorm:"comment('成功时执行') CHAR(36)"`
 	Failed      string               `json:"failed" validate:"omitempty,uuid4" xorm:"comment('失败时执行') CHAR(36)"`
 	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
-	CreatedAt   utils.Time           `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-	UpdatedAt   utils.Time           `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
+	CreatedAt   utils.Time           `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt   utils.Time           `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
 	Nodes       []string             `json:"nodes" validate:"-" xorm:"-"`
 	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
+	Expression  *cronexpr.Expression `json:"-" validate:"-" xorm:"-"`
+	NextTime    time.Time            `json:"-" validate:"-" xorm:"-"`
 }
 
 // 定义模型的数据表名称
