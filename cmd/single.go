@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/betterde/ects/models"
 	"github.com/gorhill/cronexpr"
+	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"log"
 	"strings"
@@ -20,6 +21,7 @@ var singleCmd = &cobra.Command{
 		//pipeline.WatchPipelines("7df52971-4894-4f01-9171-7452c4ddceca")
 		log.Println(cronexpr.MustParse("* * * * * *").Next(time.Now()).Format(models.DefaultTimeFormat))
 		log.Println(strings.TrimPrefix("/var/local/laravel", "/var/local/"))
+		log.Println(uuid.NewV4().String())
 	},
 }
 

@@ -47,5 +47,8 @@ export default {
         pipeline_id: id
       }
     });
+  },
+  sort(params) {
+    return Vue.axios.put('/api/pipeline/steps', params)
   }
 }

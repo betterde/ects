@@ -109,7 +109,7 @@ func start() {
 	app := iris.New()
 	app.Use(recover.New())
 	app.Use(logger.New())
-	//app.Logger().SetLevel("disable")
+	app.Logger().SetLevel("disable")
 
 	routes.Register(app)
 

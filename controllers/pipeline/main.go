@@ -18,6 +18,7 @@ import (
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
+	"sort"
 )
 
 type (
@@ -31,6 +32,11 @@ type (
 	KillPipelineRequest struct {
 		PipelineId string `json:"pipeline_id" validate:"required,uuid4"`
 	}
+	PutStepsRequest struct {
+		PipelineId string `json:"pipeline_id" validate:"required,uuid4"`
+		Origin     int    `json:"origin" validate:"numeric"`
+		Current    int    `json:"current" validate:"numeric"`
+	}
 )
 
 var (
@@ -40,8 +46,8 @@ var (
 // Get pipelines list
 func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
-		total  int64
-		err    error
+		total int64
+		err   error
 	)
 	search := ctx.Params().GetStringDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
@@ -246,23 +252,83 @@ func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 
 	relations := make([]models.PipelineTaskPivot, 0)
 
-	if err := models.Engine.Where(builder.Eq{"pipeline_id": id}).Find(&relations); err != nil {
+	if err := models.Engine.Join("INNER", "tasks", "tasks.id = pipeline_task_pivot.task_id").Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&relations); err != nil {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
-	ids := make([]string, 0)
+	return response.Success("Successful", response.Payload{"data": relations})
+}
 
-	for _, pivot := range relations {
-		ids = append(ids, pivot.TaskId)
+// 根据拖动顺序排序数据
+func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
+	params := PutStepsRequest{}
+
+	if err := ctx.ReadJSON(&params); err != nil {
+		return response.InternalServerError("Failed to Unmarshal JSON", err)
 	}
 
-	tasks := make([]models.Task, 0)
+	if err := validate.Struct(params); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		return response.ValidationError(message.Get("pipeline", validationErrors))
+	}
 
-	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
+	relations := make([]*models.PipelineTaskPivot, 0)
+
+	if err := models.Engine.Join("INNER", "tasks", "tasks.id = pipeline_task_pivot.task_id").Where(builder.Eq{"pipeline_id": params.PipelineId}).Asc("step").Find(&relations); err != nil {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
-	return response.Success("Successful", response.Payload{"data": tasks})
+	count := len(relations)
+
+	// 从任意位置挪到第一个位置
+	if params.Current == 0 && params.Origin > 0 {
+		for index := 0; index <= count; index++ {
+			if index < params.Origin {
+				relations[index].Step += 1
+				if err := relations[index].Update(); err != nil {
+					return response.InternalServerError("排序失败", err)
+				}
+			}
+		}
+	}
+
+	// 从上往下挪动
+	if params.Current > params.Origin {
+		for index := 0; index <= count; index++ {
+			if index > params.Origin && index <= params.Current {
+				relations[index].Step -= 1
+				if err := relations[index].Update(); err != nil {
+					return response.InternalServerError("排序失败", err)
+				}
+			}
+		}
+	}
+
+	// 从下往上挪动
+	if params.Current < params.Origin {
+		for index := 0; index <= count; index++ {
+			if index >= params.Current && index < params.Origin {
+				log.Println(index, params.Current, params.Origin)
+				relations[index].Step += 1
+				if err := relations[index].Update(); err != nil {
+					log.Println(err)
+					return response.InternalServerError("排序失败", err)
+				}
+			}
+		}
+	}
+
+	// 修改被移动属性的值
+	relations[params.Origin].Step = params.Current + 1
+	if err := relations[params.Origin].Update(); err != nil {
+		log.Println(err)
+	}
+
+	sort.Slice(relations, func(before, after int) bool {
+		return relations[before].Step < relations[after].Step
+	})
+
+	return response.Success("Successful", response.Payload{"data": relations})
 }
 
 // Bind the task to pipeline

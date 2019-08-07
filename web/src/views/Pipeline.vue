@@ -149,34 +149,34 @@
           <el-button type="primary" @click="submit('update')">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="添加任务" :visible.sync="bind.dialog" @close="handleClose('bind')" width="40%" :close-on-click-modal="false">
+      <el-dialog title="添加任务" :visible.sync="bind.dialog" @close="handleClose('bind')" width="800px" :close-on-click-modal="false">
         <el-form :model="bind.params" :rules="bind.rules" ref="bind" label-position="top">
           <el-row :gutter="10">
-            <el-col :span="12">
+            <el-col :span="24">
               <el-form-item label="任务">
                 <el-select v-model="bind.params.task_id" placeholder="请选择任务" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="6">
+              <el-form-item label="用户">
+                <el-input v-model="bind.params.user" placeholder="执行命令的用户"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
               <el-form-item label="超时">
                 <el-input v-model="bind.params.timeout" placeholder="超时时间"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="3">
+            <el-col :span="6">
               <el-form-item label="间隔">
                 <el-input v-model="bind.params.interval" placeholder="间隔时间"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="2">
+            <el-col :span="6">
               <el-form-item label="重试">
                 <el-input v-model="bind.params.retries" placeholder="失败重试次数"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="用户">
-                <el-input v-model="bind.params.user" placeholder="执行命令的用户"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -192,8 +192,55 @@
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="bind.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submit('bind')">Confirm</el-button>
+          <el-button @click="bind.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('bind')">确定</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog title="添加任务" :visible.sync="modify.dialog" @close="handleClose('modify')" width="800px" :close-on-click-modal="false">
+        <el-form :model="modify.params" :rules="modify.rules" ref="modify" label-position="top">
+          <el-row :gutter="10">
+            <el-col :span="24">
+              <el-form-item label="任务">
+                <el-select v-model="modify.params.task_id" placeholder="请选择任务" style="width: 100%">
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="用户">
+                <el-input v-model="modify.params.user" placeholder="执行命令的用户"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="超时">
+                <el-input v-model="modify.params.timeout" placeholder="超时时间"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="间隔">
+                <el-input v-model="modify.params.interval" placeholder="间隔时间"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="重试">
+                <el-input v-model="modify.params.retries" placeholder="失败重试次数"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="工作目录">
+                <el-input v-model="modify.params.directory" placeholder="任务执行时的工作目录"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="环境变量">
+                <el-input v-model="modify.params.environment" placeholder="任务执行时的环境变量"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="modify.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('modify')">确定</el-button>
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
@@ -229,13 +276,18 @@
                 </el-col>
               </el-row>
               <el-divider>关联任务</el-divider>
-              <el-table :data="props.row.steps" style="width: 100%">
-                <el-table-column type="index" width="50"></el-table-column>
-                <el-table-column prop="date" label="ID" width="180"></el-table-column>
-                <el-table-column prop="name" label="名称" width="180"></el-table-column>
-                <el-table-column prop="address" label="描述"></el-table-column>
-                <el-table-column prop="address" label="创建于"></el-table-column>
-                <el-table-column prop="option" label="Action" width="100">
+              <el-table :data="props.row.steps === null ? [] : props.row.steps" row-key="step" style="width: 100%" class="tasks-table">
+                <el-table-column prop="step" label="#" width="50"></el-table-column>
+                <el-table-column prop="task.name" label="名称" width="180"></el-table-column>
+                <el-table-column prop="timeout" label="超时" width="50"></el-table-column>
+                <el-table-column prop="interval" label="间隔" width="50"></el-table-column>
+                <el-table-column prop="retries" label="重试" width="50"></el-table-column>
+                <el-table-column prop="user" label="用户" width="100"></el-table-column>
+                <el-table-column prop="directory" label="工作目录" width="200"></el-table-column>
+                <el-table-column prop="environment" label="环境变量"></el-table-column>
+                <el-table-column prop="task.description" label="描述" width="150"></el-table-column>
+                <el-table-column prop="created_at" label="添加于" width="160"></el-table-column>
+                <el-table-column prop="option" label="操作" width="100">
                   <template slot-scope="scope">
                     <el-button size="mini" icon="el-icon-edit" circle
                                @click="handleEdit(scope.$index, scope.row)"></el-button>
@@ -285,6 +337,7 @@
   import Vue from 'vue'
   import api from '../apis'
   import {mapState} from 'vuex'
+  import Sortable from 'sortablejs'
 
   export default {
     name: "Pipeline",
@@ -362,9 +415,12 @@
             ]
           },
         },
+        current: {
+          id: null,
+          index: null
+        },
         bind: {
           dialog: false,
-          pipeline_id: null,
           params: {
             pipeline_id: "",
             task_id: "",
@@ -377,11 +433,26 @@
             environment: "",
             dependence: "strong",
           },
-          rules:{},
+          rules:{
+            task_id: [
+              {type: 'string', required: true, message: '请选择一个任务', trigger: 'change'}
+            ],
+          },
         },
         modify: {
           dialog: false,
-          params: {},
+          params: {
+            pipeline_id: "",
+            task_id: "",
+            step: 1,
+            timeout: 0,
+            interval: 0,
+            retries: 0,
+            directory: "",
+            user: "",
+            environment: "",
+            dependence: "strong",
+          },
           rules:{}
         },
         tasks: [],
@@ -415,7 +486,6 @@
        * 展示绑定任务表单
        */
       handleBind(row) {
-        this.bind.pipeline_id = row.id;
         this.bind.params.pipeline_id = row.id;
         this.bind.dialog = true;
       },
@@ -534,8 +604,11 @@
         } else {
           for (let index = 0; index < this.pipelines.length; index++) {
             if (this.pipelines[index].id === row.id) {
+              Vue.set(this.current, 'id', row.id);
+              Vue.set(this.current, 'index', index);
               api.pipeline.fetchTasks(row.id).then(res => {
                 Vue.set(this.pipelines[index], 'steps', res.data);
+                this.rowDrop();
               }).catch(err => {
                 this.$message.error(err.message);
               });
@@ -573,6 +646,26 @@
         this.meta.page = page;
         this.params.page = page;
         this.fetchPipelines();
+      },
+      rowDrop() {
+        const tbody = document.querySelector('.el-table__body-wrapper .tasks-table tbody');
+        const _this = this;
+        Sortable.create(tbody, {
+          onEnd({ newIndex, oldIndex }) {
+            window.console.log(newIndex, oldIndex);
+            api.pipeline.sort({
+              pipeline_id: _this.current.id,
+              origin: oldIndex,
+              current: newIndex
+            }).then(res => {
+              Vue.set(_this.pipelines[_this.current.index], 'steps', res.data);
+            }).catch(err => {
+              _this.$message.error(err.message);
+            });
+            const currRow = _this.pipelines[_this.current.index].steps.splice(oldIndex, 1)[0];
+            _this.pipelines[_this.current.index].steps.splice(newIndex, 0, currRow);
+          }
+        })
       }
     },
     computed: {
