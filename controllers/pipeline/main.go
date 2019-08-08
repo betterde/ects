@@ -262,18 +262,15 @@ func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 		ids = append(ids, relation.TaskId)
 	}
 
-	tasks := make([]models.Task, 0)
+	tasks := make(map[string]models.Task)
 
 	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
 	for index, relation := range relations {
-		for i, task := range tasks {
-			if relation.TaskId == task.Id {
-				relations[index].Task = &tasks[i]
-			}
-		}
+		task := tasks[relation.TaskId]
+		relations[index].Task = &task
 	}
 
 	return response.Success("Successful", response.Payload{"data": relations})
@@ -352,18 +349,15 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 		ids = append(ids, relation.TaskId)
 	}
 
-	tasks := make([]models.Task, 0)
+	tasks := make(map[string]models.Task)
 
 	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
 	for index, relation := range relations {
-		for i, task := range tasks {
-			if relation.TaskId == task.Id {
-				relations[index].Task = &tasks[i]
-			}
-		}
+		task := tasks[relation.TaskId]
+		relations[index].Task = &task
 	}
 
 	return response.Success("Successful", response.Payload{"data": relations})
