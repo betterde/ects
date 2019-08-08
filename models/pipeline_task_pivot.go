@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/betterde/ects/internal/utils"
+	"github.com/go-xorm/builder"
 )
 
 type PipelineTaskPivot struct {
@@ -18,7 +19,7 @@ type PipelineTaskPivot struct {
 	Dependence  string     `json:"dependence" validate:"required" xorm:"not null default 'strong' comment('依赖') VARCHAR(255)"`
 	CreatedAt   utils.Time `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt   utils.Time `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
-	Task        *Task      `json:"task" validate:"-" xorm:"extends"`
+	Task        *Task      `json:"task" validate:"-" xorm:"-"`
 }
 
 // 定义模型的数据表名称
@@ -28,12 +29,23 @@ func (pivot *PipelineTaskPivot) TableName() string {
 
 // 创建流水线和任务的关联关系
 func (pivot *PipelineTaskPivot) Store() error {
-	_, err := Engine.Insert(pivot)
+	_, err := Engine.InsertOne(pivot)
 	return err
 }
 
+// 更新中间表
 func (pivot *PipelineTaskPivot) Update() error {
-	_, err := Engine.Id(pivot.Id).Cols("step").Update(pivot)
+	_, err := Engine.Table(pivot.TableName()).Where(builder.Eq{"id": pivot.Id}).Update(map[string]interface{}{
+		"task_id": pivot.TaskId,
+		"step": pivot.Step,
+		"timeout": pivot.Timeout,
+		"interval": pivot.Interval,
+		"retries": pivot.Retries,
+		"directory": pivot.Directory,
+		"user": pivot.User,
+		"environment": pivot.Environment,
+		"dependence": pivot.Dependence,
+	})
 	return err
 }
 

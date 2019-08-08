@@ -37,14 +37,14 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		total  int64
 		err    error
 	)
-	search := ctx.Params().GetStringDefault("search", "")
+	search := ctx.URLParamDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
 	tasks := make([]models.Task, 0)
 
 	if search == "" {
 		total, err = models.Engine.Limit(limit, start).FindAndCount(&tasks)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&tasks)
+		total, err = models.Engine.Where(builder.Like{"id", search}.Or(builder.Like{"name", search})).Limit(limit, start).FindAndCount(&tasks)
 	}
 
 	if err != nil {

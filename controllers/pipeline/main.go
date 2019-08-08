@@ -256,6 +256,26 @@ func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
+	ids := make([]string, 0)
+
+	for _, relation := range relations{
+		ids = append(ids, relation.TaskId)
+	}
+
+	tasks := make([]models.Task, 0)
+
+	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
+		return response.InternalServerError("Failed to query relations", err)
+	}
+
+	for index, relation := range relations {
+		for i, task := range tasks {
+			if relation.TaskId == task.Id {
+				relations[index].Task = &tasks[i]
+			}
+		}
+	}
+
 	return response.Success("Successful", response.Payload{"data": relations})
 }
 
@@ -305,13 +325,11 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 	}
 
 	// 从下往上挪动
-	if params.Current < params.Origin {
+	if params.Current != 0 && params.Current < params.Origin {
 		for index := 0; index <= count; index++ {
 			if index >= params.Current && index < params.Origin {
-				log.Println(index, params.Current, params.Origin)
 				relations[index].Step += 1
 				if err := relations[index].Update(); err != nil {
-					log.Println(err)
 					return response.InternalServerError("排序失败", err)
 				}
 			}
@@ -321,19 +339,41 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 	// 修改被移动属性的值
 	relations[params.Origin].Step = params.Current + 1
 	if err := relations[params.Origin].Update(); err != nil {
-		log.Println(err)
+		return response.InternalServerError("排序失败", err)
 	}
 
 	sort.Slice(relations, func(before, after int) bool {
 		return relations[before].Step < relations[after].Step
 	})
 
+	ids := make([]string, 0)
+
+	for _, relation := range relations{
+		ids = append(ids, relation.TaskId)
+	}
+
+	tasks := make([]models.Task, 0)
+
+	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
+		return response.InternalServerError("Failed to query relations", err)
+	}
+
+	for index, relation := range relations {
+		for i, task := range tasks {
+			if relation.TaskId == task.Id {
+				relations[index].Task = &tasks[i]
+			}
+		}
+	}
+
 	return response.Success("Successful", response.Payload{"data": relations})
 }
 
 // Bind the task to pipeline
 func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
-	pivot := models.PipelineTaskPivot{}
+	pivot := models.PipelineTaskPivot{
+		Id: uuid.NewV4().String(),
+	}
 
 	if err := ctx.ReadJSON(&pivot); err != nil {
 		return response.InternalServerError("Failed to Unmarshal JSON", err)
