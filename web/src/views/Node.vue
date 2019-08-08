@@ -4,11 +4,11 @@
       <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
-            <el-col :span="16">
-              <el-button type="primary" plain @click="handleCreate">Create</el-button>
-            </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+            </el-col>
+            <el-col :span="16" style="text-align: right">
+              <el-button type="primary" plain @click="handleCreate">创建</el-button>
             </el-col>
           </el-row>
         </div>
@@ -44,11 +44,11 @@
       <div class="panel-body" :class="classes">
         <el-table :data="nodes" style="width: 100%" v-loading="loading" empty-text="No more data">
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
-          <el-table-column prop="name" label="Name"></el-table-column>
-          <el-table-column prop="host" label="Host" width="140"></el-table-column>
-          <el-table-column prop="port" label="Port" width="80"></el-table-column>
-          <el-table-column prop="status" label="Status" width="120"></el-table-column>
-          <el-table-column prop="option" label="Action" width="100">
+          <el-table-column prop="name" label="名称"></el-table-column>
+          <el-table-column prop="host" label="主机" width="140"></el-table-column>
+          <el-table-column prop="port" label="端口" width="80"></el-table-column>
+          <el-table-column prop="status" label="状态" width="120"></el-table-column>
+          <el-table-column prop="option" label="操作" width="100">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleUpdate(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>

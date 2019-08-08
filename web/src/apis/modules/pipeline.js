@@ -48,7 +48,20 @@ export default {
       }
     });
   },
+  /**
+   * 排序关联的任务
+   * @param params
+   * @returns {AxiosPromise<any>}
+   */
   sort(params) {
-    return Vue.axios.put('/api/pipeline/steps', params)
+    return Vue.axios.put('/api/pipeline/steps', params);
+  },
+  /**
+   * 绑定任务到流水线
+   * @param params
+   * @returns {AxiosPromise<any>}
+   */
+  bindTask(params) {
+    return Vue.axios.post('/api/pipeline/task', params);
   }
 }

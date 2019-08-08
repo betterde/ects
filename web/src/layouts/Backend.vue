@@ -9,13 +9,13 @@
         </el-col>
         <el-col :span="16">
           <el-menu :default-active="$route.path" class="el-menu-nav" mode="horizontal" router>
-            <el-menu-item index="/">Dashboard</el-menu-item>
-            <el-menu-item index="/pipeline">Pipeline</el-menu-item>
-            <el-menu-item index="/task">Task</el-menu-item>
-            <el-menu-item index="/node">Node</el-menu-item>
-            <el-menu-item index="/user">User</el-menu-item>
-            <el-menu-item index="/log">Log</el-menu-item>
-            <el-menu-item index="/setting">Setting</el-menu-item>
+            <el-menu-item index="/">概览</el-menu-item>
+            <el-menu-item index="/pipeline">流水线</el-menu-item>
+            <el-menu-item index="/task">任务</el-menu-item>
+            <el-menu-item index="/node">节点</el-menu-item>
+            <el-menu-item index="/user">用户</el-menu-item>
+            <el-menu-item index="/log">日志</el-menu-item>
+            <el-menu-item index="/setting">设置</el-menu-item>
           </el-menu>
         </el-col>
         <el-col :span="4">

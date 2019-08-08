@@ -7,22 +7,22 @@
             <el-col :span="16">
             </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
             </el-col>
           </el-row>
         </div>
       </div>
       <div class="panel-body" :class="classes">
-        <el-table :data="logs" style="width: 100%" empty-text="No more data">
+        <el-table :data="logs" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
-              <pre v-else><div style="text-align: center; color: #909399">No Content</div></pre>
+              <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
             </template>
           </el-table-column>
-          <el-table-column prop="user_id" label="User" width="300"></el-table-column>
-          <el-table-column prop="operation" label="Operation"></el-table-column>
-          <el-table-column prop="created_at" label="Created at" width="160"></el-table-column>
+          <el-table-column prop="user_id" label="用户" width="300"></el-table-column>
+          <el-table-column prop="operation" label="操作"></el-table-column>
+          <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
         </el-table>
         <div class="pagination">
           <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>

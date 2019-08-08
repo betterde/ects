@@ -3,7 +3,7 @@
     <div class="panel">
       <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
-          <el-tab-pane label="Nofification" name="notification">
+          <el-tab-pane label="系统通知" name="notification">
             <el-form :model="notification" :rules="rules" ref="database">
               <el-col :span="10">
                 <el-form-item prop="host">
@@ -48,20 +48,20 @@
               </el-col>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="Upgrade" name="upgrade">
+          <el-tab-pane label="系统升级" name="upgrade">
             <el-upload class="upgrade" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">Drag the latest ECTS binary executable file here，or <em>click to upload</em></div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="Information" name="info">
+          <el-tab-pane label="系统信息" name="info">
             <div class="information">
               <h1 class="information-title">
                 系统信息
               </h1>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="Service" name="service">
+          <el-tab-pane label="系统服务" name="service">
             <div class="service-info">
               <h1 class="service-info-title">
                 获得帮助

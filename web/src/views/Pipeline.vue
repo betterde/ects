@@ -5,7 +5,9 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchPipelines">
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              </el-input>
             </el-col>
             <el-col :span="16" style="text-align: right">
               <el-button type="primary" plain @click="handleCreate">创建</el-button>
@@ -149,13 +151,16 @@
           <el-button type="primary" @click="submit('update')">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="添加任务" :visible.sync="bind.dialog" @close="handleClose('bind')" width="800px" :close-on-click-modal="false">
+      <el-dialog title="添加任务" :visible.sync="bind.dialog" @close="handleClose('bind')" width="600px" :close-on-click-modal="false">
         <el-form :model="bind.params" :rules="bind.rules" ref="bind" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-form-item label="任务">
+              <el-form-item label="任务" prop="task_id">
                 <el-select v-model="bind.params.task_id" placeholder="请选择任务" style="width: 100%">
-                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
+                  <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id" :disabled="task.disabled">
+                    <span style="float: left">{{ task.name }}</span>
+                    <span v-if="task.disabled === true" style="float: right; color: #8492a6; font-size: 13px">该任务已添加</span>
+                  </el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -165,17 +170,17 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="超时">
+              <el-form-item label="超时" prop="timeout">
                 <el-input v-model="bind.params.timeout" placeholder="超时时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="间隔">
+              <el-form-item label="间隔" prop="interval">
                 <el-input v-model="bind.params.interval" placeholder="间隔时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="重试">
+              <el-form-item label="重试" prop="retries">
                 <el-input v-model="bind.params.retries" placeholder="失败重试次数"></el-input>
               </el-form-item>
             </el-col>
@@ -244,7 +249,7 @@
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="pipelines" style="width: 100%" @expand-change="handleTableExpand">
+        <el-table :data="pipelines" style="width: 100%" ref="pipeline" @expand-change="handleTableExpand">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
@@ -256,43 +261,52 @@
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="成功">
-                      <span>{{ props.row.finished ? props.row.finished : "未设置" }}</span>
+                      <router-link class="el-link el-link--default is-underline" v-if="props.row.finished !== ''" :to="{path: '/task', query: {id: props.row.finished}}"><span>{{ props.row.finished }}</span></router-link>
+                      <span v-else>未设置</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="8">
                     <el-form-item label="失败">
-                      <span>{{ props.row.failed ? props.row.failed : "未设置" }}</span>
+                      <router-link class="el-link el-link--default is-underline" v-if="props.row.failed !== ''" :to="{path: '/task', query: {id: props.row.failed}}"><span>{{ props.row.failed }}</span></router-link>
+                      <span v-else>未设置</span>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form>
-              <el-divider>·</el-divider>
-              <el-row :gutter="20">
-                <el-col :span="8">
-                  <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
-                </el-col>
-                <el-col :span="16" style="text-align: right">
-                  <el-button type="primary" plain @click="handleBind(props.row)">添加任务</el-button>
-                </el-col>
-              </el-row>
-              <el-divider>关联任务</el-divider>
-              <el-table :data="props.row.steps === null ? [] : props.row.steps" row-key="step" style="width: 100%" class="tasks-table">
+              <el-divider>以下是流水线关联的任务可以拖动设置执行顺序</el-divider>
+              <div style="text-align: center; width: 100%"></div>
+              <el-table :data="props.row.steps === null ? [] : props.row.steps" row-key="step" ref="task" style="width: 100%" class="tasks-table">
                 <el-table-column prop="step" label="#" width="50"></el-table-column>
-                <el-table-column prop="task.name" label="名称" width="180"></el-table-column>
+                <el-table-column label="名称" width="180">
+                  <template slot-scope="props">
+                    <router-link class="el-link el-link--default is-underline" :to="{path: '/task', query: {id: props.row.task.id}}"><span>{{ props.row.task.name }}</span></router-link>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="timeout" label="超时" width="50"></el-table-column>
                 <el-table-column prop="interval" label="间隔" width="50"></el-table-column>
                 <el-table-column prop="retries" label="重试" width="50"></el-table-column>
                 <el-table-column prop="user" label="用户" width="100"></el-table-column>
-                <el-table-column prop="directory" label="工作目录" width="200"></el-table-column>
-                <el-table-column prop="environment" label="环境变量"></el-table-column>
+                <el-table-column prop="directory" label="工作目录" width="300">
+                  <template slot-scope="props">
+                    {{ props.row.directory === "" ? "未设置" : props.row.directory }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="environment" label="环境变量">
+                  <template slot-scope="props">
+                    {{ props.row.environment === "" ? "未设置" : props.row.environment }}
+                  </template>
+                </el-table-column>
                 <el-table-column prop="task.description" label="描述" width="150"></el-table-column>
-                <el-table-column prop="created_at" label="添加于" width="160"></el-table-column>
                 <el-table-column prop="option" label="操作" width="100">
                   <template slot-scope="scope">
-                    <el-button size="mini" icon="el-icon-edit" circle
-                               @click="handleEdit(scope.$index, scope.row)"></el-button>
-                    <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
-                               @click="handleDelete(scope.$index, scope.row)"></el-button>
+                    <el-tooltip class="item" effect="dark" content="编辑关系" placement="top">
+                      <el-button size="mini" icon="el-icon-edit" circle
+                                 @click="handleEdit(scope.$index, scope.row)"></el-button>
+                    </el-tooltip>
+                    <el-tooltip class="item" effect="dark" content="移除绑定" placement="top">
+                      <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
+                                 @click="handleDelete(scope.$index, scope.row)"></el-button>
+                    </el-tooltip>
                   </template>
                 </el-table-column>
               </el-table>
@@ -314,14 +328,24 @@
           </el-table-column>
           <el-table-column prop="description" label="描述"></el-table-column>
           <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
-          <el-table-column prop="option" label="操作" width="130">
+          <el-table-column prop="option" label="操作" width="170">
             <template slot-scope="scope">
-              <el-button size="mini" icon="el-icon-edit" circle
-                         @click="handleEdit(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-plus" plain circle
-                         @click="handleDetail(scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
-                         @click="handleDelete(scope.$index, scope.row)"></el-button>
+              <el-tooltip class="item" effect="dark" content="编辑" placement="top">
+                <el-button size="mini" icon="el-icon-edit" circle
+                           @click="handleEdit(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="添加任务" placement="top">
+                <el-button size="mini" icon="el-icon-plus" circle
+                           @click="handleBind(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="查询日志" placement="top">
+                <el-button size="mini" icon="el-icon-tickets" plain circle
+                           @click="handleDetail(scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="删除" placement="top">
+                <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
+                           @click="handleDelete(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -336,7 +360,6 @@
 <script>
   import Vue from 'vue'
   import api from '../apis'
-  import {mapState} from 'vuex'
   import Sortable from 'sortablejs'
 
   export default {
@@ -437,6 +460,27 @@
             task_id: [
               {type: 'string', required: true, message: '请选择一个任务', trigger: 'change'}
             ],
+            timeout: [
+              {type: 'integer', required: true, message: '请输入超时时间', trigger: 'blur'}
+            ],
+            interval: [
+              {type: 'integer', required: true, message: '请输入间隔时间', trigger: 'blur'}
+            ],
+            retries: [
+              {type: 'integer', required: true, message: '请输入重试次数', trigger: 'blur'}
+            ],
+            directory: [
+              {type: 'string', required: false, message: '请输入工作目录', trigger: 'blur'}
+            ],
+            user: [
+              {type: 'string', required: false, message: '请输入执行用户', trigger: 'blur'}
+            ],
+            environment: [
+              {type: 'string', required: false, message: '请输入环境变量', trigger: 'blur'}
+            ],
+            dependence: [
+              {type: 'string', required: false, message: '请选择是否依赖', trigger: 'blur'}
+            ],
           },
         },
         modify: {
@@ -461,7 +505,8 @@
           limit: 10,
           page: 1,
           total: 0
-        }
+        },
+        sortable: null
       }
     },
     methods: {
@@ -485,7 +530,23 @@
       /**
        * 展示绑定任务表单
        */
-      handleBind(row) {
+      handleBind(index, row) {
+        api.pipeline.fetchTasks(row.id).then(res => {
+          Vue.set(this.pipelines[index], 'steps', res.data);
+          this.tasks.forEach(task => {
+            if (row.steps.length === 0) {
+              Vue.set(task, "disabled", false);
+            } else {
+              row.steps.forEach(step => {
+                if (task.id === step.task_id) {
+                  Vue.set(task, "disabled", true);
+                }
+              });
+            }
+          });
+        }).catch(err => {
+          this.$message.error(err.message);
+        });
         this.bind.params.pipeline_id = row.id;
         this.bind.dialog = true;
       },
@@ -518,12 +579,15 @@
             break;
         }
       },
+      /**
+       * 提交表单
+       * @param form string
+       */
       submit(form) {
         switch (form) {
-          case "create":
+          case 'create':
             this.$refs.create.validate((valid) => {
               if (valid) {
-                this.create.params.team_id = this.profile.team_id;
                 api.pipeline.create(this.create.params).then(res => {
                   this.meta.total += 1;
                   // 判断是否需要跳转到最后一页
@@ -531,19 +595,25 @@
                     this.changePage(Math.ceil(this.meta.total / this.meta.limit));
                   } else {
                     // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                    this.pipelines.push(res.data);
+                    this.pipelines.unshift(res.data);
                   }
                   this.handleClose('create');
-                  this.$message.success(res.message);
+                  this.$message.success({
+                    offset: 95,
+                    message: res.message
+                  });
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.warning({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
               }
             });
             break;
-          case "update":
+          case 'update':
             this.$refs.update.validate((valid) => {
               if (valid) {
                 api.pipeline.update(this.update.id, this.update.params).then(res => {
@@ -558,6 +628,26 @@
                   this.$message.success(res.message);
                 }).catch(err => {
                   this.$message.warning(err.message);
+                });
+              } else {
+                return false;
+              }
+            });
+            break;
+          case "bind":
+            this.$refs.bind.validate((valid) => {
+              if (valid) {
+                api.pipeline.bindTask(this.bind.params).then(res => {
+                  this.handleClose('bind');
+                  this.$message.success({
+                    offset: 95,
+                    message: res.message
+                  });
+                }).catch(err => {
+                  this.$message.warning({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -599,19 +689,45 @@
        * @param rows
        */
       handleTableExpand(row, rows) {
-        if (rows.length === 0) {
-          // TODO
-        } else {
-          for (let index = 0; index < this.pipelines.length; index++) {
-            if (this.pipelines[index].id === row.id) {
-              Vue.set(this.current, 'id', row.id);
-              Vue.set(this.current, 'index', index);
-              api.pipeline.fetchTasks(row.id).then(res => {
-                Vue.set(this.pipelines[index], 'steps', res.data);
-                this.rowDrop();
-              }).catch(err => {
-                this.$message.error(err.message);
-              });
+        // 如果当前展开超过一行
+        if (rows.length > 1) {
+          // 则遍历行，进行关闭，保证同时只有一个行展开
+          rows.forEach(item => {
+            if (row.id !== item.id) {
+              this.$refs.pipeline.toggleRowExpansion(item, false);
+            }
+          });
+        }
+
+        // 判断当前展开的行如果大于0
+        if (rows.length > 0) {
+          // 最后一个行为当前行
+          let intance = rows.pop();
+          // 考虑到展开新行和关闭行都会触发 handleTableExpand 所以需要判断是否是当前行
+          if (intance.id === row.id) {
+            for (let index = 0; index < this.pipelines.length; index++) {
+              if (this.pipelines[index].id === intance.id) {
+                Vue.set(this.current, 'id', intance.id);
+                Vue.set(this.current, 'index', index);
+                // 调用 API 获取流水线关联的任务
+                api.pipeline.fetchTasks(intance.id).then(res => {
+                  // 将返回数据设置到对应流水线下的执行步骤属性中
+                  Vue.set(this.pipelines[index], 'steps', res.data);
+                  // 只有当关联任务超过一条时才开启拖拽排序功能
+                  if (res.data instanceof Array && res.data.length > 1) {
+                    this.rowDrop();
+                  } else {
+                    if (this.sortable !== null) {
+                      this.sortable.option("disabled", true);
+                    }
+                  }
+                }).catch(err => {
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
+                });
+              }
             }
           }
         }
@@ -621,9 +737,12 @@
        */
       fetchTasks() {
         api.task.fetch(this.params).then(res => {
-          this.tasks = res.data;
+          Vue.set(this, "tasks", res.data);
         }).catch(err => {
-          this.$message.warning(err.message)
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          });
         });
       },
       /**
@@ -635,7 +754,10 @@
           this.pipelines = res.data;
           this.meta = res.meta;
         }).catch(err => {
-          this.$message.error(err.data.message);
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          });
         });
         this.loading = false;
       },
@@ -647,34 +769,42 @@
         this.params.page = page;
         this.fetchPipelines();
       },
+      /**
+       * 为流水线关联的任务表格开启排序功能
+       */
       rowDrop() {
-        const tbody = document.querySelector('.el-table__body-wrapper .tasks-table tbody');
-        const _this = this;
-        Sortable.create(tbody, {
+        let tbody = document.querySelector('.el-table__body-wrapper .tasks-table tbody');
+        let _this = this;
+        this.sortable = Sortable.create(tbody, {
           onEnd({ newIndex, oldIndex }) {
-            window.console.log(newIndex, oldIndex);
             api.pipeline.sort({
               pipeline_id: _this.current.id,
               origin: oldIndex,
               current: newIndex
             }).then(res => {
               Vue.set(_this.pipelines[_this.current.index], 'steps', res.data);
+              _this.$message.success({
+                message: '排序成功',
+                offset: 95
+              })
             }).catch(err => {
-              _this.$message.error(err.message);
+              _this.$message.error({
+                message: err.message,
+                offset: 95
+              });
+              return false;
             });
-            const currRow = _this.pipelines[_this.current.index].steps.splice(oldIndex, 1)[0];
+            let currRow = _this.pipelines[_this.current.index].steps.splice(oldIndex, 1)[0];
             _this.pipelines[_this.current.index].steps.splice(newIndex, 0, currRow);
           }
         })
       }
     },
-    computed: {
-      ...mapState({
-        profile: state => state.account.profile,
-      }),
-    },
     mounted() {
+      // 先获取流水线数据
       this.fetchPipelines();
+      // 再获取用于选择任务的下拉列表数据
+      this.fetchTasks();
     },
     /**
      * Modify the class name before entering the current component
@@ -695,7 +825,7 @@
      */
     beforeRouteLeave (to, from, next) {
       this.classes = ['animated', 'fade-out', 'faster'];
-      // Wait for leave animation to finish
+      // 等待动画效果完成再离开
       setTimeout(next, 200);
     }
   }

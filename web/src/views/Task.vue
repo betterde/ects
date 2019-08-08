@@ -4,13 +4,13 @@
       <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
-            <el-col :span="16">
-              <el-button type="primary" plain @click="handleCreate">Create</el-button>
-            </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search">
+              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchTasks" @clear="handleClear" clearable>
                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
               </el-input>
+            </el-col>
+            <el-col :span="16" style="text-align: right">
+              <el-button type="primary" plain @click="handleCreate">创建</el-button>
             </el-col>
           </el-row>
         </div>
@@ -65,11 +65,11 @@
             </template>
           </el-table-column>
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
-          <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="description" label="Description"></el-table-column>
-          <el-table-column prop="created_at" label="CreatedAt" width="155"></el-table-column>
-          <el-table-column prop="updated_at" label="UpdatedAt" width="155"></el-table-column>
-          <el-table-column prop="option" label="Action" width="130">
+          <el-table-column prop="name" label="名称" width="200"></el-table-column>
+          <el-table-column prop="description" label="描述"></el-table-column>
+          <el-table-column prop="created_at" label="创建于" width="155"></el-table-column>
+          <el-table-column prop="updated_at" label="更新于" width="155"></el-table-column>
+          <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle
                          @click="handleUpdate(scope.$index, scope.row)"></el-button>
@@ -247,6 +247,10 @@
           });
         });
       },
+      handleClear() {
+        this.$router.push("/task");
+        this.fetchTasks();
+      },
       fetchTasks() {
         this.loading = true;
         api.task.fetch(this.params).then(res => {
@@ -264,6 +268,10 @@
       },
     },
     mounted() {
+      // 如果存在查询参数则
+      if (this.$route.query.hasOwnProperty("id")) {
+        this.params.search = this.$route.query.id;
+      }
       this.fetchTasks();
     },
     beforeRouteEnter(to, from, next) {

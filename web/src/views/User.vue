@@ -4,11 +4,11 @@
       <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
-            <el-col :span="16">
-              <el-button type="primary" plain @click="handleCreate">Create</el-button>
-            </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+            </el-col>
+            <el-col :span="16" style="text-align: right">
+              <el-button type="primary" plain @click="handleCreate">创建</el-button>
             </el-col>
           </el-row>
         </div>
@@ -84,12 +84,12 @@
               <el-form label-position="top" inline class="table-expand">
                 <el-row :gutter="10">
                   <el-col :span="12">
-                    <el-form-item label="Created at">
+                    <el-form-item label="创建于">
                       <span>{{ props.row.created_at }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item label="Updated at">
+                    <el-form-item label="更新于">
                       <span>{{ props.row.updated_at }}</span>
                     </el-form-item>
                   </el-col>
@@ -98,15 +98,15 @@
             </template>
           </el-table-column>
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
-          <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="email" label="Email"></el-table-column>
-          <el-table-column label="Manager" width="100">
+          <el-table-column prop="name" label="姓名" width="200"></el-table-column>
+          <el-table-column prop="email" label="邮箱"></el-table-column>
+          <el-table-column label="管理员" width="100">
             <template slot-scope="scope">
               <el-tag v-if="scope.row.manager === false" size="medium" type="info">NO</el-tag>
               <el-tag v-else size="medium">Yes</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="option" label="Action" width="130">
+          <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleUpdate(scope.$index, scope.row)"></el-button>
               <el-button size="mini" icon="el-icon-tickets" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
