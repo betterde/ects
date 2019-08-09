@@ -63,5 +63,13 @@ export default {
    */
   bindTask(params) {
     return Vue.axios.post('/api/pipeline/task', params);
+  },
+  /**
+   * 解绑任务
+   * @param id
+   * @returns {AxiosPromise}
+   */
+  unbindTask(id) {
+    return Vue.axios.delete(`/api/pipeline/task/${id}`)
   }
 }

@@ -305,7 +305,7 @@
                     </el-tooltip>
                     <el-tooltip class="item" effect="dark" content="移除绑定" placement="top">
                       <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
-                                 @click="handleDelete(scope.$index, scope.row)"></el-button>
+                                 @click="handleRemove(scope.$index, scope.row)"></el-button>
                     </el-tooltip>
                   </template>
                 </el-table-column>
@@ -443,6 +443,7 @@
           index: null
         },
         bind: {
+          index: null,
           dialog: false,
           params: {
             pipeline_id: "",
@@ -547,6 +548,7 @@
         }).catch(err => {
           this.$message.error(err.message);
         });
+        this.bind.index = index;
         this.bind.params.pipeline_id = row.id;
         this.bind.dialog = true;
       },
@@ -577,6 +579,11 @@
             this.update.id = null;
             this.update.index = null;
             break;
+          case 'bind':
+            this.$refs.bind.resetFields();
+            this.bind.dialog = false;
+            // this.bind.index = null;
+            this.bind.params.pipeline_id = null;
         }
       },
       /**
@@ -638,6 +645,12 @@
             this.$refs.bind.validate((valid) => {
               if (valid) {
                 api.pipeline.bindTask(this.bind.params).then(res => {
+                  let steps = [];
+                  if (this.pipelines.steps instanceof Array) {
+                    steps = this.pipelines.steps;
+                  }
+                  steps.push(res.data);
+                  Vue.set(this.pipelines[this.bind.index], 'steps', steps);
                   this.handleClose('bind');
                   this.$message.success({
                     offset: 95,
@@ -657,18 +670,48 @@
         }
       },
       /**
-       * Delete pipeline
+       * 删除流水线
        * @param index
        * @param row
        */
       handleDelete(index, row) {
-        this.$confirm('This operation will delete the pipeline, whether to continue?', 'Alert', {
-          confirmButtonText: 'Confirm',
-          cancelButtonText: 'Cancel',
+        this.$confirm('此操作将删除流水线，是否继续', '警告', {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           api.pipeline.delete(row.id).then(res => {
-            Vue.delete(this.users, index);
+            Vue.delete(this.pipelines, index);
+            this.$message({
+              type: 'success',
+              offset: 95,
+              message: res.message
+            });
+          }).catch(err => {
+            this.$message.error(err.message)
+          });
+        }).catch(() => {
+          this.$message({
+            type: 'error',
+            offset: 95,
+            message: '操作已取消'
+          });
+        });
+      },
+      /**
+       * 解绑任务
+       * @param index
+       * @param row
+       */
+      handleRemove(index, row) {
+        window.console.log(row);
+        this.$confirm('此操作将解绑任务，是否继续', '警告', {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          api.pipeline.unbindTask(row.id).then(res => {
+            Vue.delete(this.pipelines, index);
             this.$message({
               type: 'success',
               message: res.message
@@ -679,7 +722,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: 'Operation canceled!'
+            message: '操作已取消'
           });
         });
       },

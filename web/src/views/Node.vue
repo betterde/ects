@@ -47,7 +47,8 @@
           <el-table-column prop="name" label="名称"></el-table-column>
           <el-table-column prop="host" label="主机" width="140"></el-table-column>
           <el-table-column prop="port" label="端口" width="80"></el-table-column>
-          <el-table-column prop="status" label="状态" width="120"></el-table-column>
+          <el-table-column prop="status" label="状态" width="80"></el-table-column>
+          <el-table-column prop="mode" label="类型" width="80"></el-table-column>
           <el-table-column prop="option" label="操作" width="100">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleUpdate(scope.$index, scope.row)"></el-button>

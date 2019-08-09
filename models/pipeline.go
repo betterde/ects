@@ -84,3 +84,9 @@ func (pipeline *Pipeline) Build() (origin string, err error) {
 	origin = string(ob)
 	return
 }
+
+// 序列化
+func (pipeline *Pipeline) ToString() (string, error) {
+	result, err := json.Marshal(pipeline)
+	return string(result), err
+}

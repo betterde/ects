@@ -17,7 +17,8 @@ type (
 	// 模型接口
 	Model interface {
 		Store() error
-		Update(id string) error
+		Update() error
+		ToString() (string, error)
 	}
 )
 

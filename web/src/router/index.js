@@ -25,14 +25,6 @@ const router = new Router({
       component: () => import('../views/Pipeline.vue'),
     },
     {
-      path: "/pipeline/:id",
-      name: "pipeline_detail",
-      meta: {
-        requiresAuth: true
-      },
-      component: () => import('../views/PipelineDetail.vue'),
-    },
-    {
       path: '/task',
       name: 'task',
       meta: {

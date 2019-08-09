@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
 )
 
@@ -45,4 +46,10 @@ func (task *Task) Update() error {
 func (task *Task) Destroy() error {
 	_, err := Engine.Delete(task)
 	return err
+}
+
+// 序列化
+func (task *Task) ToString() (string, error) {
+	result, err := json.Marshal(task)
+	return string(result), err
 }

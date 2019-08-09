@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
 )
@@ -53,4 +54,10 @@ func (pivot *PipelineTaskPivot) Update() error {
 func (pivot *PipelineTaskPivot) Destroy() error {
 	_, err := Engine.Delete(pivot)
 	return err
+}
+
+// 序列化
+func (pivot *PipelineTaskPivot) ToString() (string, error) {
+	result, err :=  json.Marshal(pivot)
+	return string(result), err
 }

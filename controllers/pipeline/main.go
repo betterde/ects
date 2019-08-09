@@ -43,7 +43,7 @@ var (
 	validate = validator.New()
 )
 
-// Get pipelines list
+// 获取流水线列表
 func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
 		total int64
@@ -73,7 +73,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	})
 }
 
-// Create a pipeline
+// 创建流水线
 func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{}
 
@@ -103,14 +103,14 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 		log.Println(err)
 	}
 
-	if err := models.CreateLog(pipeline, utils.GetUID(ctx), "CREATE PIPELINE"); err != nil {
+	if err := models.CreateLog(&pipeline, utils.GetUID(ctx), "CREATE PIPELINE"); err != nil {
 		return response.InternalServerError("Failed to create log", err)
 	}
 
 	return response.Success("Created successfully", response.Payload{"data": pipeline})
 }
 
-// Update pipeline attributes by id
+// 更新流水线
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{}
 
@@ -142,7 +142,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	return response.Success("Updated successfully", response.Payload{"data": pipeline})
 }
 
-// Delete pipeline by id
+// 删除流水线
 func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{
 		Id: id,
@@ -160,7 +160,7 @@ func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Response {
 	return response.Success("Deleted successfully", response.Payload{"data": make(map[string]interface{})})
 }
 
-// Get pipeline binding nodes
+// 获取流水线绑定的节点
 func (instance *Controller) GetNodes(ctx iris.Context) mvc.Response {
 	id := ctx.URLParam("pipeline_id")
 
@@ -189,7 +189,7 @@ func (instance *Controller) GetNodes(ctx iris.Context) mvc.Response {
 	return response.Success("Successful", response.Payload{"data": nodes})
 }
 
-// Bind pipeline to node
+// 绑定流水线到节点
 func (instance *Controller) PostNodes(ctx iris.Context) mvc.Response {
 	params := BindNodeRequest{}
 
@@ -242,7 +242,7 @@ func (instance *Controller) PostNodes(ctx iris.Context) mvc.Response {
 	return response.Success("Bind successfully", response.Payload{"data": relations})
 }
 
-// Get pipeline tasks
+// 获取流水线绑定的任务
 func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 	id := ctx.URLParam("pipeline_id")
 
@@ -258,7 +258,7 @@ func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 
 	ids := make([]string, 0)
 
-	for _, relation := range relations{
+	for _, relation := range relations {
 		ids = append(ids, relation.TaskId)
 	}
 
@@ -345,7 +345,7 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 
 	ids := make([]string, 0)
 
-	for _, relation := range relations{
+	for _, relation := range relations {
 		ids = append(ids, relation.TaskId)
 	}
 
@@ -363,7 +363,7 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 	return response.Success("Successful", response.Payload{"data": relations})
 }
 
-// Bind the task to pipeline
+// 绑定任务到流水线
 func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
 	pivot := models.PipelineTaskPivot{
 		Id: uuid.NewV4().String(),
@@ -378,12 +378,52 @@ func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
 		return response.ValidationError(message.Get("pipeline", validationErrors))
 	}
 
-	err := pivot.Store()
-	if err != nil {
+	if count, err := models.Engine.Where(builder.Eq{"pipeline_id": pivot.PipelineId}).Count(&models.PipelineTaskPivot{}); err != nil {
+		return response.InternalServerError("Failed to bind pipeline to node", err)
+	} else {
+		pivot.Step = int(count) + 1
+	}
+
+	if err := pivot.Store(); err != nil {
 		return response.InternalServerError("Failed to bind pipeline to node", err)
 	}
 
+	task := models.Task{}
+	if _, err := models.Engine.Get(&task); err != nil {
+		return response.InternalServerError("Failed to bind pipeline to node", err)
+	}
+
+	pivot.Task = &task
+
 	return response.Success("Bind successfully", response.Payload{"data": pivot})
+}
+
+// 从流水线解绑任务
+func (instance *Controller) DeleteTaskBy(id string, ctx iris.Context) mvc.Response {
+	if id == "" {
+		return response.ValidationError("请选择要解绑的关联ID")
+	}
+
+	relation := models.PipelineTaskPivot{
+		Id: id,
+	}
+
+	// 查询数据
+	if _, err := models.Engine.Get(&relation); err != nil {
+		return response.NotFound("关联关系不存在")
+	}
+
+	// 删除数据
+	if err := relation.Destroy(); err != nil {
+		return response.InternalServerError("解绑任务失败", err)
+	}
+
+	// 记录日志
+	if err := models.CreateLog(&relation, utils.GetUID(ctx), "UNBIND TASK"); err != nil {
+		return response.InternalServerError("创建日志失败", err)
+	}
+
+	return response.Success("解绑成功", response.Payload{"data": make(map[string]interface{})})
 }
 
 // Get pipeline detail by id

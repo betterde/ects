@@ -90,7 +90,7 @@ func (service *UserService) Attempt(username, passwod string) (token string, err
 
 	token, err = IssueToken(user)
 
-	if err := models.CreateLog(*user, user.Id, "USER SIGN IN"); err != nil {
+	if err := models.CreateLog(user, user.Id, "USER SIGN IN"); err != nil {
 		log.Println(err)
 	}
 

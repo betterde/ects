@@ -56,12 +56,6 @@
       }
     },
     methods: {
-      handleEdit(index, row) {
-        window.console.log(index, row)
-      },
-      handleDelete(index, row) {
-        window.console.log(index, row)
-      },
       fetchLogs () {
         this.loading = true;
         api.log.fetch(this.params).then(res => {

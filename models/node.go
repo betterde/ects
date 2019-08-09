@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
 )
@@ -68,4 +69,10 @@ func (node *Node) CreateOrUpdate() error {
 	}
 
 	return node.Store()
+}
+
+// 序列化
+func (node *Node) ToString() (string, error) {
+	result, err := json.Marshal(node)
+	return string(result), err
 }

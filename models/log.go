@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"reflect"
 	"time"
 )
 
@@ -26,31 +25,13 @@ func (log *Log) Store() error {
 }
 
 // 创建用户操作日志
-func CreateLog(v interface{}, uid string, operation string) error {
+func CreateLog(model Model, uid string, operation string) error {
 	var (
-		result []byte
+		result string
 		err error
 	)
 
-	switch reflect.TypeOf(v).String() {
-	case "models.User":
-		obj := reflect.ValueOf(v).Interface().(User)
-		result, err = json.Marshal(&obj)
-		break
-	case "models.Task":
-		obj := reflect.ValueOf(v).Interface().(Task)
-		result, err = json.Marshal(&obj)
-		break
-	case "models.Node":
-		obj := reflect.ValueOf(v).Interface().(Node)
-		result, err = json.Marshal(&obj)
-		break
-	case "models.Pipeline":
-		obj := reflect.ValueOf(v).Interface().(Pipeline)
-		result, err = json.Marshal(&obj)
-		break
-	}
-
+	result, err = model.ToString()
 	if err != nil {
 		return err
 	}
@@ -58,7 +39,7 @@ func CreateLog(v interface{}, uid string, operation string) error {
 	log := &Log{
 		UserId:    uid,
 		Operation: operation,
-		Result:    string(result),
+		Result:    result,
 		CreatedAt: time.Now(),
 	}
 
