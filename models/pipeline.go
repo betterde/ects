@@ -20,7 +20,7 @@ type Pipeline struct {
 	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
 	CreatedAt   utils.Time           `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt   utils.Time           `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
-	Nodes       []string             `json:"-" xorm:"-"`
+	Nodes       []string             `json:"nodes" xorm:"-"`
 	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
 	Expression  *cronexpr.Expression `json:"-" xorm:"-"`
 	NextTime    time.Time            `json:"-" xorm:"-"`

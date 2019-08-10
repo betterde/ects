@@ -201,7 +201,7 @@
           <el-button type="primary" @click="submit('bind')">确定</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="添加任务" :visible.sync="modify.dialog" @close="handleClose('modify')" width="800px" :close-on-click-modal="false">
+      <el-dialog title="编辑任务" :visible.sync="modify.dialog" @close="handleClose('modify')" width="800px" :close-on-click-modal="false">
         <el-form :model="modify.params" :rules="modify.rules" ref="modify" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
@@ -218,17 +218,17 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="超时">
-                <el-input v-model="modify.params.timeout" placeholder="超时时间"></el-input>
+                <el-input-number v-model="modify.params.timeout"x placeholder="超时时间"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="间隔">
-                <el-input v-model="modify.params.interval" placeholder="间隔时间"></el-input>
+                <el-input-number v-model="modify.params.interval"x placeholder="间隔时间"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="重试">
-                <el-input v-model="modify.params.retries" placeholder="失败重试次数"></el-input>
+                <el-input-number v-model="modify.params.retries"x placeholder="失败重试次数"></el-input-number>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -300,7 +300,7 @@
                   <template slot-scope="scope">
                     <el-tooltip class="item" effect="dark" content="编辑关系" placement="top">
                       <el-button size="mini" icon="el-icon-edit" circle
-                                 @click="handleEdit(scope.$index, scope.row)"></el-button>
+                                 @click="handleModify(scope.$index, scope.row)"></el-button>
                     </el-tooltip>
                     <el-tooltip class="item" effect="dark" content="移除绑定" placement="top">
                       <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
@@ -488,6 +488,8 @@
           },
         },
         modify: {
+          id: null,
+          index: null,
           dialog: false,
           params: {
             pipeline_id: "",
@@ -515,14 +517,14 @@
     },
     methods: {
       /**
-       * Show create pipeline dialog
+       * 显示创建流水线的表单
        */
       handleCreate() {
         this.create.dialog = true;
         this.fetchTasks();
       },
       /**
-       * Show edit pipeline dialog
+       * 显示编辑流水线的表单
        */
       handleEdit(index, row) {
         this.fetchTasks();
@@ -532,7 +534,7 @@
         this.update.dialog = true;
       },
       /**
-       * 展示绑定任务表单
+       * 显示绑定任务表单
        */
       handleBind(index, row) {
         api.pipeline.fetchTasks(row.id).then(res => {
@@ -554,6 +556,15 @@
         this.bind.index = index;
         this.bind.params.pipeline_id = row.id;
         this.bind.dialog = true;
+      },
+      /**
+       * 显示编辑关联详情表单
+       */
+      handleModify(index, row) {
+        this.modify.id = row.id;
+        this.modify.index = index;
+        this.modify.params = {...row};
+        this.modify.dialog = true;
       },
       /**
        * Get pipeline log
@@ -585,8 +596,14 @@
           case 'bind':
             this.$refs.bind.resetFields();
             this.bind.dialog = false;
-            // this.bind.index = null;
             this.bind.params.pipeline_id = null;
+            break;
+          case 'modify':
+            this.$refs.modify.resetFields();
+            this.modify.dialog = false;
+            this.modify.id = null;
+            this.modify.index = null;
+            break;
         }
       },
       /**
@@ -607,7 +624,7 @@
                     // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
                     this.pipelines.unshift(res.data);
                   }
-                  this.handleClose('create');
+                  this.handleClose(form);
                   this.$message.success({
                     offset: 95,
                     message: res.message
@@ -634,7 +651,7 @@
                   Vue.set(this.pipelines[this.update.index], 'finished', res.data.finished);
                   Vue.set(this.pipelines[this.update.index], 'failed', res.data.failed);
                   Vue.set(this.pipelines[this.update.index], 'overlap', res.data.overlap);
-                  this.handleClose('update');
+                  this.handleClose(form);
                   this.$message({
                     type: 'success',
                     offset: 95,
@@ -661,7 +678,28 @@
                   }
                   steps.push(res.data);
                   Vue.set(this.pipelines[this.bind.index], 'steps', steps);
-                  this.handleClose('bind');
+                  this.handleClose(form);
+                  this.$message.success({
+                    offset: 95,
+                    message: res.message
+                  });
+                }).catch(err => {
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
+                });
+              } else {
+                return false;
+              }
+            });
+            break;
+          case 'modify':
+            this.$refs.modify.validate((valid) => {
+              if (valid) {
+                api.pipeline.modifyRelation(this.modify.id, this.modify.params).then(res => {
+                  Vue.set(this.pipelines[this.current.index].steps, this.modify.index, res.data);
+                  this.handleClose(form);
                   this.$message.success({
                     offset: 95,
                     message: res.message
@@ -799,7 +837,7 @@
         this.fetchPipelines();
       },
       /**
-       * Fetch task data
+       * 获取任务列表
        */
       fetchTasks() {
         api.task.fetch(this.params).then(res => {

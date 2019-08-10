@@ -65,6 +65,15 @@ export default {
     return Vue.axios.post('/api/pipeline/task', params);
   },
   /**
+   * 修改流水线与任务关联的属性
+   * @param id
+   * @param params
+   * @returns {AxiosPromise<any>}
+   */
+  modifyRelation(id, params) {
+    return Vue.axios.put(`/api/pipeline/task/${id}`, params);
+  },
+  /**
    * 解绑任务
    * @param id
    * @returns {AxiosPromise}

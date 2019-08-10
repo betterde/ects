@@ -75,7 +75,9 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 
 // 创建流水线
 func (instance *Controller) Post(ctx iris.Context) mvc.Response {
-	pipeline := models.Pipeline{}
+	pipeline := models.Pipeline{
+		Id: uuid.NewV4().String(),
+	}
 
 	if err := ctx.ReadJSON(&pipeline); err != nil {
 		return response.InternalServerError("Failed to Unmarshal JSON", err)
@@ -86,21 +88,8 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 		return response.ValidationError(message.Get("pipeline", validationErrors))
 	}
 
-	pipeline.Id = uuid.NewV4().String()
-	err := pipeline.Store()
-	if err != nil {
+	if err := pipeline.Store(); err != nil {
 		return response.InternalServerError("Failed to create pipeline", err)
-	}
-
-	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
-
-	bytes, err := json.Marshal(&pipeline)
-	if err != nil {
-		log.Println(err)
-	}
-
-	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
-		log.Println(err)
 	}
 
 	if err := models.CreateLog(&pipeline, utils.GetUID(ctx), "CREATE PIPELINE"); err != nil {
@@ -252,7 +241,7 @@ func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 
 	relations := make([]models.PipelineTaskPivot, 0)
 
-	if err := models.Engine.Join("INNER", "tasks", "tasks.id = pipeline_task_pivot.task_id").Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&relations); err != nil {
+	if err := models.Engine.Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&relations); err != nil {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
@@ -398,6 +387,32 @@ func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
 	return response.Success("Bind successfully", response.Payload{"data": pivot})
 }
 
+// 修改绑定关系
+func (instance *Controller) PutTaskBy(id string, ctx iris.Context) mvc.Response {
+	if id == "" {
+		return response.ValidationError("请选择要修改的关联ID")
+	}
+
+	relation := models.PipelineTaskPivot{
+		Id: id,
+	}
+
+	if err := ctx.ReadJSON(&relation); err != nil {
+		return response.InternalServerError("请求参数解析失败", err)
+	}
+
+	if err := validate.Struct(relation); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		return response.ValidationError(message.Get("pipeline", validationErrors))
+	}
+
+	if err := relation.Update(); err != nil {
+		return response.InternalServerError("更新关联信息失败", err)
+	}
+
+	return response.Success("更新成功", response.Payload{"data": relation})
+}
+
 // 从流水线解绑任务
 func (instance *Controller) DeleteTaskBy(id string, ctx iris.Context) mvc.Response {
 	if id == "" {
@@ -426,7 +441,7 @@ func (instance *Controller) DeleteTaskBy(id string, ctx iris.Context) mvc.Respon
 	return response.Success("解绑成功", response.Payload{"data": make(map[string]interface{})})
 }
 
-// Get pipeline detail by id
+// 根据流水线 ID 获取详情
 func (instance *Controller) GetBy(id string) mvc.Response {
 	pipeline := models.Pipeline{
 		Id: id,
@@ -445,6 +460,53 @@ func (instance *Controller) GetBy(id string) mvc.Response {
 	}
 
 	return response.Success("", response.Payload{"data": pipeline})
+}
+
+// 同步流水线数据到 ETCD
+func (instance *Controller) PatchBy(id string, ctx iris.Context) mvc.Response {
+	pipeline := models.Pipeline{
+		Id: id,
+	}
+
+	if _, err := models.Engine.Get(&pipeline); err != nil {
+		return response.InternalServerError("查询详情失败", err)
+	}
+
+	if err := models.Engine.Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&pipeline.Steps); err !=  nil {
+		return response.InternalServerError("查询流水线任务", err)
+	}
+
+	ids := make([]string, 0)
+	for _, relation := range pipeline.Steps {
+		ids = append(ids, relation.TaskId)
+	}
+
+	tasks := make(map[string]models.Task)
+	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
+		return response.InternalServerError("Failed to query relations", err)
+	}
+
+	for index, relation := range pipeline.Steps {
+		task := tasks[relation.TaskId]
+		pipeline.Steps[index].Task = &task
+	}
+
+	bytes, err := json.Marshal(&pipeline)
+	if err != nil {
+		return response.InternalServerError("同步到 ETCD 时出错", err)
+	}
+
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
+
+	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
+		return response.InternalServerError("同步到 ETCD 时出错", err)
+	}
+
+	if err := models.CreateLog(&pipeline, utils.GetUID(ctx), "SYNC PIPELINE"); err != nil {
+		return response.InternalServerError("Failed to create log", err)
+	}
+
+	return response.Success("同步成功", response.Payload{"data": make(map[string]interface{})})
 }
 
 func (instance *Controller) PostKiller(ctx iris.Context) mvc.Response {
