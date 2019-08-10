@@ -25,32 +25,32 @@
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="service" label-width="80px" label="服务节点前缀">
-                      <el-input v-model="config.etcd.service" placeholder="用于服务节点注册" clearable="true"></el-input>
+                      <el-input v-model="config.etcd.service" placeholder="用于服务节点注册" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="pipeline" label-width="80px" label="流水线前缀">
-                      <el-input v-model="config.etcd.pipeline" placeholder="用户保存用户创建的流水线" clearable="true"></el-input>
+                      <el-input v-model="config.etcd.pipeline" placeholder="用户保存用户创建的流水线" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="config" label-width="80px" label="服务配置前缀">
-                      <el-input v-model="config.etcd.config" placeholder="用于保存服务器配置信息" clearable="true"></el-input>
+                      <el-input v-model="config.etcd.config" placeholder="用于保存服务器配置信息" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="killer" label-width="80px" label="强杀指令前缀">
-                      <el-input v-model="config.etcd.killer" placeholder="用于保存强杀正在执行的流水线ID" clearable="true"></el-input>
+                      <el-input v-model="config.etcd.killer" placeholder="用于保存强杀正在执行的流水线ID" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="locker" label-width="80px" label="分布式锁前缀">
-                      <el-input v-model="config.etcd.locker" placeholder="用于抢占资源的分布式锁" clearable="true"></el-input>
+                      <el-input v-model="config.etcd.locker" placeholder="用于抢占资源的分布式锁" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="timeout" label-width="80px" label="超时时间">
-                      <el-input v-model="config.etcd.timeout" placeholder="ETCD请求超时时间" clearable="true"></el-input>
+                      <el-input v-model="config.etcd.timeout" placeholder="ETCD请求超时时间" clearable></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -73,7 +73,7 @@
                   </el-col>
                   <el-col :span="4">
                     <el-form-item prop="ttl" label="TTL">
-                      <el-input v-model="config.auth.ttl" placeholder="TTL" clearable="true"></el-input>
+                      <el-input v-model="config.auth.ttl" placeholder="TTL" clearable></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -87,7 +87,7 @@
               <el-form :model="config.database" :rules="rules.database" ref="database">
                 <el-col :span="14">
                   <el-form-item prop="host" label="主机">
-                    <el-input v-model="config.database.host" placeholder="主机地址" clearable="true"></el-input>
+                    <el-input v-model="config.database.host" placeholder="主机地址" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 50px; text-align: center">:</el-col>
@@ -98,7 +98,7 @@
                 </el-col>
                 <el-col :span="14">
                   <el-form-item prop="name" label="数据库">
-                    <el-input v-model="config.database.name" placeholder="数据库名称" clearable="true"></el-input>
+                    <el-input v-model="config.database.name" placeholder="数据库名称" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 10px"></el-col>
@@ -112,7 +112,7 @@
                 </el-col>
                 <el-col :span="24">
                   <el-form-item prop="user" label="用户名">
-                    <el-input v-model="config.database.user" placeholder="数据库用户名" clearable="true"></el-input>
+                    <el-input v-model="config.database.user" placeholder="数据库用户名" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
@@ -129,10 +129,10 @@
             <div class="install-form-container" v-show="step === 3">
               <el-form :model="config.user" :rules="rules.user" ref="user">
                 <el-form-item prop="name">
-                  <el-input v-model="config.user.name" placeholder="用户名" clearable="true"></el-input>
+                  <el-input v-model="config.user.name" placeholder="用户名" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="email">
-                  <el-input v-model="config.user.email" placeholder="邮箱" clearable="true"></el-input>
+                  <el-input v-model="config.user.email" placeholder="邮箱" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="pass">
                   <el-input v-model="config.user.pass" placeholder="密码" show-password></el-input>

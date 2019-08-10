@@ -35,6 +35,7 @@ var (
 	master = &models.Node{
 		Mode:   models.MASTER,
 		Status: models.ONLINE,
+		Version: rootCmd.Version,
 	}
 
 	confKey string

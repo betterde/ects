@@ -63,8 +63,7 @@ func (node *Node) Offline() {
 
 // 创建或更新节点
 func (node *Node) CreateOrUpdate() error {
-	exist := &Node{}
-	if count, err := Engine.Where(builder.Eq{"id": node.Id}).Count(exist); count > 0 && err == nil {
+	if count, err := Engine.Where(builder.Eq{"id": node.Id}).Count(&Node{}); count > 0 && err == nil {
 		return node.Update()
 	}
 

@@ -78,7 +78,7 @@ func Migrate() error {
 		return err
 	}
 
-	if err := Engine.Charset("utf8mb4_unicode_ci").Sync2(tables...); err != nil {
+	if err := Engine.Charset("utf8mb4").Sync2(tables...); err != nil {
 		return err
 	}
 
