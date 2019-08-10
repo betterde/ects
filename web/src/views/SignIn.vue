@@ -7,7 +7,7 @@
       <div class="panel-body">
         <el-form :model="credentials" :rules="rules" ref="signin">
           <el-form-item prop="username">
-            <el-input v-model="credentials.username" placeholder="邮箱"></el-input>
+            <el-input v-model="credentials.username" autocomplete="off" placeholder="邮箱"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password" v-model="credentials.password" @keyup.enter.native="submit('signin')"
@@ -40,10 +40,10 @@
         },
         rules: {
           username: [
-            {required: true, message: 'Enter your email address', trigger: 'blur'},
+            {required: true, message: '请输入邮箱地址', trigger: 'blur'},
           ],
           password: [
-            {required: true, message: 'Enter your password', trigger: 'blur'},
+            {required: true, message: '请输入密码', trigger: 'blur'},
           ]
         }
       }

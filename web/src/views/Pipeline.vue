@@ -47,14 +47,14 @@
           <el-row :gutter="10">
             <el-col :span="12">
               <el-form-item label="Finished" prop="finished">
-                <el-select v-model="create.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                <el-select v-model="create.params.finished" placeholder="Please select a task" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Failed" prop="failed">
-                <el-select v-model="create.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                <el-select v-model="create.params.failed" placeholder="Please select a task" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
@@ -115,14 +115,14 @@
           <el-row :gutter="10">
             <el-col :span="12">
               <el-form-item label="Finished" prop="finished">
-                <el-select v-model="update.params.finished" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                <el-select v-model="update.params.finished" placeholder="Please select a task" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="Failed" prop="failed">
-                <el-select v-model="update.params.failed" placeholder="Please select a task" style="width: 100%" no-data-text="No more data">
+                <el-select v-model="update.params.failed" placeholder="Please select a task" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>

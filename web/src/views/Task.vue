@@ -15,24 +15,66 @@
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create task" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="创建任务" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="create.params.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="Description" prop="description">
-            <el-input v-model="create.params.description" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="Content" prop="content">
-            <el-input v-model="create.params.content" autocomplete="off" @keyup.enter.native="submit('create')"></el-input>
-          </el-form-item>
+          <el-row :gutter="10">
+            <el-col :span="18">
+              <el-form-item label="名称" prop="name">
+                <el-input v-model="create.params.name" autocomplete="off" clearable></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="类型" prop="mode">
+                <el-select v-model="create.params.mode" placeholder="请选择">
+                  <el-option key="shell" label="Shell命令" value="shell"></el-option>
+                  <el-option key="http" label="HTTP请求" value="http"></el-option>
+                  <el-option key="mail" label="邮件通知" value="mail"></el-option>
+                  <el-option key="hook" label="Hook通知" value="hook"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="描述" prop="description">
+                <el-input v-model="create.params.description" autocomplete="off" clearable></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10" v-if="['http', 'hook'].includes(create.params.mode)">
+            <el-col :span="4">
+              <el-form-item label="方法" prop="method">
+                <el-select v-model="create.params.method" placeholder="方法">
+                  <el-option key="get" label="GET" value="get"></el-option>
+                  <el-option key="post" label="POST" value="post"></el-option>
+                  <el-option key="put" label="PUT" value="put"></el-option>
+                  <el-option key="patch" label="PATCH" value="patch"></el-option>
+                  <el-option key="delete" label="DELETE" value="delete"></el-option>
+                  <el-option key="head" label="HEAD" value="head"></el-option>
+                  <el-option key="options" label="OPTIONS" value="options"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="20">
+              <el-form-item label="URL" prop="mode">
+                <el-input v-model="create.params.url" placeholder="请输入请求的URL地址" clearable></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="24" v-if="['shell', 'mail', 'http'].includes(create.params.mode)">
+              <el-form-item label="内容" prop="content">
+                <el-input v-model="create.params.content" placeholder="此处填写Shell命令、邮件通知地址或HTTP请求体（JSON字符串）"
+                          autocomplete="off" @keyup.enter.native="submit('create')" clearable></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="create.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submit('create')">Confirm</el-button>
+          <el-button @click="create.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('create')">确定</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit task" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="Edit task" :visible.sync="update.dialog" @close="handleClose('update')" width="600px"
+                 :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
           <el-form-item label="Name" prop="name">
             <el-input v-model="update.params.name" autocomplete="off"></el-input>
@@ -41,7 +83,8 @@
             <el-input v-model="update.params.description" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="Content" prop="content">
-            <el-input v-model="update.params.content" autocomplete="off" @keyup.enter.native="submit('update')"></el-input>
+            <el-input v-model="update.params.content" autocomplete="off"
+                      @keyup.enter.native="submit('update')"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -50,7 +93,7 @@
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="tasks" style="width: 100%" empty-text="No more data">
+        <el-table :data="tasks" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
@@ -81,7 +124,8 @@
           </el-table-column>
         </el-table>
         <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
+          <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total"
+                         @current-change="changePage"></el-pagination>
         </div>
       </div>
     </div>
@@ -106,18 +150,24 @@
           dialog: false,
           params: {
             name: '',
+            url: '',
+            mode: 'shell',
+            method: 'post',
             description: '',
             content: ''
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a task name', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入任务名称', trigger: 'blur'}
+            ],
+            mode: [
+              {type: 'string', required: true, message: '请选择任务类型', trigger: 'change'}
             ],
             description: [
-              {type: 'string', required: false, message: 'Please enter a task description', trigger: 'blur'}
+              {type: 'string', required: false, message: '请输入任务描述', trigger: 'blur'}
             ],
             content: [
-              {type: 'string', required: true, message: 'Please enter task command', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入任务内容', trigger: 'blur'}
             ]
           }
         },
@@ -127,6 +177,9 @@
           dialog: false,
           params: {
             name: '',
+            url: '',
+            mode: 'shell',
+            method: 'post',
             description: '',
             content: ''
           },
@@ -151,9 +204,41 @@
       }
     },
     methods: {
+      /**
+       * 显示创建任务的表单
+       */
       handleCreate() {
         this.create.dialog = true;
       },
+      /**
+       * 显示更新表单
+       */
+      handleUpdate(index, row) {
+        this.update.id = row.id;
+        this.update.index = index;
+        this.update.params = {...row};
+        this.update.dialog = true;
+      },
+      /**
+       * 表单关闭事件触发逻辑
+       * @param form 表单名称
+       */
+      handleClose(form) {
+        switch (form) {
+          case 'create':
+            this.$refs.create.resetFields();
+            this.create.dialog = false;
+            break;
+          case 'update':
+            this.$refs.update.resetFields();
+            this.update.dialog = false;
+            break;
+        }
+      },
+      /**
+       * 提交表单
+       * @param form 表单名称
+       */
       submit(form) {
         switch (form) {
           case "create":
@@ -199,31 +284,10 @@
             break;
         }
       },
-      handleUpdate(index, row) {
-        this.update.id = row.id;
-        this.update.index = index;
-        this.update.params = {...row};
-        this.update.dialog = true;
-      },
+
       handleQueryLog(index, row) {
         // TODO Redirect to log view
         window.console.log(index, row);
-      },
-      /**
-       * Close create or edit dialog handler
-       * @param form
-       */
-      handleClose(form) {
-        switch (form) {
-          case 'create':
-            this.$refs.create.resetFields();
-            this.create.dialog = false;
-            break;
-          case 'update':
-            this.$refs.update.resetFields();
-            this.update.dialog = false;
-            break;
-        }
       },
       handleDelete(index, row) {
         this.$confirm('This operation will delete the task, whether to continue?', 'Alert', {
@@ -279,7 +343,7 @@
         vm.classes = ['animated', 'fade-in', 'fast'];
       });
     },
-    beforeRouteLeave (to, from, next) {
+    beforeRouteLeave(to, from, next) {
       this.classes = ['animated', 'fade-out', 'faster'];
       setTimeout(next, 200);
     }
@@ -294,9 +358,11 @@
     padding: 10px 20px;
     background-color: #e6effb;
   }
+
   .task-content {
     width: 100%;
   }
+
   .el-select {
     width: 100%;
   }

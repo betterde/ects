@@ -78,7 +78,7 @@
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="users" style="width: 100%" empty-text="No more data">
+        <el-table :data="users" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
