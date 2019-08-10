@@ -30,11 +30,11 @@ type (
 	}
 )
 
-// Get nodes list
-func (instance *Controller) Get(ctx iris.Context) mvc.Result {
+// 获取节点列表
+func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
-		total  int64
-		err    error
+		total int64
+		err   error
 	)
 	search := ctx.Params().GetStringDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
@@ -61,8 +61,8 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 		}})
 }
 
-// Create node
-func (instance *Controller) Post(ctx iris.Context) mvc.Result {
+// 创建节点
+func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	var params CreateRequest
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -74,13 +74,13 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	}
 
 	worker := models.Node{
-		Id: uuid.NewV4().String(),
-		Name: params.Name,
+		Id:          uuid.NewV4().String(),
+		Name:        params.Name,
 		Description: params.Remark,
-		Status: models.ONLINE,
-		Host: "",
-		CreatedAt: utils.Time(time.Now()),
-		UpdatedAt: utils.Time(time.Now()),
+		Status:      models.ONLINE,
+		Host:        "",
+		CreatedAt:   utils.Time(time.Now()),
+		UpdatedAt:   utils.Time(time.Now()),
 	}
 	if err := worker.Store(); err != nil {
 		return response.InternalServerError("Failed to create node", err)
@@ -89,8 +89,8 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	return response.Success("Created successful", response.Payload{"data": worker})
 }
 
-// Modify node attribute
-func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
+// 修改节点信息
+func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	var params UpdateRequest
 	var worker models.Node
 	validate := validator.New()
@@ -119,8 +119,8 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	return response.Success("Updated successful", response.Payload{"data": worker})
 }
 
-// Delete node
-func (instance *Controller) DeleteBy(id string) mvc.Result {
+// 删除节点
+func (instance *Controller) DeleteBy(id string) mvc.Response {
 	worker := &models.Node{
 		Id: id,
 	}
@@ -131,4 +131,75 @@ func (instance *Controller) DeleteBy(id string) mvc.Result {
 	}
 
 	return response.Success("Deleted successful", response.Payload{"data": make(map[string]interface{})})
+}
+
+// 获取节点关联的流水线
+func (instance *Controller) GetPipelines(ctx iris.Context) mvc.Response {
+	id := ctx.URLParamDefault("node_id", "")
+	if id == "" {
+		return response.ValidationError("请选择节点")
+	}
+
+	relations := make([]models.PipelineNodePivot, 0)
+
+	if err := models.Engine.Where(builder.Eq{"node_id": id}).Find(&relations); err != nil {
+		return response.InternalServerError("查询节点和流水线关系失败", err)
+	}
+
+	ids := make([]string, 0)
+
+	// 获取流水线ID数组
+	for _, relation := range relations {
+		ids = append(ids, relation.PipelineId)
+	}
+
+	pipelines := make(map[string]models.Pipeline)
+
+	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&pipelines); err != nil {
+		return response.InternalServerError("Failed to query relations", err)
+	}
+
+	// 将流水线关联到节点关系
+	for index, relation := range relations {
+		task := pipelines[relation.PipelineId]
+		relations[index].Pipeline = &task
+	}
+
+	return response.Success("获取关联关系成功", response.Payload{"data": relations})
+}
+
+// 关联流水线
+func (instance *Controller) PostPipeline(ctx iris.Context) mvc.Response {
+	relation := models.PipelineNodePivot{}
+
+	if err := ctx.ReadJSON(&relation); err != nil {
+		return response.InternalServerError("参数解析失败", err)
+	}
+
+	if err := relation.Store(); err != nil {
+		return response.InternalServerError("关联失败", err)
+	}
+
+	relation.Pipeline = &models.Pipeline{}
+
+	if _, err := models.Engine.Id(relation.PipelineId).Get(relation.Pipeline); err != nil {
+		return response.InternalServerError("查询流水线信息失败", err)
+	}
+
+	return response.Success("关联成功", response.Payload{"data": relation})
+}
+
+// 解绑流水线
+func (instance *Controller) DeletePipelineBy(ctx iris.Context) mvc.Response {
+	relation := models.PipelineNodePivot{}
+
+	if err := ctx.ReadJSON(&relation); err != nil {
+		return response.InternalServerError("参数解析失败", err)
+	}
+
+	if _, err := models.Engine.Delete(&relation); err != nil {
+		return response.InternalServerError("解绑流水线失败", err)
+	}
+
+	return response.Success("解绑成功", response.Payload{"data": make([]interface{}, 0)})
 }

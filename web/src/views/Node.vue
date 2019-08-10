@@ -13,12 +13,12 @@
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create node" :visible.sync="create.dialog" @close="handleClose('create')" width="500px" :close-on-click-modal="false">
+      <el-dialog title="创建节点" :visible.sync="create.dialog" @close="handleClose('create')" width="500px" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create">
-          <el-form-item label="Name" prop="name">
+          <el-form-item label="名称" prop="name">
             <el-input v-model="create.params.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="Description" prop="description">
+          <el-form-item label="描述" prop="description">
             <el-input v-model="create.params.description" autocomplete="off" @keyup.enter.native="submit('create')"></el-input>
           </el-form-item>
         </el-form>
@@ -27,12 +27,12 @@
           <el-button type="primary" @click="submit('create')">Confirm</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit node" :visible.sync="update.dialog" @close="handleClose('update')" width="500px" :close-on-click-modal="false">
+      <el-dialog title="编辑节点" :visible.sync="update.dialog" @close="handleClose('update')" width="500px" :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="update">
-          <el-form-item label="Name" prop="name">
+          <el-form-item label="名称" prop="name">
             <el-input v-model="update.params.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="Description" prop="remark">
+          <el-form-item label="描述" prop="remark">
             <el-input v-model="update.params.description" autocomplete="off" @keyup.enter.native="submit('update')"></el-input>
           </el-form-item>
         </el-form>
@@ -41,8 +41,43 @@
           <el-button type="primary" @click="submit('update')">Confirm</el-button>
         </div>
       </el-dialog>
+      <el-dialog title="关联流水线" :visible.sync="bind.dialog" @close="handleClose('bind')" width="500px" :close-on-click-modal="false">
+        <el-form :model="bind.params" :rules="bind.rules" ref="bind" label-position="top">
+          <el-form-item label="流水线" prop="name">
+            <el-select v-model="bind.params.pipeline_id" placeholder="请选择流水线" style="width: 100%">
+              <el-option v-for="pipeline in pipelines" :key="pipeline.id" :label="pipeline.name" :value="pipeline.id"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="bind.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('bind')">确定</el-button>
+        </div>
+      </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="nodes" style="width: 100%" v-loading="loading">
+        <el-table :data="nodes" style="width: 100%" v-loading="loading" ref="nodes" @expand-change="handleTableExpand">
+          <el-table-column type="expand">
+            <template slot-scope="props">
+              <el-form label-position="top" inline class="table-expand">
+
+              </el-form>
+              <el-divider>以下是节点关联的流水线</el-divider>
+              <div style="text-align: center; width: 100%"></div>
+              <el-table :data="props.row.pipelines === null ? [] : props.row.pipelines" row-key="step" ref="task" style="width: 100%" class="tasks-table">
+                <el-table-column prop="pipeline.name" label="名称"></el-table-column>
+                <el-table-column prop="pipeline.spec" label="表达式"></el-table-column>
+                <el-table-column prop="created_at" label="创建于"></el-table-column>
+                <el-table-column prop="option" label="操作" width="130">
+                  <template slot-scope="scope">
+                    <el-tooltip class="item" effect="dark" content="解绑流水线" placement="top">
+                      <el-button size="mini" :disabled="scope.row.status === 'online'" icon="el-icon-delete" type="danger"
+                                 plain circle @click="handleRemove(scope.$index, scope.row)"></el-button>
+                    </el-tooltip>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="名称"></el-table-column>
           <el-table-column prop="host" label="主机" width="140"></el-table-column>
@@ -50,10 +85,18 @@
           <el-table-column prop="status" label="状态" width="80"></el-table-column>
           <el-table-column prop="version" label="版本" width="80"></el-table-column>
           <el-table-column prop="mode" label="类型" width="80"></el-table-column>
-          <el-table-column prop="option" label="操作" width="100">
+          <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
-              <el-button size="mini" icon="el-icon-edit" circle @click="handleUpdate(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" :disabled="scope.row.status === 'online'" icon="el-icon-delete" type="danger" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
+              <el-tooltip class="item" effect="dark" content="编辑节点" placement="top">
+                <el-button size="mini" icon="el-icon-edit" circle @click="handleUpdate(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="关联流水线" placement="top">
+                <el-button size="mini" icon="el-icon-plus" :disabled="scope.row.mode === 'master'" circle @click="handleBind(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="删除节点" placement="top">
+                <el-button size="mini" :disabled="scope.row.status === 'online'" icon="el-icon-delete" type="danger"
+                           plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -77,7 +120,7 @@
         loading: false,
         params: {
           search: '',
-          page: 1
+          page: 1,
         },
         create: {
           dialog: false,
@@ -111,7 +154,17 @@
             ]
           }
         },
+        bind: {
+          index: null,
+          dialog: false,
+          params: {
+            node_id: null,
+            pipeline_id: '',
+          },
+          rules: {},
+        },
         nodes: [],
+        pipelines: [],
         meta: {
           limit: 10,
           page: 1,
@@ -120,21 +173,36 @@
       }
     },
     methods: {
+      /**
+       * 显示创建节点表单
+       */
       handleCreate() {
         this.create.dialog = true;
       },
+      /**
+       * 显示编辑节点表单
+       */
       handleUpdate(index, row) {
         this.update.id = row.id;
         this.update.index = index;
         this.update.params = {...row};
         this.update.dialog = true;
       },
+      /**
+       * 显示关联流水线表单
+       */
+      handleBind(index, row) {
+        this.bind.index = index;
+        this.bind.params.node_id = row.id;
+        this.fetchPipelines();
+        this.bind.dialog = true;
+      },
       submit(form) {
         switch (form) {
           case 'create':
             this.$refs.create.validate((valid) => {
               if (valid) {
-                api.node.create(this.createParams).then(res => {
+                api.node.create(this.create.params).then(res => {
                   this.meta.total += 1;
                   // 判断是否需要跳转到最后一页
                   if (this.meta.total > (this.meta.limit * this.meta.page)) {
@@ -169,6 +237,20 @@
               }
             });
             break;
+          case 'bind':
+            this.$refs.bind.validate((valid) => {
+              if (valid) {
+                api.node.bindPipeline(this.bind.params).then(res => {
+                  Vue.set(this.nodes[this.bind.index], 'pipelines', res.data);
+                  this.handleClose(form);
+                  this.$message.success(res.message);
+                }).catch(err => {
+                  this.$message.warning(err.message);
+                });
+              } else {
+                return false;
+              }
+            });
         }
       },
       /**
@@ -187,6 +269,10 @@
             this.update.id = null;
             this.update.index = null;
             break;
+          case 'bind':
+            this.$refs.bind.resetFields();
+            this.bind.index = null;
+            this.bind.dialog = false;
         }
       },
       /**
@@ -204,11 +290,70 @@
           });
         }
       },
+      /**
+       * 解绑流水线
+       * @param index
+       * @param row
+       */
+      handleRemove(index, row) {
+        window.console.log(row);
+        this.$confirm('此操作将解绑流水线，是否继续', '警告', {
+          confirmButtonText: '继续',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          api.pipeline.unbindTask(row.id).then(res => {
+            Vue.delete(this.pipelines, index);
+            this.$message.success({
+              offset: 95,
+              message: res.message
+            });
+          }).catch(err => {
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            })
+          });
+        }).catch(() => {
+          this.$message.info({
+            offset: 95,
+            message: '操作已取消'
+          });
+        });
+      },
+      handleTableExpand(row, rows) {
+        // 判断当前展开的行如果大于0
+        if (rows.length > 0) {
+          // 最后一个行为当前行
+          let intance = rows.pop();
+          // 考虑到展开新行和关闭行都会触发 handleTableExpand 所以需要判断是否是当前行
+          if (intance.id === row.id) {
+            for (let index = 0; index < this.nodes.length; index++) {
+              if (this.nodes[index].id === intance.id) {
+                Vue.set(this.bind, 'index', index);
+                // 调用 API 获取流水线关联的任务
+                api.node.fetchPipelines({node_id: intance.id}).then(res => {
+                  // 将返回数据设置到对应流水线下的执行步骤属性中
+                  Vue.set(this.nodes[index], 'pipelines', res.data);
+                }).catch(err => {
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
+                });
+              }
+            }
+          }
+        }
+      },
       changePage(page) {
         this.meta.page = page;
         this.params.page = page;
         this.fetchWorkers();
       },
+      /**
+       * 获取节点信息
+       */
       fetchWorkers() {
         this.loading = true;
         api.node.fetch(this.params).then(res => {
@@ -218,6 +363,19 @@
           this.$message.warning(err.message)
         });
         this.loading = false;
+      },
+      /**
+       * 获取流水线列表
+       */
+      fetchPipelines() {
+        api.pipeline.fetch({scene: 'selector'}).then(res => {
+          this.pipelines = res.data;
+        }).catch(err => {
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          });
+        });
       }
     },
     mounted() {
