@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchPipelines">
+              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchPipelines" @clear="handleClear" clearable>
                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
               </el-input>
             </el-col>
@@ -84,7 +84,7 @@
         </div>
       </el-dialog>
       <el-dialog title="编辑流水线" :visible.sync="update.dialog" @close="handleClose('update')" width="40%" :close-on-click-modal="false">
-        <el-form :model="update.params" :rules="update.rules" ref="edit" label-position="top">
+        <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
               <el-form-item label="Name" prop="name">
@@ -296,7 +296,6 @@
                     {{ props.row.environment === "" ? "未设置" : props.row.environment }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="task.description" label="描述" width="150"></el-table-column>
                 <el-table-column prop="option" label="操作" width="100">
                   <template slot-scope="scope">
                     <el-tooltip class="item" effect="dark" content="编辑关系" placement="top">
@@ -314,21 +313,21 @@
           </el-table-column>
           <el-table-column prop="name" label="名称" width="200"></el-table-column>
           <el-table-column prop="spec" label="表达式" width="130"></el-table-column>
-          <el-table-column label="状态" width="100">
+          <el-table-column label="状态" width="70">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.status === 0" size="medium" type="info">Disabled</el-tag>
-              <el-tag v-else size="medium">Normal</el-tag>
+              <el-tag v-if="scope.row.status === 0" size="small" type="info">禁用</el-tag>
+              <el-tag v-else size="small">正常</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="重复" width="100">
+          <el-table-column label="重复" width="60">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.overlap === 0" size="medium" type="info">No</el-tag>
-              <el-tag v-else size="medium">Yes</el-tag>
+              <el-tag v-if="scope.row.overlap === 0" size="small" type="info">否</el-tag>
+              <el-tag v-else size="small">是</el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="description" label="描述"></el-table-column>
           <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
-          <el-table-column prop="option" label="操作" width="170">
+          <el-table-column prop="option" label="操作" width="200">
             <template slot-scope="scope">
               <el-tooltip class="item" effect="dark" content="编辑" placement="top">
                 <el-button size="mini" icon="el-icon-edit" circle
@@ -340,6 +339,10 @@
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="查询日志" placement="top">
                 <el-button size="mini" icon="el-icon-tickets" plain circle
+                           @click="handleDetail(scope.row)"></el-button>
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="同步到节点" placement="top">
+                <el-button size="mini" icon="el-icon-refresh" plain circle
                            @click="handleDetail(scope.row)"></el-button>
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="删除" placement="top">
@@ -573,9 +576,9 @@
             this.$refs.create.resetFields();
             this.create.dialog = false;
             break;
-          case 'edit':
-            this.$refs.edit.resetFields();
-            this.edit.dialog = false;
+          case 'update':
+            this.$refs.update.resetFields();
+            this.update.dialog = false;
             this.update.id = null;
             this.update.index = null;
             break;
@@ -610,7 +613,7 @@
                     message: res.message
                   });
                 }).catch(err => {
-                  this.$message.warning({
+                  this.$message.error({
                     offset: 95,
                     message: err.message
                   });
@@ -632,9 +635,16 @@
                   Vue.set(this.pipelines[this.update.index], 'failed', res.data.failed);
                   Vue.set(this.pipelines[this.update.index], 'overlap', res.data.overlap);
                   this.handleClose('update');
-                  this.$message.success(res.message);
+                  this.$message({
+                    type: 'success',
+                    offset: 95,
+                    message: res.message
+                  });
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -657,7 +667,7 @@
                     message: res.message
                   });
                 }).catch(err => {
-                  this.$message.warning({
+                  this.$message.error({
                     offset: 95,
                     message: err.message
                   });
@@ -688,11 +698,13 @@
               message: res.message
             });
           }).catch(err => {
-            this.$message.error(err.message)
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            })
           });
         }).catch(() => {
-          this.$message({
-            type: 'error',
+          this.$message.info({
             offset: 95,
             message: '操作已取消'
           });
@@ -712,16 +724,19 @@
         }).then(() => {
           api.pipeline.unbindTask(row.id).then(res => {
             Vue.delete(this.pipelines, index);
-            this.$message({
-              type: 'success',
+            this.$message.success({
+              offset: 95,
               message: res.message
             });
           }).catch(err => {
-            this.$message.error(err.message)
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            })
           });
         }).catch(() => {
-          this.$message({
-            type: 'info',
+          this.$message.info({
+            offset: 95,
             message: '操作已取消'
           });
         });
@@ -775,6 +790,14 @@
           }
         }
       },
+      handleClear() {
+        // 判断是否有 Pipeline 页面跳转传入的参数
+        if (this.$route.query.hasOwnProperty("id")) {
+          // 如果有则替换路由
+          this.$router.replace("/pipeline");
+        }
+        this.fetchPipelines();
+      },
       /**
        * Fetch task data
        */
@@ -827,13 +850,13 @@
             }).then(res => {
               Vue.set(_this.pipelines[_this.current.index], 'steps', res.data);
               _this.$message.success({
-                message: '排序成功',
-                offset: 95
+                offset: 95,
+                message: '排序成功'
               })
             }).catch(err => {
               _this.$message.error({
-                message: err.message,
-                offset: 95
+                offset: 95,
+                message: err.message
               });
               return false;
             });
@@ -844,6 +867,10 @@
       }
     },
     mounted() {
+      // 如果存在查询参数则
+      if (this.$route.query.hasOwnProperty("id")) {
+        this.params.search = this.$route.query.id;
+      }
       // 先获取流水线数据
       this.fetchPipelines();
       // 再获取用于选择任务的下拉列表数据

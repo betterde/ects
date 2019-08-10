@@ -73,23 +73,62 @@
           <el-button type="primary" @click="submit('create')">确定</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Edit task" :visible.sync="update.dialog" @close="handleClose('update')" width="600px"
-                 :close-on-click-modal="false">
+      <el-dialog title="编辑任务" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
-          <el-form-item label="Name" prop="name">
-            <el-input v-model="update.params.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="Description" prop="description">
-            <el-input v-model="update.params.description" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="Content" prop="content">
-            <el-input v-model="update.params.content" autocomplete="off"
-                      @keyup.enter.native="submit('update')"></el-input>
-          </el-form-item>
+          <el-row :gutter="10">
+            <el-col :span="18">
+              <el-form-item label="名称" prop="name">
+                <el-input v-model="update.params.name" autocomplete="off" clearable></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="类型" prop="mode">
+                <el-select v-model="update.params.mode" placeholder="请选择">
+                  <el-option key="shell" label="Shell命令" value="shell"></el-option>
+                  <el-option key="http" label="HTTP请求" value="http"></el-option>
+                  <el-option key="mail" label="邮件通知" value="mail"></el-option>
+                  <el-option key="hook" label="Hook通知" value="hook"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="描述" prop="description">
+                <el-input v-model="update.params.description" autocomplete="off" clearable></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10" v-if="['http', 'hook'].includes(update.params.mode)">
+            <el-col :span="4">
+              <el-form-item label="方法" prop="method">
+                <el-select v-model="update.params.method" placeholder="方法">
+                  <el-option key="get" label="GET" value="get"></el-option>
+                  <el-option key="post" label="POST" value="post"></el-option>
+                  <el-option key="put" label="PUT" value="put"></el-option>
+                  <el-option key="patch" label="PATCH" value="patch"></el-option>
+                  <el-option key="delete" label="DELETE" value="delete"></el-option>
+                  <el-option key="head" label="HEAD" value="head"></el-option>
+                  <el-option key="options" label="OPTIONS" value="options"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="20">
+              <el-form-item label="URL" prop="mode">
+                <el-input v-model="update.params.url" placeholder="请输入请求的URL地址" clearable></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="24" v-if="['shell', 'mail', 'http'].includes(update.params.mode)">
+              <el-form-item label="内容" prop="content">
+                <el-input v-model="update.params.content" placeholder="此处填写Shell命令、邮件通知地址或HTTP请求体（JSON字符串）"
+                          autocomplete="off" @keyup.enter.native="submit('create')" clearable></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="update.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submit('update')">Confirm</el-button>
+          <el-button @click="update.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('update')">确定</el-button>
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
@@ -98,9 +137,19 @@
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
                 <el-row :gutter="10">
+                  <el-col v-if="props.row.mode === 'http'" :span="12">
+                    <el-form-item label="请求方法">
+                      <span>{{ props.row.method.toLocaleUpperCase() }}</span>
+                    </el-form-item>
+                  </el-col>
+                  <el-col v-if="props.row.mode === 'http'" :span="12">
+                    <el-form-item label="URL">
+                      <span>{{ props.row.url }}</span>
+                    </el-form-item>
+                  </el-col>
                   <el-col :span="24">
-                    <el-form-item label="Content">
-                      <pre class="task-pre"><code class="task-content">{{ props.row.content }}</code></pre>
+                    <el-form-item label="内容">
+                      <pre class="task-pre"><code class="task-content">{{ props.row.content === '' ? props.row.method.toLocaleUpperCase() + ' ' + props.row.url : props.row.content }}</code></pre>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -110,8 +159,8 @@
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="名称" width="200"></el-table-column>
           <el-table-column prop="description" label="描述"></el-table-column>
+          <el-table-column prop="mode" label="模式" width="60"></el-table-column>
           <el-table-column prop="created_at" label="创建于" width="155"></el-table-column>
-          <el-table-column prop="updated_at" label="更新于" width="155"></el-table-column>
           <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle
@@ -178,20 +227,23 @@
           params: {
             name: '',
             url: '',
-            mode: 'shell',
-            method: 'post',
+            mode: '',
+            method: '',
             description: '',
             content: ''
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a task name', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入任务名称', trigger: 'blur'}
+            ],
+            mode: [
+              {type: 'string', required: true, message: '请选择任务类型', trigger: 'change'}
             ],
             description: [
-              {type: 'string', required: false, message: 'Please enter a task description', trigger: 'blur'}
+              {type: 'string', required: false, message: '请输入任务描述', trigger: 'blur'}
             ],
             content: [
-              {type: 'string', required: true, message: 'Please enter task command', trigger: 'blur'}
+              {type: 'string', required: false, message: '请输入任务内容', trigger: 'blur'}
             ]
           }
         },
@@ -312,7 +364,11 @@
         });
       },
       handleClear() {
-        this.$router.push("/task");
+        // 判断是否有 Pipeline 页面跳转传入的参数
+        if (this.$route.query.hasOwnProperty("id")) {
+          // 如果有则替换路由
+          this.$router.replace("/task");
+        }
         this.fetchTasks();
       },
       fetchTasks() {
