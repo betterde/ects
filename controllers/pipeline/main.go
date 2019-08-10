@@ -49,28 +49,42 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		total int64
 		err   error
 	)
-	search := ctx.Params().GetStringDefault("search", "")
-	page, limit, start := utils.Pagination(ctx)
+	scene := ctx.Params().GetStringDefault("scene", "table")
 	pipelines := make([]models.Pipeline, 0)
 
-	if search != "" {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
-	} else {
-		total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
+	switch scene {
+	case "table":
+		search := ctx.Params().GetStringDefault("search", "")
+		page, limit, start := utils.Pagination(ctx)
+
+		if search != "" {
+			total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
+		} else {
+			total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
+		}
+
+		if err != nil {
+			return response.InternalServerError("Failed to query pipelines list", err)
+		}
+
+		return response.Success("Successful", response.Payload{
+			"data": pipelines,
+			"meta": &response.Meta{
+				Limit: limit,
+				Page:  page,
+				Total: int(total),
+			},
+		})
+	case "selector":
+		// 当数据使用场景为选择器时，查询所有数据
+		if err := models.Engine.Find(&pipelines); err != nil {
+			return response.InternalServerError("获取流水线列表失败", err)
+		}
+
+		return response.Success("Successful", response.Payload{"data": pipelines})
 	}
 
-	if err != nil {
-		return response.InternalServerError("Failed to query pipelines list", err)
-	}
-
-	return response.Success("Successful", response.Payload{
-		"data": pipelines,
-		"meta": &response.Meta{
-			Limit: limit,
-			Page:  page,
-			Total: int(total),
-		},
-	})
+	return response.Success("数据使用场景有误", response.Payload{"data": make([]interface{}, 0)})
 }
 
 // 创建流水线
@@ -472,7 +486,7 @@ func (instance *Controller) PatchBy(id string, ctx iris.Context) mvc.Response {
 		return response.InternalServerError("查询详情失败", err)
 	}
 
-	if err := models.Engine.Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&pipeline.Steps); err !=  nil {
+	if err := models.Engine.Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&pipeline.Steps); err != nil {
 		return response.InternalServerError("查询流水线任务", err)
 	}
 

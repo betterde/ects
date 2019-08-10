@@ -192,7 +192,8 @@
         classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
-          search: "",
+          scene: 'table',
+          search: '',
           page: 1
         },
         create: {

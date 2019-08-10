@@ -372,6 +372,7 @@
         classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
+          scene: 'table',
           search: '',
           page: 1
         },
@@ -850,7 +851,7 @@
         });
       },
       /**
-       * Fetch pipeline data
+       * 获取流水线列表
        */
       fetchPipelines() {
         this.loading = true;
@@ -940,9 +941,6 @@
 </script>
 
 <style lang="scss">
-  .el-divider__text {
-    color: #99a9bf;
-  }
   .fade-enter-active, .fade-leave-active {
     transition: opacity .5s;
   }
