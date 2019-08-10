@@ -9,7 +9,7 @@ const (
 	STATUSNORMAL   = "normal"
 	STATUSDISABLED = "disabled"
 	MODESHELL      = "shell"
-	MODEREST       = "rest"
+	MODEHTTP       = "http"
 	MODEMAIL       = "mail"
 	MODEHOOK       = "hook"
 )
