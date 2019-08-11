@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"crypto/tls"
 	"github.com/betterde/ects/models"
 	"github.com/gorhill/cronexpr"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
+	"gopkg.in/gomail.v2"
 	"log"
 	"strings"
 	"time"
@@ -22,6 +24,8 @@ var singleCmd = &cobra.Command{
 		log.Println(cronexpr.MustParse("* * * * * *").Next(time.Now()).Format(models.DefaultTimeFormat))
 		log.Println(strings.TrimPrefix("/var/local/laravel", "/var/local/"))
 		log.Println(uuid.NewV4().String())
+		d := gomail.NewDialer("", 27, "system@betterde.com", "system@2019")
+		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	},
 }
 
