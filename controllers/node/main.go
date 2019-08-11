@@ -223,6 +223,13 @@ func (instance *Controller) PostPipeline(ctx iris.Context) mvc.Response {
 		return response.InternalServerError("查询流水线信息失败", err)
 	}
 
+	// 查询流水线关联的任务数量，如果没有任务则无法关联
+	if count, err := models.Engine.Where(builder.Eq{"pipeline_id": relation.PipelineId}).Count(&models.PipelineTaskPivot{}); err != nil {
+		return response.InternalServerError("获取流水线关联的任务数量失败", err)
+	} else if count < 1 {
+		return response.Send(400, "当前流水线没有关联任何任务", make([]interface{}, 0))
+	}
+
 	return response.Success("关联成功", response.Payload{"data": relation})
 }
 
