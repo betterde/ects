@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchTasks" @clear="handleClear" clearable>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchTasks" @clear="handleClear" clearable>
                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
               </el-input>
             </el-col>
@@ -15,7 +15,7 @@
           </el-row>
         </div>
       </div>
-      <el-dialog title="创建任务" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="创建任务" :visible.sync="create.dialog" @close="handleClose('create')" width="550px" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
           <el-row :gutter="10">
             <el-col :span="18">
@@ -62,7 +62,15 @@
           <el-row :gutter="10">
             <el-col :span="24" v-if="['shell', 'mail', 'http'].includes(create.params.mode)">
               <el-form-item label="内容" prop="content">
-                <el-input v-model="create.params.content" placeholder="此处填写Shell命令、邮件通知地址或HTTP请求体（JSON字符串）"
+                <el-autocomplete style="width: 100%" v-if="create.params.mode === 'mail'"
+                                 value-key="email"
+                                 v-model="create.params.content" :fetch-suggestions="searchAsync" placeholder="请输入邮箱地址" clearable>
+                  <template slot-scope="{ item }">
+                    <span style="float: left;">{{ item.name }}</span>
+                    <span style="float: right; color: rgb(132, 146, 166)">{{ item.email }}</span>
+                  </template>
+                </el-autocomplete>
+                <el-input v-else v-model="create.params.content" placeholder="此处填写Shell命令或HTTP请求体（JSON字符串）"
                           autocomplete="off" @keyup.enter.native="submit('create')" clearable></el-input>
               </el-form-item>
             </el-col>
@@ -120,7 +128,15 @@
           <el-row :gutter="10">
             <el-col :span="24" v-if="['shell', 'mail', 'http'].includes(update.params.mode)">
               <el-form-item label="内容" prop="content">
-                <el-input v-model="update.params.content" placeholder="此处填写Shell命令、邮件通知地址或HTTP请求体（JSON字符串）"
+                <el-autocomplete style="width: 100%" v-if="create.params.mode === 'mail'"
+                                 value-key="email"
+                                 v-model="update.params.content" :fetch-suggestions="searchAsync" placeholder="请输入邮箱地址" clearable>
+                  <template slot-scope="{ item }">
+                    <span style="float: left;">{{ item.name }}</span>
+                    <span style="float: right; color: rgb(132, 146, 166)">{{ item.email }}</span>
+                  </template>
+                </el-autocomplete>
+                <el-input v-else v-model="update.params.content" placeholder="此处填写Shell命令或HTTP请求体（JSON字符串）"
                           autocomplete="off" @keyup.enter.native="submit('create')" clearable></el-input>
               </el-form-item>
             </el-col>
@@ -201,7 +217,7 @@
           params: {
             name: '',
             url: '',
-            mode: 'shell',
+            mode: 'mail',
             method: 'post',
             description: '',
             content: ''
@@ -217,7 +233,7 @@
               {type: 'string', required: false, message: '请输入任务描述', trigger: 'blur'}
             ],
             content: [
-              {type: 'string', required: true, message: '请输入任务内容', trigger: 'blur'}
+              {type: 'string', required: false, message: '请输入任务内容', trigger: 'change'}
             ]
           }
         },
@@ -249,6 +265,7 @@
           }
         },
         tasks: [],
+        users: [],
         meta: {
           limit: 10,
           page: 1,
@@ -304,7 +321,7 @@
                     this.changePage(Math.ceil(this.meta.total / this.meta.limit));
                   } else {
                     // 如果不需要跳转则直接将数据追加到当前列表，减少API请求
-                    this.tasks.push(res.data);
+                    this.tasks.unshift(res.data);
                   }
                   this.handleClose('create');
                   this.$message.success(res.message);
@@ -337,11 +354,20 @@
             break;
         }
       },
-
+      /**
+       * 查看当前行的日志
+       * @param index
+       * @param row
+       */
       handleQueryLog(index, row) {
         // TODO Redirect to log view
         window.console.log(index, row);
       },
+      /**
+       * 删除任务
+       * @param index
+       * @param row
+       */
       handleDelete(index, row) {
         this.$confirm('This operation will delete the task, whether to continue?', 'Alert', {
           confirmButtonText: 'Confirm',
@@ -364,6 +390,9 @@
           });
         });
       },
+      /**
+       * 清空搜索框
+       */
       handleClear() {
         // 判断是否有 Pipeline 页面跳转传入的参数
         if (this.$route.query.hasOwnProperty("id")) {
@@ -372,6 +401,9 @@
         }
         this.fetchTasks();
       },
+      /**
+       * 获取任务列表
+       */
       fetchTasks() {
         this.loading = true;
         api.task.fetch(this.params).then(res => {
@@ -381,6 +413,24 @@
           this.$message.warning(err.message)
         });
         this.loading = false;
+      },
+      /**
+       * 异步查询用户列表
+       * @param query
+       * @param callback
+       */
+      searchAsync(query, callback) {
+        api.user.fetch({
+          scene: 'selector',
+          search: query
+        }).then(res => {
+          callback(res.data);
+        }).catch(err => {
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          })
+        });
       },
       changePage(page) {
         this.meta.page = page;
