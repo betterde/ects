@@ -7,17 +7,17 @@
             <el-form :model="notification" :rules="rules" ref="database">
               <el-col :span="10">
                 <el-form-item prop="host">
-                  <el-input v-model="notification.host" placeholder="Host"></el-input>
+                  <el-input v-model="notification.host" placeholder="主机地址"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
                 <el-form-item prop="port" label-width="0">
-                  <el-input v-model="notification.port" placeholder="Port"></el-input>
+                  <el-input v-model="notification.port" placeholder="端口"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.char" placeholder="Service protocol">
+                  <el-select v-model="notification.char" placeholder="请选择协议">
                     <el-option key="smtp" label="SMTP" value="smtp"></el-option>
                     <el-option key="pop3" label="POP3" value="pop3"></el-option>
                   </el-select>
@@ -25,7 +25,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.encryption" placeholder="Encryption type">
+                  <el-select v-model="notification.encryption" placeholder="请选择加密类型">
                     <el-option key="tls" label="TLS" value="tls"></el-option>
                     <el-option key="ssl" label="SSL" value="ssl"></el-option>
                   </el-select>
@@ -33,17 +33,17 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="user">
-                  <el-input v-model="notification.user" placeholder="User"></el-input>
+                  <el-input v-model="notification.user" placeholder="用户名"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="pass">
-                  <el-input v-model="notification.pass" placeholder="Password" show-password></el-input>
+                  <el-input v-model="notification.pass" placeholder="密码" show-password></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item prop="pass" style="text-align: right">
-                  <el-button type="primary" plain>Upgrade</el-button>
+                  <el-button type="primary" plain>保存</el-button>
                 </el-form-item>
               </el-col>
             </el-form>

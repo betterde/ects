@@ -66,12 +66,6 @@
         });
         this.loading = false;
       }
-    },
-    computed: {
-      ...mapState({
-        access_token: state => state.account.access_token,
-        profile: state => state.account.profile,
-      }),
     }
   }
 </script>

@@ -18,7 +18,7 @@
           <el-row :gutter="10">
            <el-col :span="18">
              <el-form-item label="姓名" prop="name">
-               <el-input v-model="create.params.name" autocomplete="off"></el-input>
+               <el-input v-model="create.params.name" autocomplete="off" placeholder="请输入姓名"></el-input>
              </el-form-item>
            </el-col>
            <el-col :span="6">
@@ -31,10 +31,10 @@
            </el-col>
           </el-row>
           <el-form-item label="邮箱" prop="email">
-            <el-input v-model="create.params.email" autocomplete="off"></el-input>
+            <el-input v-model="create.params.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="pass">
-            <el-input v-model="create.params.pass" placeholder="密码" show-password></el-input>
+            <el-input v-model="create.params.pass" placeholder="请输入密码" show-password></el-input>
           </el-form-item>
           <el-form-item label="确认" prop="confirm">
             <el-input v-model="create.params.confirm" placeholder="请再次输入密码" show-password></el-input>
@@ -45,16 +45,16 @@
           <el-button type="primary" @click="submit('create')">确认</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Update user" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="编辑用户" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
           <el-row :gutter="10">
             <el-col :span="18">
-              <el-form-item label="Name" prop="name">
-                <el-input v-model="update.params.name" autocomplete="off"></el-input>
+              <el-form-item label="名称" prop="name">
+                <el-input v-model="update.params.name" autocomplete="off" placeholder="请输入姓名"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="Manager" prop="manager">
+              <el-form-item label="管理" prop="manager">
                 <el-select v-model="update.params.manager" placeholder="请选择">
                   <el-option label="Yes" :value="true"></el-option>
                   <el-option label="No" :value="false"></el-option>
@@ -62,14 +62,14 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="Email" prop="email">
-            <el-input v-model="update.params.email" autocomplete="off"></el-input>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="update.params.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
           </el-form-item>
-          <el-form-item label="Password" prop="pass">
-            <el-input v-model="update.params.pass" placeholder="Password" show-password></el-input>
+          <el-form-item label="密码" prop="pass">
+            <el-input v-model="update.params.pass" placeholder="密码" show-password></el-input>
           </el-form-item>
-          <el-form-item label="Confirm" prop="confirm">
-            <el-input v-model="update.params.confirm" placeholder="Confirm" show-password></el-input>
+          <el-form-item label="确认" prop="confirm">
+            <el-input v-model="update.params.confirm" placeholder="请再次输入密码" show-password></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -301,9 +301,9 @@
        * @param row
        */
       handleDelete(index, row) {
-        this.$confirm('This operation will delete the user, whether to continue?', 'Alert', {
-          confirmButtonText: 'Confirm',
-          cancelButtonText: 'Cancel',
+        this.$confirm('此操作将删除该用户，是否继续？', 'Alert', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           api.user.delete(row.id).then(res => {
@@ -318,7 +318,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: 'Operation canceled!'
+            message: '操作被取消'
           });
         });
       },

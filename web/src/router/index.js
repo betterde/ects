@@ -108,9 +108,8 @@ router.beforeEach((to, from, next) => {
    * Determine if auth is required
    */
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    const access_token = store.state.account.access_token;
     //通过access_token判断用户是否已经登录
-    if (!access_token) {
+    if (store.state.account.access_token === null) {
       next({
         path: '/signin'
       })
