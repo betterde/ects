@@ -67,7 +67,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 			return response.InternalServerError("Failed to query pipelines list", err)
 		}
 
-		return response.Success("Successful", response.Payload{
+		return response.Success("请求成功", response.Payload{
 			"data": pipelines,
 			"meta": &response.Meta{
 				Limit: limit,
@@ -110,7 +110,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 		return response.InternalServerError("Failed to create log", err)
 	}
 
-	return response.Success("Created successfully", response.Payload{"data": pipeline})
+	return response.Success("创建成功", response.Payload{"data": pipeline})
 }
 
 // 更新流水线
@@ -142,7 +142,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 		return response.InternalServerError("Failed to delete pipeline", err)
 	}
 
-	return response.Success("Updated successfully", response.Payload{"data": pipeline})
+	return response.Success("更新成功", response.Payload{"data": pipeline})
 }
 
 // 删除流水线
@@ -160,7 +160,7 @@ func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Response {
 	if err := pipeline.Destroy(); err != nil {
 		return response.InternalServerError("Failed to delete pipeline", err)
 	}
-	return response.Success("Deleted successfully", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("删除成功", response.Payload{"data": make(map[string]interface{})})
 }
 
 // 获取流水线绑定的节点
@@ -189,7 +189,7 @@ func (instance *Controller) GetNodes(ctx iris.Context) mvc.Response {
 		return response.InternalServerError("Failed to query relations", err)
 	}
 
-	return response.Success("Successful", response.Payload{"data": nodes})
+	return response.Success("请求成功", response.Payload{"data": nodes})
 }
 
 // 绑定流水线到节点
@@ -242,7 +242,7 @@ func (instance *Controller) PostNodes(ctx iris.Context) mvc.Response {
 		log.Println(err)
 	}
 
-	return response.Success("Bind successfully", response.Payload{"data": relations})
+	return response.Success("绑定成功", response.Payload{"data": relations})
 }
 
 // 获取流水线绑定的任务
@@ -276,7 +276,7 @@ func (instance *Controller) GetTasks(ctx iris.Context) mvc.Response {
 		relations[index].Task = &task
 	}
 
-	return response.Success("Successful", response.Payload{"data": relations})
+	return response.Success("请求成功", response.Payload{"data": relations})
 }
 
 // 根据拖动顺序排序数据
@@ -363,7 +363,7 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 		relations[index].Task = &task
 	}
 
-	return response.Success("Successful", response.Payload{"data": relations})
+	return response.Success("请求成功", response.Payload{"data": relations})
 }
 
 // 绑定任务到流水线
@@ -398,7 +398,7 @@ func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
 
 	pivot.Task = &task
 
-	return response.Success("Bind successfully", response.Payload{"data": pivot})
+	return response.Success("绑定成功", response.Payload{"data": pivot})
 }
 
 // 修改绑定关系
@@ -455,27 +455,6 @@ func (instance *Controller) DeleteTaskBy(id string, ctx iris.Context) mvc.Respon
 	return response.Success("解绑成功", response.Payload{"data": make(map[string]interface{})})
 }
 
-// 根据流水线 ID 获取详情
-func (instance *Controller) GetBy(id string) mvc.Response {
-	pipeline := models.Pipeline{
-		Id: id,
-	}
-
-	_, err := models.Engine.Get(&pipeline)
-
-	if err != nil {
-		return response.InternalServerError("Query pipeline on error", err)
-	}
-
-	_, err = pipeline.Build()
-
-	if err != nil {
-		return response.InternalServerError("Failed to build pipeline to string", err)
-	}
-
-	return response.Success("", response.Payload{"data": pipeline})
-}
-
 // 同步流水线数据到 ETCD
 func (instance *Controller) PatchBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{
@@ -523,6 +502,7 @@ func (instance *Controller) PatchBy(id string, ctx iris.Context) mvc.Response {
 	return response.Success("同步成功", response.Payload{"data": make(map[string]interface{})})
 }
 
+// 创建强杀指令
 func (instance *Controller) PostKiller(ctx iris.Context) mvc.Response {
 	params := KillPipelineRequest{}
 

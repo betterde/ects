@@ -63,9 +63,7 @@ func bootstrap() {
 	}
 
 	discover.NewClient()
-
 	discover.GetConf(confKey)
-
 	models.Engine, err = models.Connection()
 	if err != nil {
 		log.Println(err)

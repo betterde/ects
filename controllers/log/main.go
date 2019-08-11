@@ -24,7 +24,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		err    error
 	)
 
-	search := ctx.Params().GetStringDefault("search", "")
+	search := ctx.URLParamDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
 	logs := make([]models.Log, 0)
 
@@ -32,7 +32,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&logs)
 
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&logs)
+		total, err = models.Engine.Where(builder.Eq{"user_id": search}).Limit(limit, start).Desc("created_at").FindAndCount(&logs)
 	}
 
 	if err != nil {

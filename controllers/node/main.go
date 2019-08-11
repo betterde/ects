@@ -38,22 +38,57 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	)
 	search := ctx.Params().GetStringDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
-	workers := make([]models.Node, 0)
+	nodes := make([]models.Node, 0)
 
 	if search == "" {
-		total, err = models.Engine.Count(&models.Node{})
-		err = models.Engine.Limit(limit, start).Find(&workers)
+		total, err = models.Engine.Limit(limit, start).FindAndCount(&nodes)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Count(&models.Node{})
-		err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Find(&workers)
+		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&models.Node{})
 	}
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	return response.Success("Success", response.Payload{
-		"data": workers,
+	nids := make([]string, 0)
+
+	for _, node := range nodes {
+		nids = append(nids, node.Id)
+	}
+
+	relations := make([]models.PipelineNodePivot, 0)
+	if err := models.Engine.Where(builder.In("node_id", nids)).Find(&relations); err != nil {
+		return response.InternalServerError("查询绑定关系失败", err)
+	}
+
+	pids := make([]string, 0)
+
+	for _, relation := range relations {
+		pids = append(pids, relation.PipelineId)
+	}
+
+	pipelines := make(map[string]models.Pipeline)
+
+	if err := models.Engine.Where(builder.In("id", pids)).Find(&pipelines); err != nil {
+		return response.InternalServerError("获取关联的流水线信息失败", err)
+	}
+
+	for rindex, relation := range relations {
+		pipeline := pipelines[relation.PipelineId]
+		relations[rindex].Pipeline = &pipeline
+	}
+
+	for nindex, node := range nodes {
+		nodes[nindex].Pipelines = make([]*models.PipelineNodePivot, 0)
+		for rindex, relation := range relations {
+			if node.Id == relation.NodeId {
+				nodes[nindex].Pipelines = append(nodes[nindex].Pipelines, &relations[rindex])
+			}
+		}
+	}
+
+	return response.Success("请求成功", response.Payload{
+		"data": nodes,
 		"meta": &response.Meta{
 			Limit: limit,
 			Page:  page,
@@ -116,7 +151,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 		}
 	}
 
-	return response.Success("Updated successful", response.Payload{"data": worker})
+	return response.Success("更新成功", response.Payload{"data": worker})
 }
 
 // 删除节点
@@ -130,7 +165,7 @@ func (instance *Controller) DeleteBy(id string) mvc.Response {
 
 	}
 
-	return response.Success("Deleted successful", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("删除成功", response.Payload{"data": make(map[string]interface{})})
 }
 
 // 获取节点关联的流水线
@@ -170,7 +205,9 @@ func (instance *Controller) GetPipelines(ctx iris.Context) mvc.Response {
 
 // 关联流水线
 func (instance *Controller) PostPipeline(ctx iris.Context) mvc.Response {
-	relation := models.PipelineNodePivot{}
+	relation := models.PipelineNodePivot{
+		Id: uuid.NewV4().String(),
+	}
 
 	if err := ctx.ReadJSON(&relation); err != nil {
 		return response.InternalServerError("参数解析失败", err)
@@ -190,11 +227,13 @@ func (instance *Controller) PostPipeline(ctx iris.Context) mvc.Response {
 }
 
 // 解绑流水线
-func (instance *Controller) DeletePipelineBy(ctx iris.Context) mvc.Response {
-	relation := models.PipelineNodePivot{}
+func (instance *Controller) DeletePipelineBy(id string, ctx iris.Context) mvc.Response {
+	if id == "" {
+		return response.ValidationError("请选择要解绑的关联ID")
+	}
 
-	if err := ctx.ReadJSON(&relation); err != nil {
-		return response.InternalServerError("参数解析失败", err)
+	relation := models.PipelineNodePivot{
+		Id: id,
 	}
 
 	if _, err := models.Engine.Delete(&relation); err != nil {

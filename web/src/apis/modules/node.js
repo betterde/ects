@@ -56,12 +56,10 @@ export default {
   },
   /**
    * 解绑流水线
-   * @param params
+   * @param id
    * @returns {AxiosPromise}
    */
-  unbindPipeline(params) {
-    return Vue.axios.delete('/api/node/pipeline', {
-      params: params
-    });
+  unbindPipeline(id) {
+    return Vue.axios.delete(`/api/node/pipeline/${id}`);
   }
 }
