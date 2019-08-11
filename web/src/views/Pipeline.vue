@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchPipelines" @clear="handleClear" clearable>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchPipelines" @clear="handleClear" clearable>
                 <i slot="prefix" class="el-input__icon el-icon-search"></i>
               </el-input>
             </el-col>
@@ -19,19 +19,19 @@
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-form-item label="Name" prop="name">
-                <el-input v-model="create.params.name" autocomplete="off" placeholder="Please enter a name"></el-input>
+              <el-form-item label="名称" prop="name">
+                <el-input v-model="create.params.name" autocomplete="off" placeholder="请输入名称"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-form-item label="Spec" prop="spec">
-                <el-input v-model="create.params.spec" placeholder="Please enter a cron expression"></el-input>
+              <el-form-item label="表达式" prop="spec">
+                <el-input v-model="create.params.spec" placeholder="请输入表达式"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <collapse-view content="Crontab reference">
+              <collapse-view content="表达式参考">
                 <pre><code style="display: -webkit-box; height: 200px">*    *    *    *    *    *
   ┬    ┬    ┬    ┬    ┬    ┬
   │    │    │    │    │    |
@@ -46,60 +46,60 @@
           </el-row>
           <el-row :gutter="10">
             <el-col :span="12">
-              <el-form-item label="Finished" prop="finished">
-                <el-select v-model="create.params.finished" placeholder="Please select a task" style="width: 100%">
+              <el-form-item label="成功" prop="finished">
+                <el-select v-model="create.params.finished" placeholder="请选择一个当流水线成功时触发任务" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="Failed" prop="failed">
-                <el-select v-model="create.params.failed" placeholder="Please select a task" style="width: 100%">
+              <el-form-item label="失败" prop="failed">
+                <el-select v-model="create.params.failed" placeholder="请选择一个流水线失败时触发任务" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="Description" prop="description">
-            <el-input v-model="create.params.description" autocomplete="off"></el-input>
+          <el-form-item label="描述" prop="description">
+            <el-input v-model="create.params.description" autocomplete="off" placeholder="请输入流水线的描述信息"></el-input>
           </el-form-item>
           <el-row :gutter="10">
             <el-col :span="12">
-              <el-form-item label="Status" prop="status">
-                <el-radio v-model="create.params.status" :label="0" border>Disable</el-radio>
-                <el-radio v-model="create.params.status" :label="1" border>Enable</el-radio>
+              <el-form-item label="状态" prop="status">
+                <el-radio v-model="create.params.status" :label="0" border>禁用</el-radio>
+                <el-radio v-model="create.params.status" :label="1" border>启用</el-radio>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="Overlap" prop="overlap">
-                <el-radio v-model="create.params.overlap" :label="0" border>Disable</el-radio>
-                <el-radio v-model="create.params.overlap" :label="1" border>Enable</el-radio>
+              <el-form-item label="周期并行" prop="overlap">
+                <el-radio v-model="create.params.overlap" :label="0" border>禁用</el-radio>
+                <el-radio v-model="create.params.overlap" :label="1" border>启用</el-radio>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="create.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submit('create')">Confirm</el-button>
+          <el-button @click="create.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('create')">确定</el-button>
         </div>
       </el-dialog>
       <el-dialog title="编辑流水线" :visible.sync="update.dialog" @close="handleClose('update')" width="40%" :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-form-item label="Name" prop="name">
-                <el-input v-model="update.params.name" autocomplete="off"></el-input>
+              <el-form-item label="名称" prop="name">
+                <el-input v-model="update.params.name" autocomplete="off" placeholder="请输入名称"></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24">
-              <el-form-item label="Spec" prop="spec">
-                <el-input v-model="update.params.spec" placeholder="Please enter a cron expression"></el-input>
+              <el-form-item label="表达式" prop="spec">
+                <el-input v-model="update.params.spec" placeholder="请输入表达式"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <collapse-view content="Crontab reference">
+              <collapse-view content="表达式参考">
                 <pre><code style="display: -webkit-box; height: 200px">*    *    *    *    *    *
   ┬    ┬    ┬    ┬    ┬    ┬
   │    │    │    │    │    |
@@ -114,41 +114,41 @@
           </el-row>
           <el-row :gutter="10">
             <el-col :span="12">
-              <el-form-item label="Finished" prop="finished">
-                <el-select v-model="update.params.finished" placeholder="Please select a task" style="width: 100%">
+              <el-form-item label="成功" prop="finished">
+                <el-select v-model="update.params.finished" placeholder="请选择一个当流水线成功时触发任务" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="Failed" prop="failed">
-                <el-select v-model="update.params.failed" placeholder="Please select a task" style="width: 100%">
+              <el-form-item label="失败" prop="failed">
+                <el-select v-model="update.params.failed" placeholder="请选择一个流水线失败时触发任务" style="width: 100%">
                   <el-option v-for="task in tasks" :key="task.id" :label="task.name" :value="task.id"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="Description" prop="description">
+          <el-form-item label="描述" prop="description">
             <el-input v-model="update.params.description" autocomplete="off"></el-input>
           </el-form-item>
           <el-row :gutter="10">
             <el-col :span="12">
-              <el-form-item label="Status" prop="status">
-                <el-radio v-model="update.params.status" :label="0" border>Disable</el-radio>
-                <el-radio v-model="update.params.status" :label="1" border>Enable</el-radio>
+              <el-form-item label="状态" prop="status">
+                <el-radio v-model="update.params.status" :label="0" border>禁用</el-radio>
+                <el-radio v-model="update.params.status" :label="1" border>启用</el-radio>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="Overlap" prop="overlap">
-                <el-radio v-model="update.params.overlap" :label="0" border>Disable</el-radio>
-                <el-radio v-model="update.params.overlap" :label="1" border>Enable</el-radio>
+              <el-form-item label="周期并行" prop="overlap">
+                <el-radio v-model="update.params.overlap" :label="0" border>禁用</el-radio>
+                <el-radio v-model="update.params.overlap" :label="1" border>启用</el-radio>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="update.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submit('update')">Confirm</el-button>
+          <el-button @click="update.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('update')">确定</el-button>
         </div>
       </el-dialog>
       <el-dialog title="添加任务" :visible.sync="bind.dialog" @close="handleClose('bind')" width="600px" :close-on-click-modal="false">
@@ -674,8 +674,8 @@
               if (valid) {
                 api.pipeline.bindTask(this.bind.params).then(res => {
                   let steps = [];
-                  if (this.pipelines.steps instanceof Array) {
-                    steps = this.pipelines.steps;
+                  if (this.pipelines[this.bind.index].steps instanceof Array) {
+                    steps = this.pipelines[this.bind.index].steps;
                   }
                   steps.push(res.data);
                   Vue.set(this.pipelines[this.bind.index], 'steps', steps);

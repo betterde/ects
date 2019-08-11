@@ -7,7 +7,9 @@
             <el-col :span="16">
             </el-col>
             <el-col :span="8">
-              <el-input placeholder="在这里搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchLogs" @clear="handleClear" clearable>
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              </el-input>
             </el-col>
           </el-row>
         </div>
@@ -66,6 +68,14 @@
         });
         this.loading = false;
       },
+      handleClear() {
+        // 判断是否有 Pipeline 页面跳转传入的参数
+        if (this.$route.query.hasOwnProperty("id")) {
+          // 如果有则替换路由
+          this.$router.replace("/log");
+        }
+        this.fetchLogs();
+      },
       changePage(page) {
         this.meta.page = page;
         this.params.page = page;
@@ -73,6 +83,10 @@
       },
     },
     mounted() {
+      // 如果存在查询参数则
+      if (this.$route.query.hasOwnProperty("id")) {
+        this.params.search = this.$route.query.id;
+      }
       this.fetchLogs()
     },
     beforeRouteEnter(to, from, next) {

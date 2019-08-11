@@ -54,12 +54,15 @@
         switch (command) {
           case 'signOut':
             this.signOut();
+            break;
+          case 'profile':
+            break;
         }
       },
       signOut(){
         this.$store.commit('SET_PROFILE', false);
         this.$store.commit('SET_ACCESS_TOKEN', false);
-        this.$message.success("Sign out successful");
+        this.$message.success('注销成功');
         this.$router.push("/signin");
       }
     },
@@ -142,8 +145,6 @@
   .main-content {
     height: 100%;
     border-radius: 4px;
-    /*background-color: #FFFFFF;*/
-    /*box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);*/
     padding: 0 20px;
   }
 </style>

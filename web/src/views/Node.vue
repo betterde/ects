@@ -5,7 +5,7 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-input placeholder="在这里搜索" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
             </el-col>
             <el-col :span="16" style="text-align: right">
               <el-button type="primary" plain @click="handleCreate">创建</el-button>
@@ -43,10 +43,17 @@
       </el-dialog>
       <el-dialog title="关联流水线" :visible.sync="bind.dialog" @close="handleClose('bind')" width="500px" :close-on-click-modal="false">
         <el-form :model="bind.params" :rules="bind.rules" ref="bind" label-position="top">
-          <el-form-item label="流水线" prop="name">
+          <el-form-item label="流水线" prop="pipeline_id">
             <el-select v-model="bind.params.pipeline_id" placeholder="请选择流水线" style="width: 100%">
-              <el-option v-for="pipeline in pipelines" :key="pipeline.id" :label="pipeline.name" :value="pipeline.id"></el-option>
+              <el-option v-for="pipeline in pipelines" :key="pipeline.id" :label="pipeline.name" :value="pipeline.id" :disabled="pipeline.disabled">
+                <span style="float: left">{{ pipeline.name }}</span>
+                <span v-if="pipeline.disabled === true" style="float: right; color: #8492a6; font-size: 13px">该任务已添加</span>
+              </el-option>
             </el-select>
+          </el-form-item>
+          <el-form-item label="状态" prop="status">
+            <el-radio v-model="bind.params.status" :label="0" border>禁用</el-radio>
+            <el-radio v-model="bind.params.status" :label="1" border>启用</el-radio>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -55,7 +62,7 @@
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="nodes" style="width: 100%" v-loading="loading" ref="nodes" @expand-change="handleTableExpand">
+        <el-table :data="nodes" style="width: 100%" v-loading="loading" ref="nodes">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
@@ -64,14 +71,19 @@
               <el-divider>以下是节点关联的流水线</el-divider>
               <div style="text-align: center; width: 100%"></div>
               <el-table :data="props.row.pipelines === null ? [] : props.row.pipelines" row-key="step" ref="task" style="width: 100%" class="tasks-table">
-                <el-table-column prop="pipeline.name" label="名称"></el-table-column>
+                <el-table-column prop="pipeline.name" label="名称">
+                  <template slot-scope="scope">
+                    <router-link class="el-link el-link--default is-underline" :to="{path: '/pipeline', query: {id: scope.row.pipeline_id}}"><span>{{ scope.row.pipeline.name }}</span></router-link>
+                  </template>
+                </el-table-column>
                 <el-table-column prop="pipeline.spec" label="表达式"></el-table-column>
-                <el-table-column prop="created_at" label="创建于"></el-table-column>
+                <el-table-column prop="pipeline.description" label="描述"></el-table-column>
+                <el-table-column prop="created_at" label="关联于"></el-table-column>
                 <el-table-column prop="option" label="操作" width="130">
                   <template slot-scope="scope">
                     <el-tooltip class="item" effect="dark" content="解绑流水线" placement="top">
                       <el-button size="mini" :disabled="scope.row.status === 'online'" icon="el-icon-delete" type="danger"
-                                 plain circle @click="handleRemove(scope.$index, scope.row)"></el-button>
+                                 plain circle @click="handleRemove(props.$index, scope.$index, scope.row)"></el-button>
                     </el-tooltip>
                   </template>
                 </el-table-column>
@@ -130,10 +142,7 @@
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
-            ],
-            description: [
-              {type: 'string', required: false, message: 'Please enter a description', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入节点名称', trigger: 'blur'}
             ]
           }
         },
@@ -147,10 +156,7 @@
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
-            ],
-            description: [
-              {type: 'string', required: false, message: 'Please enter a description', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入节点名称', trigger: 'blur'}
             ]
           }
         },
@@ -158,10 +164,18 @@
           index: null,
           dialog: false,
           params: {
+            status: 0,
             node_id: null,
             pipeline_id: '',
           },
-          rules: {},
+          rules: {
+            status: [
+              {type: 'number', required: true, message: '请选择状态', trigger: 'change'}
+            ],
+            pipeline_id: [
+              {type: 'string', required: true, message: '请选择流水线', trigger: 'change'}
+            ],
+          },
         },
         nodes: [],
         pipelines: [],
@@ -194,7 +208,25 @@
       handleBind(index, row) {
         this.bind.index = index;
         this.bind.params.node_id = row.id;
-        this.fetchPipelines();
+        api.pipeline.fetch({scene: 'selector'}).then(res => {
+          res.data.forEach(pipeline => {
+            if (row.pipelines.length === 0) {
+              pipeline.disabled = false;
+            } else {
+              row.pipelines.forEach(relation => {
+                if (pipeline.id === relation.pipeline_id) {
+                  pipeline.disabled = true;
+                }
+              });
+            }
+          });
+          this.pipelines = res.data;
+        }).catch(err => {
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          });
+        });
         this.bind.dialog = true;
       },
       submit(form) {
@@ -241,7 +273,9 @@
             this.$refs.bind.validate((valid) => {
               if (valid) {
                 api.node.bindPipeline(this.bind.params).then(res => {
-                  Vue.set(this.nodes[this.bind.index], 'pipelines', res.data);
+                  let pipelines = this.nodes[this.bind.index].pipelines;
+                  pipelines.push(res.data);
+                  Vue.set(this.nodes[this.bind.index], 'pipelines', pipelines);
                   this.handleClose(form);
                   this.$message.success(res.message);
                 }).catch(err => {
@@ -292,18 +326,18 @@
       },
       /**
        * 解绑流水线
-       * @param index
+       * @param nindex
+       * @param rindex
        * @param row
        */
-      handleRemove(index, row) {
-        window.console.log(row);
+      handleRemove(nindex, rindex, row) {
         this.$confirm('此操作将解绑流水线，是否继续', '警告', {
           confirmButtonText: '继续',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          api.pipeline.unbindTask(row.id).then(res => {
-            Vue.delete(this.pipelines, index);
+          api.node.unbindPipeline(row.id).then(res => {
+            Vue.delete(this.nodes[nindex].pipelines, rindex);
             this.$message.success({
               offset: 95,
               message: res.message
@@ -320,31 +354,6 @@
             message: '操作已取消'
           });
         });
-      },
-      handleTableExpand(row, rows) {
-        // 判断当前展开的行如果大于0
-        if (rows.length > 0) {
-          // 最后一个行为当前行
-          let intance = rows.pop();
-          // 考虑到展开新行和关闭行都会触发 handleTableExpand 所以需要判断是否是当前行
-          if (intance.id === row.id) {
-            for (let index = 0; index < this.nodes.length; index++) {
-              if (this.nodes[index].id === intance.id) {
-                Vue.set(this.bind, 'index', index);
-                // 调用 API 获取流水线关联的任务
-                api.node.fetchPipelines({node_id: intance.id}).then(res => {
-                  // 将返回数据设置到对应流水线下的执行步骤属性中
-                  Vue.set(this.nodes[index], 'pipelines', res.data);
-                }).catch(err => {
-                  this.$message.error({
-                    offset: 95,
-                    message: err.message
-                  });
-                });
-              }
-            }
-          }
-        }
       },
       changePage(page) {
         this.meta.page = page;
