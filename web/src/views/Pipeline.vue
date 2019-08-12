@@ -171,17 +171,17 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="超时" prop="timeout">
-                <el-input v-model="bind.params.timeout" placeholder="超时时间"></el-input>
+                <el-input v-model.number="bind.params.timeout" placeholder="超时时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="间隔" prop="interval">
-                <el-input v-model="bind.params.interval" placeholder="间隔时间"></el-input>
+                <el-input v-model.number="bind.params.interval" placeholder="间隔时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="重试" prop="retries">
-                <el-input v-model="bind.params.retries" placeholder="失败重试次数"></el-input>
+                <el-input v-model.number="bind.params.retries" placeholder="失败重试次数"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -218,17 +218,17 @@
             </el-col>
             <el-col :span="6">
               <el-form-item label="超时">
-                <el-input-number v-model="modify.params.timeout" placeholder="超时时间"></el-input-number>
+                <el-input v-model.number="modify.params.timeout" placeholder="超时时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="间隔">
-                <el-input-number v-model="modify.params.interval" placeholder="间隔时间"></el-input-number>
+                <el-input v-model.number="modify.params.interval" placeholder="间隔时间"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="重试">
-                <el-input-number v-model="modify.params.retries" placeholder="失败重试次数"></el-input-number>
+                <el-input v-model.number="modify.params.retries" placeholder="失败重试次数"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">

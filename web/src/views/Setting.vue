@@ -12,7 +12,7 @@
               </el-col>
               <el-col :span="2">
                 <el-form-item prop="port" label-width="0">
-                  <el-input v-model="notification.port" placeholder="端口"></el-input>
+                  <el-input v-model.number="notification.port" placeholder="端口"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">

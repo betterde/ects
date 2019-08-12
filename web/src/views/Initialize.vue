@@ -50,7 +50,7 @@
                   </el-col>
                   <el-col :span="12">
                     <el-form-item prop="timeout" label-width="80px" label="超时时间">
-                      <el-input v-model="config.etcd.timeout" placeholder="ETCD请求超时时间" clearable></el-input>
+                      <el-input v-model.number="config.etcd.timeout" placeholder="ETCD请求超时时间" type="number" clearable></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -73,7 +73,7 @@
                   </el-col>
                   <el-col :span="4">
                     <el-form-item prop="ttl" label="TTL">
-                      <el-input v-model="config.auth.ttl" placeholder="TTL" clearable></el-input>
+                      <el-input v-model.number="config.auth.ttl" placeholder="TTL" clearable></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -93,7 +93,7 @@
                 <el-col :span="2" style="padding-top: 50px; text-align: center">:</el-col>
                 <el-col :span="8">
                   <el-form-item prop="port" label="端口">
-                    <el-input v-model="config.database.port" placeholder="端口号"></el-input>
+                    <el-input v-model.number="config.database.port" placeholder="端口号"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="14">
