@@ -15,6 +15,9 @@ type TaskRecords struct {
 	Retries          int        `json:"retries" xorm:"not null default 0 comment('重试次数') TINYINT(3)"`
 	Status           string     `json:"status" xorm:"not null default 'finished' comment('状态') VARCHAR(255)"`
 	Result           string     `json:"result" xorm:"not null comment('执行结果') TEXT"`
+	Duration         int64      `json:"duration" xorm:"not null comment('持续时间') INT(10)"`
+	BeginWith        utils.Time `json:"begin_with" xorm:"not null comment('开始于') DATETIME"`
+	FinishWith       utils.Time `json:"finish_with" xorm:"not null comment('结束于') DATETIME"`
 	CreatedAt        utils.Time `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
 	UpdatedAt        utils.Time `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
 }
