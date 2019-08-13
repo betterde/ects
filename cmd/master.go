@@ -114,7 +114,7 @@ func start() {
 		defer cancel()
 
 		// 当主节点关闭时，先检查是否有其他在线主节点
-		if count, err := models.Engine.Where("mode = ? AND status = ?", "master", "online").Count(&models.Node{}); err != nil {
+		if count, err := models.Engine.Where("mode = ? AND status = ? AND id != ?", "master", "online", master.Id).Count(&models.Node{}); err != nil {
 			log.Println(err)
 		} else {
 			if count == 0 {

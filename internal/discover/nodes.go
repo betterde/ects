@@ -32,58 +32,87 @@ func (cluster *Cluster) WatchNodes(id string, ctx context.Context) {
 		for _, event := range watchResp.Events {
 			var node models.Node
 			leaseCtx, cancelFunc := context.WithTimeout(ctx, 5 * time.Second)
-			leaseRes, err := Client.Grant(ctx, 5)
-			if err != nil {
-				log.Println(err)
-			}
-
-			_, err = Client.KeepAlive(leaseCtx, leaseRes.ID)
-			if err != nil {
-				log.Println(err)
-			}
 
 			switch event.Type {
 			case mvccpb.PUT:
 				if err := json.Unmarshal(event.Kv.Value, &node); err != nil {
 					log.Println(err)
 				}
-
-				lookKey := fmt.Sprintf("%s/%s/", config.Conf.Locker, node.Id)
-
-				// 执行事物，开始抢锁
-				txn := Client.Txn(context.TODO())
-				txn.If(clientv3.Compare(clientv3.CreateRevision(lookKey), "=", 0)).
-					Then(clientv3.OpPut(lookKey, id, clientv3.WithLease(leaseRes.ID))).
-					Else(clientv3.OpGet(lookKey))
-				txnResp, err := txn.Commit()
-				if err != nil {
-					log.Println(err)
-				}
-
-				// 如果没有抢到锁，则获取占用锁的节点ID
-				if !txnResp.Succeeded {
-					log.Printf("锁已经被节点 %s 占用", txnResp.Responses[0].GetResponseRange().Kvs[0].Value)
-				} else {
-					// 如果抢到锁，则创建或更新节点信息
+				result := seize(leaseCtx, node.Id, id)
+				if result {
 					if err := node.CreateOrUpdate(); err != nil {
 						log.Println(err)
 					}
-
 					log.Printf("节点：%s 注册成功", node.Id)
 				}
-
-				cancelFunc()
+				break
 			case mvccpb.DELETE:
 				if err := json.Unmarshal(event.PrevKv.Value, &node); err != nil {
 					log.Println(err)
 				}
 
-				node.Status = models.OFFLINE
-				if err := node.Update(); err != nil {
+				result := seize(leaseCtx, node.Id, id)
+				if result {
+					node.Status = models.OFFLINE
+					if err := node.Update(); err != nil {
+						log.Println(err)
+					}
+					log.Printf("节点：%s 离线", node.Id)
+				}
+				break
+			}
+			cancelFunc()
+		}
+	}
+}
+
+// 抢用于更新节点信息的锁
+func seize(ctx context.Context, key, val string) bool {
+	res, err := Client.Grant(ctx, 5)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+	resc, err := Client.KeepAlive(ctx, res.ID)
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	go func(ctx context.Context) {
+		for {
+			select {
+			case kresp := <-resc:
+				if kresp != nil {
+					log.Println("续租成功，LeaseID: ", kresp.ID)
+				} else if resc == nil {
+					log.Println("续租失败")
+					return
+				}
+			case <-ctx.Done():
+				if _, err := Client.Revoke(context.TODO(), res.ID); err != nil {
 					log.Println(err)
 				}
-				log.Printf("节点：%s 离线", node.Id)
+				return
 			}
+			time.Sleep(1 * time.Second)
 		}
+	}(ctx)
+
+	lockey := fmt.Sprintf("%s/%s/", config.Conf.Locker, key)
+	txn := Client.Txn(ctx)
+	txn.If(clientv3.Compare(clientv3.CreateRevision(lockey), "=", 0)).
+		Then(clientv3.OpPut(lockey, val, clientv3.WithLease(res.ID))).
+		Else(clientv3.OpGet(lockey))
+	txnResp, err := txn.Commit()
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	if !txnResp.Succeeded {
+		return false
+	} else {
+		return true
 	}
 }
