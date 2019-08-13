@@ -28,6 +28,7 @@ var (
 	worker = &models.Node{
 		Mode:   models.WORKER,
 		Status: models.ONLINE,
+		Version: rootCmd.Version,
 	}
 
 	EndPoints []string
