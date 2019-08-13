@@ -50,38 +50,37 @@ func (pipeline *Pipeline) Destroy() error {
 }
 
 // 构造流水线数据结构
-func (pipeline *Pipeline) Build() (origin string, err error) {
+func (pipeline *Pipeline) Build() (origin []byte, err error) {
 	relations := make([]*PipelineNodePivot, 0)
-	err = Engine.Where(builder.Eq{"pipeline_id": pipeline.Id}).Find(&relations)
-	if err != nil {
-		return
+
+	if err = Engine.Where(builder.Eq{"pipeline_id": pipeline.Id}).Find(&relations); err != nil {
+		return []byte{}, err
+	}
+
+	for _, relation := range relations {
+		pipeline.Nodes = append(pipeline.Nodes, relation.NodeId)
+	}
+
+	if err = Engine.Where(builder.Eq{"pipeline_id": pipeline.Id}).Find(&pipeline.Steps); err != nil {
+		return []byte{}, err
 	}
 
 	ids := make([]string, 0)
-	for _, relation := range relations {
-		ids = append(ids, relation.NodeId)
+	for _, relation := range pipeline.Steps {
+		ids = append(ids, relation.TaskId)
 	}
 
-	nodes := make(map[string]*Node)
-
-	// Load binded nodes
-	err = Engine.Where(builder.Eq{"id": ids}).Find(&nodes)
-	if err != nil {
-		return
+	tasks := make(map[string]Task)
+	if err := Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
+		return []byte{}, err
 	}
 
-	for _, node := range nodes {
-		pipeline.Nodes = append(pipeline.Nodes, node.Id)
+	for index, relation := range pipeline.Steps {
+		task := tasks[relation.TaskId]
+		pipeline.Steps[index].Task = &task
 	}
 
-	// Load binded tasks
-	err = Engine.Where(builder.Eq{"pipeline_id": pipeline.Id}).Find(&pipeline.Steps)
-	if err != nil {
-		return
-	}
-
-	ob, err := json.Marshal(pipeline)
-	origin = string(ob)
+	origin, err = json.Marshal(pipeline)
 	return
 }
 

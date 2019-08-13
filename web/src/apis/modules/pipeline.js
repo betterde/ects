@@ -80,5 +80,13 @@ export default {
    */
   unbindTask(id) {
     return Vue.axios.delete(`/api/pipeline/task/${id}`)
+  },
+  /**
+   * 同步流水线到 ETCD
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
+  sync(id) {
+    return Vue.axios.patch(`/api/pipeline/${id}`)
   }
 }

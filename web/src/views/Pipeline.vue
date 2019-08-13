@@ -343,7 +343,7 @@
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="同步到节点" placement="top">
                 <el-button size="mini" icon="el-icon-refresh" plain circle
-                           @click="handleDetail(scope.row)"></el-button>
+                           @click="handleSync(scope.row)"></el-button>
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="删除" placement="top">
                 <el-button size="mini" icon="el-icon-delete" type="danger" plain circle
@@ -829,6 +829,9 @@
           }
         }
       },
+      /**
+       * 清空搜索框时触发
+       */
       handleClear() {
         // 判断是否有 Pipeline 页面跳转传入的参数
         if (this.$route.query.hasOwnProperty("id")) {
@@ -836,6 +839,23 @@
           this.$router.replace("/pipeline");
         }
         this.fetchPipelines();
+      },
+      /**
+       * 同步流水线到 ETCD
+       */
+      handleSync(row) {
+        api.pipeline.sync(row.id).then(res => {
+          this.$message.success({
+            offset: 95,
+            message: res.message
+          });
+          window.console.log(res.data)
+        }).catch(err => {
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          });
+        });
       },
       /**
        * 获取任务列表
@@ -867,7 +887,7 @@
         this.loading = false;
       },
       /**
-       * Change page
+       * 分页跳转时触发
        */
       changePage(page) {
         this.meta.page = page;

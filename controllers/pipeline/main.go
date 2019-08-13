@@ -151,15 +151,49 @@ func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Response {
 		Id: id,
 	}
 
+	session := models.Engine.NewSession()
+	defer session.Close()
+	if err := session.Begin(); err != nil {
+		return response.InternalServerError("初始化事务失败", err)
+	}
+
+	// 解绑节点
+	if _, err := session.Where(builder.Eq{"pipeline_id": pipeline.Id}).Delete(&models.PipelineNodePivot{}); err != nil {
+		if err := session.Rollback(); err != nil {
+			log.Println(err)
+		}
+		return response.InternalServerError("解绑关联的节点失败", err)
+	}
+
+	// 解绑任务
+	if _, err := session.Where(builder.Eq{"pipeline_id": pipeline.Id}).Delete(&models.PipelineTaskPivot{}); err != nil {
+		if err := session.Rollback(); err != nil {
+			log.Println(err)
+		}
+		return response.InternalServerError("解绑关联的任务失败", err)
+	}
+
+	// 删除流水线
+	if _, err := session.Delete(&pipeline); err != nil {
+		if err := session.Rollback(); err != nil {
+			log.Println(err)
+		}
+		return response.InternalServerError("从数据库中删除流水线失败", err)
+	}
+
 	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
 
 	if _, err := discover.Client.Delete(context.TODO(), key); err != nil {
-		return response.InternalServerError("Failed to delete pipeline", err)
+		if err := session.Rollback(); err != nil {
+			log.Println(err)
+		}
+		return response.InternalServerError("从ETCD中删除流水线失败", err)
 	}
 
-	if err := pipeline.Destroy(); err != nil {
-		return response.InternalServerError("Failed to delete pipeline", err)
+	if err := session.Commit(); err != nil {
+		return response.InternalServerError("提交事务失败", err)
 	}
+
 	return response.Success("删除成功", response.Payload{"data": make(map[string]interface{})})
 }
 
@@ -465,41 +499,30 @@ func (instance *Controller) PatchBy(id string, ctx iris.Context) mvc.Response {
 		return response.InternalServerError("查询详情失败", err)
 	}
 
-	if err := models.Engine.Where(builder.Eq{"pipeline_id": id}).Asc("step").Find(&pipeline.Steps); err != nil {
-		return response.InternalServerError("查询流水线任务", err)
-	}
-
-	ids := make([]string, 0)
-	for _, relation := range pipeline.Steps {
-		ids = append(ids, relation.TaskId)
-	}
-
-	tasks := make(map[string]models.Task)
-	if err := models.Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
-		return response.InternalServerError("Failed to query relations", err)
-	}
-
-	for index, relation := range pipeline.Steps {
-		task := tasks[relation.TaskId]
-		pipeline.Steps[index].Task = &task
-	}
-
-	bytes, err := json.Marshal(&pipeline)
+	bytes, err := pipeline.Build()
 	if err != nil {
-		return response.InternalServerError("同步到 ETCD 时出错", err)
+		return response.InternalServerError("获取流水线相关信息失败", err)
 	}
 
 	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, pipeline.Id)
+
+	if len(pipeline.Steps) == 0 {
+		return response.Send(400, "该流水线未关联任何任务", make([]interface{}, 0))
+	}
+
+	if len(pipeline.Nodes) == 0 {
+		return response.Send(400, "该流水线未关联任何节点", make([]interface{}, 0))
+	}
 
 	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
 		return response.InternalServerError("同步到 ETCD 时出错", err)
 	}
 
 	if err := models.CreateLog(&pipeline, utils.GetUID(ctx), "SYNC PIPELINE"); err != nil {
-		return response.InternalServerError("Failed to create log", err)
+		return response.InternalServerError("创建日志失败", err)
 	}
 
-	return response.Success("同步成功", response.Payload{"data": make(map[string]interface{})})
+	return response.Success("同步成功", response.Payload{"data": pipeline})
 }
 
 // 创建强杀指令

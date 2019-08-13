@@ -1,6 +1,10 @@
 package node
 
 import (
+	"context"
+	"fmt"
+	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
@@ -156,13 +160,35 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 
 // 删除节点
 func (instance *Controller) DeleteBy(id string) mvc.Response {
-	worker := &models.Node{
+	worker := models.Node{
 		Id: id,
 	}
 
-	_, err := models.Engine.Delete(worker)
-	if err != nil {
+	session := models.Engine.NewSession()
+	defer session.Close()
 
+	if err := session.Begin(); err != nil {
+		return response.InternalServerError("初始化事务失败", err)
+	}
+
+	// 删除任务和流水线关联记录
+	if _, err := session.Where("node_id = ?", id).Delete(&models.PipelineNodePivot{}); err != nil {
+		if err := session.Rollback(); err != nil {
+			log.Println(err)
+		}
+		return response.InternalServerError("删除节点关联的流水线失败", err)
+	}
+	// 删除节点
+	if _, err := session.Delete(&worker); err != nil {
+		if err := session.Rollback(); err != nil {
+			log.Println(err)
+		}
+		return response.InternalServerError("删除节点失败", err)
+	}
+
+	// 提交事务
+	if err := session.Commit(); err != nil {
+		return response.InternalServerError("提交事务失败", err)
 	}
 
 	return response.Success("删除成功", response.Payload{"data": make(map[string]interface{})})
@@ -223,11 +249,24 @@ func (instance *Controller) PostPipeline(ctx iris.Context) mvc.Response {
 		return response.InternalServerError("查询流水线信息失败", err)
 	}
 
-	// 查询流水线关联的任务数量，如果没有任务则无法关联
-	if count, err := models.Engine.Where(builder.Eq{"pipeline_id": relation.PipelineId}).Count(&models.PipelineTaskPivot{}); err != nil {
-		return response.InternalServerError("获取流水线关联的任务数量失败", err)
-	} else if count < 1 {
+	// 构建流水线数据
+	bytes, err := relation.Pipeline.Build()
+	if err != nil {
+		return response.InternalServerError("获取流水线相关信息失败", err)
+	}
+
+	if len(relation.Pipeline.Steps) == 0 {
 		return response.Send(400, "当前流水线没有关联任何任务", make([]interface{}, 0))
+	}
+
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, relation.Pipeline.Id)
+
+	if _, err := discover.Client.Put(context.TODO(), key, string(bytes)); err != nil {
+		return response.InternalServerError("同步到 ETCD 时出错", err)
+	}
+
+	if err := models.CreateLog(relation.Pipeline, utils.GetUID(ctx), "SYNC PIPELINE"); err != nil {
+		return response.InternalServerError("创建日志失败", err)
 	}
 
 	return response.Success("关联成功", response.Payload{"data": relation})
@@ -241,6 +280,23 @@ func (instance *Controller) DeletePipelineBy(id string, ctx iris.Context) mvc.Re
 
 	relation := models.PipelineNodePivot{
 		Id: id,
+	}
+
+	if _, err := models.Engine.Get(&relation); err != nil {
+		return response.InternalServerError("获取关联记录失败", err)
+	}
+
+	count, err := models.Engine.Where("pipeline_id = ? AND id != ?", relation.PipelineId, id).Count(&models.PipelineNodePivot{})
+	if err != nil {
+		return response.InternalServerError("获取关联记录数量失败", err)
+	}
+
+	// 如果流水线未关联任何节点，则立即删除ETCD中的流水线
+	if count == 0 {
+		key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, relation.Pipeline.Id)
+		if _, err := discover.Client.Delete(context.TODO(), key); err != nil {
+			return response.InternalServerError("删除ETCD中的流水线失败", err)
+		}
 	}
 
 	if _, err := models.Engine.Delete(&relation); err != nil {

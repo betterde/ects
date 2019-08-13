@@ -51,10 +51,6 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="状态" prop="status">
-            <el-radio v-model="bind.params.status" :label="0" border>禁用</el-radio>
-            <el-radio v-model="bind.params.status" :label="1" border>启用</el-radio>
-          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="bind.dialog = false">取消</el-button>
@@ -164,18 +160,14 @@
           index: null,
           dialog: false,
           params: {
-            status: 0,
             node_id: null,
             pipeline_id: '',
           },
           rules: {
-            status: [
-              {type: 'number', required: true, message: '请选择状态', trigger: 'change'}
-            ],
             pipeline_id: [
               {type: 'string', required: true, message: '请选择流水线', trigger: 'change'}
-            ],
-          },
+            ]
+          }
         },
         nodes: [],
         pipelines: [],
