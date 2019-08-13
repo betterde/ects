@@ -2,13 +2,12 @@ package cmd
 
 import (
 	"crypto/tls"
+	"fmt"
 	"github.com/betterde/ects/models"
 	"github.com/gorhill/cronexpr"
-	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"gopkg.in/gomail.v2"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -22,10 +21,16 @@ var singleCmd = &cobra.Command{
 		//discover.GetConf("/ects/config")
 		//pipeline.WatchPipelines("7df52971-4894-4f01-9171-7452c4ddceca")
 		log.Println(cronexpr.MustParse("* * * * * *").Next(time.Now()).Format(models.DefaultTimeFormat))
-		log.Println(strings.TrimPrefix("/var/local/laravel", "/var/local/"))
-		log.Println(uuid.NewV4().String())
-		d := gomail.NewDialer("", 27, "system@betterde.com", "system@2019")
+		d := gomail.NewDialer("smtp.qiye.aliyun.com", 465, "system@betterde.com", "System@2019")
 		d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+		m := gomail.NewMessage()
+		m.SetHeader("From", fmt.Sprintf("%s<%s>", "ECTS", "system@betterde.com"))
+		m.SetHeader("To", "george@betterde.com")
+		m.SetHeader("Subject", "Notification")
+		m.SetBody("text/html", "Hello Goerge")
+		if err := d.DialAndSend(m); err != nil {
+			log.Println(err)
+		}
 	},
 }
 
