@@ -5,6 +5,11 @@
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
           <el-tab-pane label="系统通知" name="notification">
             <el-form :model="notification" :rules="rules" ref="database">
+              <el-col :span="24">
+                <el-form-item prop="url">
+                  <el-input v-model="notification.url" placeholder="后台URL用于邮件内链接跳转到ECTS后台，如: https://ects.betterde.com"></el-input>
+                </el-form-item>
+              </el-col>
               <el-col :span="10">
                 <el-form-item prop="host">
                   <el-input v-model="notification.host" placeholder="主机地址"></el-input>
@@ -17,7 +22,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.char" placeholder="请选择协议">
+                  <el-select v-model="notification.protocol" placeholder="请选择协议">
                     <el-option key="smtp" label="SMTP" value="smtp"></el-option>
                     <el-option key="pop3" label="POP3" value="pop3"></el-option>
                   </el-select>
@@ -33,12 +38,12 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="user">
-                  <el-input v-model="notification.user" placeholder="用户名"></el-input>
+                  <el-input v-model="notification.user" autocomplete="off" placeholder="用户名"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="pass">
-                  <el-input v-model="notification.pass" placeholder="密码" show-password></el-input>
+                  <el-input v-model="notification.pass" autocomplete="off" placeholder="密码" show-password></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="24">
@@ -93,13 +98,14 @@
           desc: ''
         },
         notification: {
+          url: '',
           host: "smtp.mailtrap.io",
           port: 25,
-          user: "",
-          pass: "",
-          name: "",
-          char: "",
-          encryption: ""
+          user: '',
+          pass: '',
+          name: '',
+          protocol: '',
+          encryption: ''
         },
         rules: {
           name: [
