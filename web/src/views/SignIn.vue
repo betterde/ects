@@ -57,7 +57,7 @@
                 this.$router.replace("/");
               });
             }).catch(err => {
-              this.$message.warning(err.data.message);
+              this.$message.error(err.message);
             });
           } else {
             return false;

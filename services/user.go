@@ -100,6 +100,9 @@ func (service *UserService) Attempt(username, passwod string) (token string, err
 // Get user by credentials
 func (service *UserService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
 	user = service.FindByEmail(username)
+	if user == nil {
+		return nil, errors.New("用户不存在")
+	}
 
 	result, err := models.ValidatePassword(password, []byte(user.Password))
 
