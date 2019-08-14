@@ -49,6 +49,19 @@ func (pipeline *Pipeline) Destroy() error {
 	return err
 }
 
+func (pipeline *Pipeline) Exec() {
+	if len(pipeline.Steps) > 0 {
+		//for _, pivot := range pipeline.Steps {
+		//	output, err := pivot.Task.Exec()
+		//	if err != nil {
+		//
+		//	}
+		//}
+	}
+
+	return
+}
+
 // 构造流水线数据结构
 func (pipeline *Pipeline) Build() (origin []byte, err error) {
 	relations := make([]*PipelineNodePivot, 0)

@@ -83,7 +83,7 @@ func listen() {
 
 	sign := make(chan os.Signal, 1)
 
-	signal.Notify(sign)
+	signal.Notify(sign, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 
 	for {
 		receiver := <-sign
@@ -91,8 +91,6 @@ func listen() {
 		switch receiver {
 		case syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL:
 			service.Stop()
-			return
-		default:
 			return
 		}
 	}

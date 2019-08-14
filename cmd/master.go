@@ -84,8 +84,14 @@ func register() {
 		}
 	}
 
+	var err error
+
 	if master.Name == "" {
-		master.Name = "master-" + master.Id
+		master.Name, err = os.Hostname()
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	service, err := discover.NewService(master)

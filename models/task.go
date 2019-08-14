@@ -3,6 +3,10 @@ package models
 import (
 	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
+	"os/exec"
+	"os/user"
+	"strconv"
+	"syscall"
 )
 
 const (
@@ -54,4 +58,38 @@ func (task *Task) Destroy() error {
 func (task *Task) ToString() (string, error) {
 	result, err := json.Marshal(task)
 	return string(result), err
+}
+
+func (task *Task) Exec(username string, dir string, env []string) ([]byte, error) {
+	switch task.Mode {
+	case MODESHELL:
+		cmd := exec.Command("/bin/bash", "-c", task.Content)
+		cmd.Env = env
+		cmd.Dir = dir
+		cmd.SysProcAttr = &syscall.SysProcAttr{
+			Setpgid:    true,
+		}
+		if username != "" {
+			sysuser, err := user.Lookup(username)
+			if err != nil {
+				return []byte{}, nil
+			}
+			uid, err := strconv.Atoi(sysuser.Uid)
+			gid, err := strconv.Atoi(sysuser.Gid)
+			cmd.SysProcAttr.Credential = &syscall.Credential{
+				Uid:         uint32(uid),
+				Gid:         uint32(gid),
+				Groups:      nil,
+				NoSetGroups: false,
+			}
+		}
+		break
+	case MODEHOOK:
+		break
+	case MODEHTTP:
+		break
+	case MODEMAIL:
+		break
+	}
+	return []byte{1,2,4}, nil
 }

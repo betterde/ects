@@ -18,14 +18,19 @@ func WatchPipelines(local string) {
 	Pipelines = make(map[string]*models.Pipeline)
 	var curRevision int64 = 0
 
-	for {
-		rangeResp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
+	rangeResp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
+	if err != nil {
+		panic(err)
+	}
+	curRevision = rangeResp.Header.Revision + 1
 
-		if err != nil {
-			continue
+	for _, obj := range rangeResp.Kvs {
+		var pipeline models.Pipeline
+		if err := json.Unmarshal(obj.Value, &pipeline); err != nil {
+			log.Println(err)
 		}
-		curRevision = rangeResp.Header.Revision + 1
-		break
+
+		Pipelines[pipeline.Id] = &pipeline
 	}
 
 	watchChan := discover.Client.Watch(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
