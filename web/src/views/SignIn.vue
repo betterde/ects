@@ -7,18 +7,17 @@
       <div class="panel-body">
         <el-form :model="credentials" :rules="rules" ref="signin">
           <el-form-item prop="username">
-            <el-input v-model="credentials.username" placeholder="Email"></el-input>
+            <el-input v-model="credentials.username" autocomplete="off" placeholder="邮箱"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input type="password" v-model="credentials.password" @keyup.enter.native="submit('signin')"
-                      placeholder="Password" show-password></el-input>
+                      placeholder="密码" show-password></el-input>
           </el-form-item>
           <el-form-item class="login-button">
-            <el-button type="primary" plain class="pull-right" style="width: 100%" @click="submit('signin')" :loading="loading">Sign In
-            </el-button>
+            <el-button type="primary" plain class="pull-right" style="width: 100%" @click="submit('signin')" :loading="loading">登录</el-button>
           </el-form-item>
           <div class="tips">
-            <p>If you forget your password, click here</p>
+            <p>如果你忘记了密码，请点击这里</p>
           </div>
         </el-form>
       </div>
@@ -28,7 +27,6 @@
 
 <script>
   import store from '../store'
-  import {mapState} from 'vuex'
 
   export default {
     name: "SignIn",
@@ -41,10 +39,10 @@
         },
         rules: {
           username: [
-            {required: true, message: 'Enter your email address', trigger: 'blur'},
+            {required: true, message: '请输入邮箱地址', trigger: 'blur'},
           ],
           password: [
-            {required: true, message: 'Enter your password', trigger: 'blur'},
+            {required: true, message: '请输入密码', trigger: 'blur'},
           ]
         }
       }
@@ -59,7 +57,7 @@
                 this.$router.replace("/");
               });
             }).catch(err => {
-              this.$message.warning(err.data.message);
+              this.$message.error(err.message);
             });
           } else {
             return false;
@@ -67,12 +65,6 @@
         });
         this.loading = false;
       }
-    },
-    computed: {
-      ...mapState({
-        access_token: state => state.account.access_token,
-        profile: state => state.account.profile,
-      }),
     }
   }
 </script>

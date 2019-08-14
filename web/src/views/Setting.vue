@@ -3,21 +3,26 @@
     <div class="panel">
       <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
-          <el-tab-pane label="Nofification" name="notification">
-            <el-form :model="notification" :rules="rules" ref="database">
+          <el-tab-pane label="系统通知" name="notification">
+            <el-form :model="notification" :rules="rules" ref="setting">
+              <el-col :span="24">
+                <el-form-item prop="url">
+                  <el-input v-model="notification.url" placeholder="后台URL用于邮件内链接跳转到ECTS后台，如: https://ects.betterde.com"></el-input>
+                </el-form-item>
+              </el-col>
               <el-col :span="10">
                 <el-form-item prop="host">
-                  <el-input v-model="notification.host" placeholder="Host"></el-input>
+                  <el-input v-model="notification.host" placeholder="主机地址"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="2">
                 <el-form-item prop="port" label-width="0">
-                  <el-input v-model="notification.port" placeholder="Port"></el-input>
+                  <el-input v-model.number="notification.port" placeholder="端口"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.char" placeholder="Service protocol">
+                  <el-select v-model="notification.protocol" placeholder="请选择协议">
                     <el-option key="smtp" label="SMTP" value="smtp"></el-option>
                     <el-option key="pop3" label="POP3" value="pop3"></el-option>
                   </el-select>
@@ -25,7 +30,7 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item prop="char">
-                  <el-select v-model="notification.encryption" placeholder="Encryption type">
+                  <el-select v-model="notification.encryption" placeholder="请选择加密类型">
                     <el-option key="tls" label="TLS" value="tls"></el-option>
                     <el-option key="ssl" label="SSL" value="ssl"></el-option>
                   </el-select>
@@ -33,35 +38,35 @@
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="user">
-                  <el-input v-model="notification.user" placeholder="User"></el-input>
+                  <el-input v-model="notification.user" autocomplete="off" placeholder="用户名"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
                 <el-form-item prop="pass">
-                  <el-input v-model="notification.pass" placeholder="Password" show-password></el-input>
+                  <el-input v-model="notification.pass" autocomplete="off" placeholder="密码" show-password></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="24">
                 <el-form-item prop="pass" style="text-align: right">
-                  <el-button type="primary" plain>Upgrade</el-button>
+                  <el-button type="primary" plain @click="submit">保存</el-button>
                 </el-form-item>
               </el-col>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="Upgrade" name="upgrade">
+          <el-tab-pane label="系统升级" name="upgrade">
             <el-upload class="upgrade" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
               <i class="el-icon-upload"></i>
-              <div class="el-upload__text">Drag the latest ECTS binary executable file here，or <em>click to upload</em></div>
+              <div class="el-upload__text">请将最新版的ECTS二进制文件拖拽到这里或 <em>点击上传</em></div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="Information" name="info">
+          <el-tab-pane label="系统信息" name="info">
             <div class="information">
               <h1 class="information-title">
                 系统信息
               </h1>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="Service" name="service">
+          <el-tab-pane label="系统服务" name="service">
             <div class="service-info">
               <h1 class="service-info-title">
                 获得帮助
@@ -75,6 +80,8 @@
 </template>
 
 <script>
+  import api from '../apis'
+
   export default {
     name: "Setting",
     data() {
@@ -93,13 +100,14 @@
           desc: ''
         },
         notification: {
-          host: "smtp.mailtrap.io",
+          url: '',
+          host: "",
           port: 25,
-          user: "",
-          pass: "",
-          name: "",
-          char: "",
-          encryption: ""
+          user: '',
+          pass: '',
+          name: '',
+          protocol: '',
+          encryption: ''
         },
         rules: {
           name: [
@@ -128,10 +136,21 @@
       }
     },
     methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
+      submit() {
+        this.$refs.setting.validate((valid) => {
           if (valid) {
-            alert('submit!');
+            api.setting.updateNotification(this.notification).then(res => {
+              this.notification = res.data;
+              this.$message.success({
+                offset: 95,
+                message: res.message
+              })
+            }).catch(err => {
+              this.$message.error({
+                offset: 95,
+                message: err.message
+              })
+            })
           } else {
             return false;
           }
@@ -140,6 +159,16 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       }
+    },
+    mounted() {
+      api.setting.fetchNotification().then(res => {
+        this.notification = res.data;
+      }).catch(err => {
+        this.$message.error({
+          offset: 95,
+          message: err.message
+        })
+      })
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {

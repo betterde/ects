@@ -4,57 +4,57 @@
       <div class="panel-header" :class="classes">
         <div class="panel-tools">
           <el-row :gutter="20">
-            <el-col :span="16">
-              <el-button type="primary" plain @click="handleCreate">Create</el-button>
-            </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+            </el-col>
+            <el-col :span="16" style="text-align: right">
+              <el-button type="primary" plain @click="handleCreate">创建</el-button>
             </el-col>
           </el-row>
         </div>
       </div>
-      <el-dialog title="Create user" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="创建用户" :visible.sync="create.dialog" @close="handleClose('create')" width="600px" :close-on-click-modal="false">
         <el-form :model="create.params" :rules="create.rules" ref="create" label-position="top">
           <el-row :gutter="10">
            <el-col :span="18">
-             <el-form-item label="Name" prop="name">
-               <el-input v-model="create.params.name" autocomplete="off"></el-input>
+             <el-form-item label="姓名" prop="name">
+               <el-input v-model="create.params.name" autocomplete="off" placeholder="请输入姓名"></el-input>
              </el-form-item>
            </el-col>
            <el-col :span="6">
-             <el-form-item label="Manager" prop="manager">
+             <el-form-item label="管理" prop="manager">
                <el-select v-model="create.params.manager" placeholder="请选择">
-                 <el-option label="Yes" :value="true"></el-option>
-                 <el-option label="No" :value="false"></el-option>
+                 <el-option label="是" :value="true"></el-option>
+                 <el-option label="否" :value="false"></el-option>
                </el-select>
              </el-form-item>
            </el-col>
           </el-row>
-          <el-form-item label="Email" prop="email">
-            <el-input v-model="create.params.email" autocomplete="off"></el-input>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="create.params.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
           </el-form-item>
-          <el-form-item label="Password" prop="pass">
-            <el-input v-model="create.params.pass" placeholder="Password" show-password></el-input>
+          <el-form-item label="密码" prop="pass">
+            <el-input v-model="create.params.pass" placeholder="请输入密码" show-password></el-input>
           </el-form-item>
-          <el-form-item label="Confirm" prop="confirm">
-            <el-input v-model="create.params.confirm" placeholder="Confirm" show-password></el-input>
+          <el-form-item label="确认" prop="confirm">
+            <el-input v-model="create.params.confirm" placeholder="请再次输入密码" show-password></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="create.dialog = false">Cancel</el-button>
-          <el-button type="primary" @click="submit('create')">Confirm</el-button>
+          <el-button @click="create.dialog = false">取消</el-button>
+          <el-button type="primary" @click="submit('create')">确认</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="Update user" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
+      <el-dialog title="编辑用户" :visible.sync="update.dialog" @close="handleClose('update')" width="600px" :close-on-click-modal="false">
         <el-form :model="update.params" :rules="update.rules" ref="update" label-position="top">
           <el-row :gutter="10">
             <el-col :span="18">
-              <el-form-item label="Name" prop="name">
-                <el-input v-model="update.params.name" autocomplete="off"></el-input>
+              <el-form-item label="名称" prop="name">
+                <el-input v-model="update.params.name" autocomplete="off" placeholder="请输入姓名"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="Manager" prop="manager">
+              <el-form-item label="管理" prop="manager">
                 <el-select v-model="update.params.manager" placeholder="请选择">
                   <el-option label="Yes" :value="true"></el-option>
                   <el-option label="No" :value="false"></el-option>
@@ -62,14 +62,14 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="Email" prop="email">
-            <el-input v-model="update.params.email" autocomplete="off"></el-input>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="update.params.email" autocomplete="off" placeholder="请输入邮箱"></el-input>
           </el-form-item>
-          <el-form-item label="Password" prop="pass">
-            <el-input v-model="update.params.pass" placeholder="Password" show-password></el-input>
+          <el-form-item label="密码" prop="pass">
+            <el-input v-model="update.params.pass" placeholder="密码" show-password></el-input>
           </el-form-item>
-          <el-form-item label="Confirm" prop="confirm">
-            <el-input v-model="update.params.confirm" placeholder="Confirm" show-password></el-input>
+          <el-form-item label="确认" prop="confirm">
+            <el-input v-model="update.params.confirm" placeholder="请再次输入密码" show-password></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -78,18 +78,18 @@
         </div>
       </el-dialog>
       <div class="panel-body" :class="classes">
-        <el-table :data="users" style="width: 100%" empty-text="No more data">
+        <el-table :data="users" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-form label-position="top" inline class="table-expand">
                 <el-row :gutter="10">
                   <el-col :span="12">
-                    <el-form-item label="Created at">
+                    <el-form-item label="创建于">
                       <span>{{ props.row.created_at }}</span>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item label="Updated at">
+                    <el-form-item label="更新于">
                       <span>{{ props.row.updated_at }}</span>
                     </el-form-item>
                   </el-col>
@@ -98,18 +98,20 @@
             </template>
           </el-table-column>
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
-          <el-table-column prop="name" label="Name" width="200"></el-table-column>
-          <el-table-column prop="email" label="Email"></el-table-column>
-          <el-table-column label="Manager" width="100">
+          <el-table-column prop="name" label="姓名" width="200"></el-table-column>
+          <el-table-column prop="email" label="邮箱"></el-table-column>
+          <el-table-column label="管理员" width="100">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row.manager === false" size="medium" type="info">NO</el-tag>
-              <el-tag v-else size="medium">Yes</el-tag>
+              <el-tag v-if="scope.row.manager === false" size="medium" type="info">否</el-tag>
+              <el-tag v-else size="medium">是</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="option" label="Action" width="130">
+          <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">
               <el-button size="mini" icon="el-icon-edit" circle @click="handleUpdate(scope.$index, scope.row)"></el-button>
-              <el-button size="mini" icon="el-icon-tickets" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
+              <el-tooltip class="item" effect="dark" content="查询日志" placement="top">
+                <el-button size="mini" icon="el-icon-tickets" plain circle @click="handleUserLog(scope.$index, scope.row)"></el-button>
+              </el-tooltip>
               <el-button size="mini" icon="el-icon-delete" type="danger" plain circle @click="handleDelete(scope.$index, scope.row)"></el-button>
             </template>
           </el-table-column>
@@ -131,7 +133,7 @@
     data() {
       let validateCreatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please enter your password!'));
+          callback(new Error('请输入密码'));
         } else {
           if (this.create.params.confirm !== '') {
             this.$refs.create.validateField('confirm');
@@ -141,16 +143,16 @@
       };
       let confirmCreatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please confirm your password!'));
+          callback(new Error('请输再次输入密码'));
         } else if (value !== this.create.params.pass) {
-          callback(new Error('Password mismatch!'));
+          callback(new Error('两次输入的密码不一致'));
         } else {
           callback();
         }
       };
       let validateUpdatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please enter your password!'));
+          callback(new Error('请输入密码'));
         } else {
           if (this.update.params.confirm !== '') {
             this.$refs.update.validateField('confirm');
@@ -160,9 +162,9 @@
       };
       let confirmUpdatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please confirm your password!'));
+          callback(new Error('请输再次输入密码'));
         } else if (value !== this.update.params.pass) {
-          callback(new Error('Password mismatch!'));
+          callback(new Error('两次输入的密码不一致'));
         } else {
           callback();
         }
@@ -171,7 +173,8 @@
         classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
-          search: "",
+          scene: 'table',
+          search: '',
           page: 1
         },
         create: {
@@ -185,10 +188,10 @@
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入用户姓名', trigger: 'blur'}
             ],
             email: [
-              {type: 'string', required: true, message: 'Please enter a email', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入用户邮箱地址', trigger: 'blur'}
             ],
             pass: [
               {type: 'string', required: true, validator: validateCreatePass, trigger: 'blur'}
@@ -197,7 +200,7 @@
               {type: 'string', required: true, validator: confirmCreatePass, trigger: 'blur'}
             ],
             manager: [
-              {type: 'boolean', required: true, message: 'Please select user role', trigger: 'change'}
+              {type: 'boolean', required: true, message: '请选择是否是管理员', trigger: 'change'}
             ]
           }
         },
@@ -213,10 +216,10 @@
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入用户姓名', trigger: 'blur'}
             ],
             email: [
-              {type: 'string', required: true, message: 'Please enter a email', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入用户邮箱地址', trigger: 'blur'}
             ],
             pass: [
               {type: 'string', required: true, validator: validateUpdatePass, trigger: 'blur'}
@@ -225,7 +228,7 @@
               {type: 'string', required: true, validator: confirmUpdatePass, trigger: 'blur'}
             ],
             manager: [
-              {type: 'boolean', required: true, message: 'Please select user role', trigger: 'change'}
+              {type: 'boolean', required: true, message: '请选择是否是管理员', trigger: 'change'}
             ]
           }
         },
@@ -298,9 +301,9 @@
        * @param row
        */
       handleDelete(index, row) {
-        this.$confirm('This operation will delete the user, whether to continue?', 'Alert', {
-          confirmButtonText: 'Confirm',
-          cancelButtonText: 'Cancel',
+        this.$confirm('此操作将删除该用户，是否继续？', 'Alert', {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           api.user.delete(row.id).then(res => {
@@ -315,7 +318,7 @@
         }).catch(() => {
           this.$message({
             type: 'info',
-            message: 'Operation canceled!'
+            message: '操作被取消'
           });
         });
       },
@@ -334,6 +337,17 @@
             this.update.dialog = false;
             break;
         }
+      },
+      /**
+       * 查询用户日志
+       */
+      handleUserLog(index, row) {
+        this.$router.push({
+          path: '/log',
+          query: {
+            id: row.id
+          }
+        })
       },
       /**
        * Fetch user list

@@ -34,30 +34,41 @@ var (
 // Get tasks list
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
-		total  int64
-		err    error
+		total int64
+		err   error
 	)
-	search := ctx.Params().GetStringDefault("search", "")
-	page, limit, start := utils.Pagination(ctx)
+	scene := ctx.Params().GetStringDefault("scene", "table")
 	tasks := make([]models.Task, 0)
 
-	if search == "" {
-		total, err = models.Engine.Limit(limit, start).FindAndCount(&tasks)
-	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&tasks)
+	switch scene {
+	case "table":
+		search := ctx.URLParamDefault("search", "")
+		page, limit, start := utils.Pagination(ctx)
+
+		if search == "" {
+			total, err = models.Engine.Limit(limit, start).FindAndCount(&tasks)
+		} else {
+			total, err = models.Engine.Where(builder.Like{"id", search}.Or(builder.Like{"name", search})).Limit(limit, start).FindAndCount(&tasks)
+		}
+
+		if err != nil {
+			log.Println(err)
+		}
+
+		return response.Success("Successful", response.Payload{
+			"data": tasks,
+			"meta": &response.Meta{
+				Limit: limit,
+				Page:  page,
+				Total: int(total),
+			}})
+	case "selector":
+		if err := models.Engine.Find(&tasks); err != nil {
+			return response.InternalServerError("查询任务列表失败", err)
+		}
 	}
 
-	if err != nil {
-		log.Println(err)
-	}
-
-	return response.Success("Successful", response.Payload{
-		"data": tasks,
-		"meta": &response.Meta{
-			Limit: limit,
-			Page:  page,
-			Total: int(total),
-		}})
+	return response.Success("数据使用场景有误", response.Payload{"data": make([]interface{}, 0)})
 }
 
 // Create task

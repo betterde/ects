@@ -28,6 +28,7 @@ var (
 	worker = &models.Node{
 		Mode:   models.WORKER,
 		Status: models.ONLINE,
+		Version: rootCmd.Version,
 	}
 
 	EndPoints []string
@@ -60,11 +61,9 @@ func listen() {
 	discover.NewClient()
 	discover.GetConf(confKey)
 
-	if worker.Host == "0.0.0.0" {
-		ips := utils.GetIPs()
-		if len(ips) > 0 {
-			worker.Host = ips[0]
-		}
+	ips := utils.GetIPs()
+	if len(ips) > 0 {
+		worker.Host = ips[0]
 	}
 
 	service, err := discover.NewService(worker)

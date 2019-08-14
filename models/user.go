@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -31,6 +32,12 @@ func ValidatePassword(password string, hashed []byte) (bool, error) {
 	return true, nil
 }
 
+// 更新用户信息
+func (user *User) Update() error {
+	_, err := Engine.Id(user.Id).Update(user)
+	return err
+}
+
 func (user *User) Store() error {
 	_, err := Engine.Insert(user)
 	return err
@@ -45,4 +52,10 @@ func (user *User) ModifyEmail(email string) (*User, error) {
 	user.Email = email
 	err := user.Save()
 	return user, err
+}
+
+// 序列化
+func (user *User) ToString() (string, error) {
+	result, err := json.Marshal(user)
+	return string(result), err
 }

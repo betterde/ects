@@ -16,7 +16,7 @@ type (
 	UserInterface interface {
 		Users(params map[string]string) (*[]models.User, *response.Meta)
 		FindByID(id string) (*models.User, error)
-		FindByEmail(email string) (*models.User, error)
+		FindByEmail(email string) *models.User
 		Attempt(username, password string) (string, error)
 		Destroy(id string, force bool) error
 	}
@@ -90,7 +90,7 @@ func (service *UserService) Attempt(username, passwod string) (token string, err
 
 	token, err = IssueToken(user)
 
-	if err := models.CreateLog(*user, user.Id, "USER SIGN IN"); err != nil {
+	if err := models.CreateLog(user, user.Id, "USER SIGN IN"); err != nil {
 		log.Println(err)
 	}
 
@@ -99,10 +99,9 @@ func (service *UserService) Attempt(username, passwod string) (token string, err
 
 // Get user by credentials
 func (service *UserService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
-	user, err = service.FindByEmail(username)
-
-	if err != nil {
-		return nil, err
+	user = service.FindByEmail(username)
+	if user == nil {
+		return nil, errors.New("用户不存在")
 	}
 
 	result, err := models.ValidatePassword(password, []byte(user.Password))
@@ -115,15 +114,15 @@ func (service *UserService) RetrieveByCredentials(username, password string) (us
 }
 
 // Get user by email
-func (service *UserService) FindByEmail(email string) (*models.User, error) {
-	var user models.User
-	result, err := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
+func (service *UserService) FindByEmail(email string) *models.User {
+	user := models.User{}
+	result, _ := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
 
 	if result {
-		return &user, err
+		return &user
 	}
 
-	return nil, errors.New("User does not exist")
+	return nil
 }
 
 // Get user

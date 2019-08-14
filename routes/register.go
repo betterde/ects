@@ -20,11 +20,13 @@ func Register(app *iris.Application) {
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
 		mvc.Configure(api.Party("/auth"), authentication)
 		api.Use(middleware.JWTHandler.Serve)
+		mvc.Configure(api.Party("/task"), registerTask)
 		mvc.Configure(api.Party("/node"), registerNode)
 		mvc.Configure(api.Party("/pipeline"), registerPipeline)
-		mvc.Configure(api.Party("/task"), registerTask)
+		mvc.Configure(api.Party("/dashboard"), registerDashboard)
 		mvc.Configure(api.Party("/user"), registerUser)
 		mvc.Configure(api.Party("/log"), registerLog)
+		mvc.Configure(api.Party("/setting"), registerSetting)
 		mvc.Configure(api.PartyFunc("/account", func(account iris.Party) {
 			mvc.Configure(account.Party("/profile"), registerProfile)
 		}))

@@ -35,5 +35,31 @@ export default {
    */
   delete(id) {
     return Vue.axios.delete(`/api/node/${id}`);
+  },
+  /**
+   * 获取节点关联的流水线
+   * @param params
+   * @returns {AxiosPromise<any>}
+   */
+  fetchPipelines(params) {
+    return Vue.axios.get('/api/node/pipelines', {
+      params: params
+    })
+  },
+  /**
+   * 关联流水线到节点
+   * @param params
+   * @returns {AxiosPromise<any>}
+   */
+  bindPipeline(params) {
+    return Vue.axios.post('/api/node/pipeline', params);
+  },
+  /**
+   * 解绑流水线
+   * @param id
+   * @returns {AxiosPromise}
+   */
+  unbindPipeline(id) {
+    return Vue.axios.delete(`/api/node/pipeline/${id}`);
   }
 }

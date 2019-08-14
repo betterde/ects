@@ -25,19 +25,30 @@ type (
 		Char string `json:"char" yaml:"char" validate:"required"`
 	}
 	User struct {
-		Name    string `json:"name" validate:"required" yaml:"-"`
-		Email   string `json:"email" validate:"required" yaml:"-"`
-		Pass    string `json:"pass" validate:"required" yaml:"-"`
-		Confirm string `json:"confirm" validate:"required" yaml:"-"`
+		Name    string `json:"name" yaml:"-" validate:"required"`
+		Email   string `json:"email" yaml:"-" validate:"required"`
+		Pass    string `json:"pass" yaml:"-" validate:"required"`
+		Confirm string `json:"confirm" yaml:"-" validate:"required"`
 	}
 	Auth struct {
 		Secret string `json:"secret" yaml:"secret" validate:"required"`
 		TTL    int64  `json:"ttl" yaml:"ttl" validate:"required"`
 	}
+	Notification struct {
+		Url        string `json:"url" yaml:"url" validate:"required"`
+		Host       string `json:"host" yaml:"host" validate:"required"`
+		Port       int    `json:"port" yaml:"port" validate:"numeric"`
+		User       string `json:"user" yaml:"user" validate:"required"`
+		Pass       string `json:"pass" yaml:"pass" validate:"required"`
+		Name       string `json:"name" yaml:"name" validate:"required"`
+		Protocol   string `json:"protocol" yaml:"protocol" validate:"required"`
+		Encryption string `json:"encryption" yaml:"encryption" validate:"required"`
+	}
 	Config struct {
 		Database `json:"database"`
 		Auth     `json:"auth"`
 		Etcd     `json:"etcd"`
+		Notification `json:"notification"`
 	}
 )
 

@@ -8,14 +8,14 @@
           </div>
         </el-col>
         <el-col :span="16">
-          <el-menu :default-active="menu.active" class="el-menu-nav" mode="horizontal" @select="handleSelect" router>
-            <el-menu-item index="/">Dashboard</el-menu-item>
-            <el-menu-item index="/pipeline">Pipeline</el-menu-item>
-            <el-menu-item index="/task">Task</el-menu-item>
-            <el-menu-item index="/node">Node</el-menu-item>
-            <el-menu-item index="/user">User</el-menu-item>
-            <el-menu-item index="/log">Log</el-menu-item>
-            <el-menu-item index="/setting">Setting</el-menu-item>
+          <el-menu :default-active="$route.path" class="el-menu-nav" mode="horizontal" router>
+            <el-menu-item index="/">概览</el-menu-item>
+            <el-menu-item index="/task">任务</el-menu-item>
+            <el-menu-item index="/pipeline">流水线</el-menu-item>
+            <el-menu-item index="/node">节点</el-menu-item>
+            <el-menu-item index="/user">用户</el-menu-item>
+            <el-menu-item index="/log">日志</el-menu-item>
+            <el-menu-item index="/setting">设置</el-menu-item>
           </el-menu>
         </el-col>
         <el-col :span="4">
@@ -24,8 +24,8 @@
             <div class="avatar grid-content" v-html="profile.name.slice(0,1)"></div>
           </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="a">Profile</el-dropdown-item>
-              <el-dropdown-item command="signOut">Sign out</el-dropdown-item>
+              <el-dropdown-item command="a">个人信息</el-dropdown-item>
+              <el-dropdown-item command="signOut">退出登陆</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-col>
@@ -50,25 +50,24 @@
       return {}
     },
     methods: {
-      handleSelect(key){
-        this.$store.commit('SET_MENU_ACTIVE', key);
-      },
       handleCommand(command) {
         switch (command) {
           case 'signOut':
             this.signOut();
+            break;
+          case 'profile':
+            break;
         }
       },
       signOut(){
-        this.$store.commit('SET_PROFILE', false);
         this.$store.commit('SET_ACCESS_TOKEN', false);
-        this.$message.success("Sign out successful");
+        this.$store.commit('SET_PROFILE', false);
+        this.$message.success('注销成功');
         this.$router.push("/signin");
       }
     },
     computed: {
       ...mapState({
-        menu: state => state.system.menu,
         profile: state => state.account.profile,
         access_token: state => state.account.access_token
       })
@@ -83,7 +82,7 @@
 
     .el-header {
       width: 100%;
-      background-color: #FFFFFF;
+      background-color: white;
       box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       .el-dropdown {
         float: right;
@@ -146,8 +145,6 @@
   .main-content {
     height: 100%;
     border-radius: 4px;
-    /*background-color: #FFFFFF;*/
-    /*box-shadow: 1px 1px 3px rgba(0, 21, 41, .08);*/
     padding: 0 20px;
   }
 </style>

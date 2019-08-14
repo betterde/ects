@@ -51,7 +51,7 @@ export default {
     SET_ACCESS_TOKEN: (state, data) => {
       if (data === false) {
         Vue.set(state, 'expires_in', '');
-        Vue.set(state, 'access_token', '');
+        Vue.set(state, 'access_token', null);
         // 删除 localStorage 中的用户凭证信息
         localStorage.removeItem('expires_in');
         localStorage.removeItem('access_token');

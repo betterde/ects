@@ -7,22 +7,24 @@
             <el-col :span="16">
             </el-col>
             <el-col :span="8">
-              <el-input placeholder="Search in here" v-model="params.search"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchLogs" @clear="handleClear" clearable>
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              </el-input>
             </el-col>
           </el-row>
         </div>
       </div>
       <div class="panel-body" :class="classes">
-        <el-table :data="logs" style="width: 100%" empty-text="No more data">
+        <el-table :data="logs" style="width: 100%">
           <el-table-column type="expand">
             <template slot-scope="props">
               <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
-              <pre v-else><div style="text-align: center; color: #909399">No Content</div></pre>
+              <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
             </template>
           </el-table-column>
-          <el-table-column prop="user_id" label="User" width="300"></el-table-column>
-          <el-table-column prop="operation" label="Operation"></el-table-column>
-          <el-table-column prop="created_at" label="Created at" width="160"></el-table-column>
+          <el-table-column prop="user_id" label="用户" width="300"></el-table-column>
+          <el-table-column prop="operation" label="操作"></el-table-column>
+          <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
         </el-table>
         <div class="pagination">
           <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
@@ -56,12 +58,6 @@
       }
     },
     methods: {
-      handleEdit(index, row) {
-        window.console.log(index, row)
-      },
-      handleDelete(index, row) {
-        window.console.log(index, row)
-      },
       fetchLogs () {
         this.loading = true;
         api.log.fetch(this.params).then(res => {
@@ -72,6 +68,14 @@
         });
         this.loading = false;
       },
+      handleClear() {
+        // 判断是否有 Pipeline 页面跳转传入的参数
+        if (this.$route.query.hasOwnProperty("id")) {
+          // 如果有则替换路由
+          this.$router.replace("/log");
+        }
+        this.fetchLogs();
+      },
       changePage(page) {
         this.meta.page = page;
         this.params.page = page;
@@ -79,6 +83,10 @@
       },
     },
     mounted() {
+      // 如果存在查询参数则
+      if (this.$route.query.hasOwnProperty("id")) {
+        this.params.search = this.$route.query.id;
+      }
       this.fetchLogs()
     },
     beforeRouteEnter(to, from, next) {

@@ -20,43 +20,43 @@
                   <el-col :span="24">
                     <el-form-item prop="endpoints" label="EndPoints">
                       <el-select v-model="config.etcd.endpoints" multiple filterable allow-create default-first-option
-                                 placeholder="Endpoints" style="width: 100%"></el-select>
+                                 placeholder="请输入 ETCD 的 EndPoints" style="width: 100%"></el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="service" label-width="80px" label="Service key">
-                      <el-input v-model="config.etcd.service" placeholder="Service discover key"></el-input>
+                    <el-form-item prop="service" label-width="80px" label="服务节点前缀">
+                      <el-input v-model="config.etcd.service" placeholder="用于服务节点注册" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="pipeline" label-width="80px" label="Pipeline key">
-                      <el-input v-model="config.etcd.pipeline" placeholder="Pipeline key"></el-input>
+                    <el-form-item prop="pipeline" label-width="80px" label="流水线前缀">
+                      <el-input v-model="config.etcd.pipeline" placeholder="用户保存用户创建的流水线" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="config" label-width="80px" label="Config key">
-                      <el-input v-model="config.etcd.config" placeholder="System config key"></el-input>
+                    <el-form-item prop="config" label-width="80px" label="服务配置前缀">
+                      <el-input v-model="config.etcd.config" placeholder="用于保存服务器配置信息" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="killer" label-width="80px" label="Killer">
-                      <el-input v-model="config.etcd.killer" label="Timeout"></el-input>
+                    <el-form-item prop="killer" label-width="80px" label="强杀指令前缀">
+                      <el-input v-model="config.etcd.killer" placeholder="用于保存强杀正在执行的流水线ID" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="locker" label-width="80px" label="Locker">
-                      <el-input v-model="config.etcd.locker" label="Timeout"></el-input>
+                    <el-form-item prop="locker" label-width="80px" label="分布式锁前缀">
+                      <el-input v-model="config.etcd.locker" placeholder="用于抢占资源的分布式锁" clearable></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="12">
-                    <el-form-item prop="timeout" label-width="80px" label="Timeout">
-                      <el-input v-model="config.etcd.timeout" label="Timeout"></el-input>
+                    <el-form-item prop="timeout" label-width="80px" label="超时时间">
+                      <el-input v-model.number="config.etcd.timeout" placeholder="ETCD请求超时时间" type="number" clearable></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form>
               <div class="footer">
-                <el-button type="primary" plain @click="confirm('etcd')">Next</el-button>
+                <el-button type="primary" plain @click="confirm('etcd')">下一步</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 1">
@@ -65,7 +65,7 @@
                   <el-col :span="20">
                     <el-form-item prop="secret" label="Secret">
                       <el-input v-model="config.auth.secret" placeholder="Secret">
-                        <el-tooltip slot="append" class="item" effect="dark" content="Generate secret" placement="top">
+                        <el-tooltip slot="append" class="item" effect="dark" content="生成 Secret" placement="top">
                           <el-button icon="el-icon-document" @click="fetchJWTSecret"></el-button>
                         </el-tooltip>
                       </el-input>
@@ -73,89 +73,89 @@
                   </el-col>
                   <el-col :span="4">
                     <el-form-item prop="ttl" label="TTL">
-                      <el-input v-model="config.auth.ttl" placeholder="TTL"></el-input>
+                      <el-input v-model.number="config.auth.ttl" placeholder="TTL" clearable></el-input>
                     </el-form-item>
                   </el-col>
                 </el-row>
               </el-form>
               <div class="footer">
-                <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('auth')">Next</el-button>
+                <el-button type="info" plain @click="back">上一步</el-button>
+                <el-button type="primary" plain @click="confirm('auth')">下一步</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 2">
               <el-form :model="config.database" :rules="rules.database" ref="database">
                 <el-col :span="14">
-                  <el-form-item prop="host" label="Host">
-                    <el-input v-model="config.database.host" placeholder="Host"></el-input>
+                  <el-form-item prop="host" label="主机">
+                    <el-input v-model="config.database.host" placeholder="主机地址" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 50px; text-align: center">:</el-col>
                 <el-col :span="8">
-                  <el-form-item prop="port" label="Port">
-                    <el-input v-model="config.database.port" placeholder="Port"></el-input>
+                  <el-form-item prop="port" label="端口">
+                    <el-input v-model.number="config.database.port" placeholder="端口号"></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="14">
-                  <el-form-item prop="name" label="Database">
-                    <el-input v-model="config.database.name" placeholder="Database name"></el-input>
+                  <el-form-item prop="name" label="数据库">
+                    <el-input v-model="config.database.name" placeholder="数据库名称" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="2" style="padding-top: 10px"></el-col>
                 <el-col :span="8">
-                  <el-form-item prop="char" label="Charset">
-                    <el-select v-model="config.database.char" placeholder="Database charset">
+                  <el-form-item prop="char" label="字符集">
+                    <el-select v-model="config.database.char" placeholder="数据库字符集">
                       <el-option v-for="char in chars" :key="char.value" :label="char.label"
                                  :value="char.value"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <el-form-item prop="user" label="Username">
-                    <el-input v-model="config.database.user" placeholder="Database username"></el-input>
+                  <el-form-item prop="user" label="用户名">
+                    <el-input v-model="config.database.user" placeholder="数据库用户名" clearable></el-input>
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
-                  <el-form-item prop="pass" label="Password">
-                    <el-input v-model="config.database.pass" placeholder="Database password" show-password></el-input>
+                  <el-form-item prop="pass" label="密码">
+                    <el-input v-model="config.database.pass" placeholder="数据库密码" show-password></el-input>
                   </el-form-item>
                 </el-col>
               </el-form>
               <div class="footer">
-                <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('database')">Next</el-button>
+                <el-button type="info" plain @click="back">上一步</el-button>
+                <el-button type="primary" plain @click="confirm('database')">下一步</el-button>
               </div>
             </div>
             <div class="install-form-container" v-show="step === 3">
               <el-form :model="config.user" :rules="rules.user" ref="user">
                 <el-form-item prop="name">
-                  <el-input v-model="config.user.name" placeholder="Name"></el-input>
+                  <el-input v-model="config.user.name" placeholder="用户名" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="email">
-                  <el-input v-model="config.user.email" placeholder="Email"></el-input>
+                  <el-input v-model="config.user.email" placeholder="邮箱" clearable></el-input>
                 </el-form-item>
                 <el-form-item prop="pass">
-                  <el-input v-model="config.user.pass" placeholder="Password" show-password></el-input>
+                  <el-input v-model="config.user.pass" placeholder="密码" show-password></el-input>
                 </el-form-item>
                 <el-form-item prop="confirm">
-                  <el-input v-model="config.user.confirm" placeholder="Confirm" show-password></el-input>
+                  <el-input v-model="config.user.confirm" placeholder="确认密码" show-password></el-input>
                 </el-form-item>
               </el-form>
               <div class="footer">
-                <el-button type="info" plain @click="back">Back</el-button>
-                <el-button type="primary" plain @click="confirm('user')">Submit</el-button>
+                <el-button type="info" plain @click="back">上一步</el-button>
+                <el-button type="primary" plain @click="confirm('user')">提交</el-button>
               </div>
             </div>
             <div class="install-form-container" style="text-align: center" v-show="step >= 4">
               <el-progress type="circle" :percentage="100" status="success">
                 <i class="el-icon-check" style="color: #409EFF; font-size: 48px"></i>
               </el-progress>
-              <h2 style="color: #8c939d; margin: 40px 0;">System initialization complete</h2>
+              <h2 style="color: #8c939d; margin: 40px 0;">恭喜你，系统初始化成功！</h2>
               <div class="footer">
                 <div class="command">
                   <code v-html="command"></code>
                 </div>
-                <p>Copy this command to your terminal and execute it</p>
+                <p>现在复制上面的命令，并关闭 init 服务，在终端运行你复制的命令，就可以开始管理你的定时任务了。</p>
               </div>
             </div>
           </div>
@@ -164,8 +164,8 @@
       <el-row type="flex" align="bottom">
         <el-col :span="24">
           <footer class="copyright page-copyright-inverse text-center">
-            <p class="version">ECTS Version: {{info.version}}</p>
-            <p>Copyright © 2018 Betterde.Inc. All Rights Reserved.</p>
+            <p class="version">ECTS : {{info.version}}</p>
+            <p>Copyright © 2019 Betterde.Inc. All Rights Reserved.</p>
           </footer>
         </el-col>
       </el-row>
@@ -181,7 +181,7 @@
     data() {
       let validatePass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please enter your password!'));
+          callback(new Error('请输入密码'));
         } else {
           if (this.config.user.confirm !== '') {
             this.$refs.user.validateField('confirm');
@@ -191,9 +191,9 @@
       };
       let confirmPass = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error('Please confirm your password!'));
+          callback(new Error('请输入密码'));
         } else if (value !== this.config.user.pass) {
-          callback(new Error('Password mismatch!'));
+          callback(new Error('输入的两次密码不匹配'));
         } else {
           callback();
         }
@@ -238,38 +238,38 @@
         rules: {
           database: {
             host: [
-              {type: "string", required: true, message: 'Please enter a host', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入数据库主机地址', trigger: 'blur'}
             ],
             port: [
-              {type: "integer", required: true, message: 'Please enter a port', trigger: 'blur'}
+              {type: "integer", required: true, message: '请输入数据库端口', trigger: 'blur'}
             ],
             user: [
-              {type: "string", required: true, message: 'Please enter a username', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入数据库用户名', trigger: 'blur'}
             ],
             pass: [
-              {type: "string", required: true, message: 'Please enter a password', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入数据库密码', trigger: 'blur'}
             ],
             name: [
-              {type: "string", required: true, message: 'Please enter a database name', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入数据库名称', trigger: 'blur'}
             ],
             char: [
-              {type: "string", required: true, message: 'Please enter a charset', trigger: 'blur'}
+              {type: "string", required: true, message: '请选择数据库默认字符集', trigger: 'blur'}
             ]
           },
           auth: {
             secret: [
-              {type: "string", required: true, message: 'Please enter a secret', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入 JWT Secret', trigger: 'blur'}
             ],
             ttl: [
-              {type: "number", required: true, message: 'Please enter a ttl', trigger: 'blur'}
+              {type: "number", required: true, message: '请输入 JWT TTL', trigger: 'blur'}
             ]
           },
           user: {
             name: [
-              {type: "string", required: true, message: 'Please enter a user name', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入你的用户名', trigger: 'blur'}
             ],
             email: [
-              {type: 'email', message: 'Please enter a valid email address', trigger: ['blur', 'change']}
+              {type: 'email', message: '请输入你的邮箱地址', trigger: ['blur', 'change']}
             ],
             pass: [
               {validator: validatePass, trigger: 'blur'}
@@ -280,25 +280,25 @@
           },
           etcd: {
             endpoints: [
-              {type: "array", required: true, message: 'Please enter a endpoints', trigger: 'blur'}
+              {type: "array", required: true, message: '请输入 ETCD 服务的 EndPoints', trigger: 'blur'}
             ],
             service: [
-              {type: "string", required: true, message: 'Please enter a service discover key', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入用于服务注册和发现的前缀', trigger: 'blur'}
             ],
             pipeline: [
-              {type: "string", required: true, message: 'Please enter a pipeline key', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入用户保存需要执行流水线的前缀', trigger: 'blur'}
             ],
             killer: [
-              {type: "string", required: true, message: 'Please enter a killer key', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入需要保存强杀流水线的前缀', trigger: 'blur'}
             ],
             locker: [
-              {type: "string", required: true, message: 'Please enter a locker key', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入用于保存分布式锁的前缀', trigger: 'blur'}
             ],
             config: [
-              {type: "string", required: true, message: 'Please enter a system config key', trigger: 'blur'}
+              {type: "string", required: true, message: '请输入用于保存服务配置信息的前缀', trigger: 'blur'}
             ],
             timeout: [
-              {type: "number", required: true, message: 'Please enter a timeout', trigger: 'blur'}
+              {type: "number", required: true, message: '请设置 ETCD 请求的超时时间', trigger: 'blur'}
             ],
           }
         },
@@ -332,16 +332,16 @@
               if (form === 'database') {
                 api.system.database(this.config.database).then(res => {
                   if (res.data.exist) {
-                    this.$confirm('The database already exists and will overwrite the original data if it continues!', 'Warning', {
-                      confirmButtonText: 'Continue',
-                      cancelButtonText: 'Cancel',
+                    this.$confirm('数据库已经存在，如果继续则原有数据将被清空!', '警告', {
+                      confirmButtonText: '继续',
+                      cancelButtonText: '取消',
                       type: 'warning'
                     }).then(() => {
                       this.next();
                     }).catch(() => {
                       this.$message({
                         type: 'info',
-                        message: 'Canceled'
+                        message: '已经取消'
                       });
                     });
                   } else {
@@ -368,7 +368,7 @@
         }
       },
       /**
-       * Submit system config
+       * 提交配置信
        */
       submit() {
         api.system.initialize(this.config).then(res => {
@@ -386,7 +386,7 @@
         });
       },
       /**
-       * Fetch JSON Web Token secret
+       * 获取 JSON Web Token secret
        */
       fetchJWTSecret() {
         api.system.secret().then(res => {
@@ -398,13 +398,16 @@
           })
         })
       },
+      /**
+       * 生成运行命令
+       */
       generateCommand() {
         let endpoints = this.config.etcd.endpoints.join(',');
         this.command = `ects master --etcd=${endpoints} --name='master' --desc='master node' --config=${this.config.etcd.config}`;
       }
     },
     /**
-     * Fetch system version information
+     * 获取系统版本信息
      */
     mounted() {
       api.system.fetch().then(res => {

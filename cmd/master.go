@@ -35,6 +35,7 @@ var (
 	master = &models.Node{
 		Mode:   models.MASTER,
 		Status: models.ONLINE,
+		Version: rootCmd.Version,
 	}
 
 	confKey string
@@ -49,7 +50,7 @@ func init() {
 	masterCmd.PersistentFlags().StringVar(&master.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.PersistentFlags().IntVar(&master.Port, "port", 9701, "Set listen on port")
 	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
-	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", "", "Set master node id")
+	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", uuid.NewV4().String(), "Set master node id")
 	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
 	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "master node", "Set master node description")
 	masterCmd.PersistentFlags().StringVar(&confKey, "config", "/ects/config", "Set the key used to get configuration information")
@@ -62,9 +63,7 @@ func bootstrap() {
 	}
 
 	discover.NewClient()
-
 	discover.GetConf(confKey)
-
 	models.Engine, err = models.Connection()
 	if err != nil {
 		log.Println(err)
@@ -73,7 +72,7 @@ func bootstrap() {
 }
 
 func watch() {
-	go discover.ServiceCluster.WatchNodes(ctx)
+	go discover.ServiceCluster.WatchNodes(master.Id, ctx)
 }
 
 // Service registry
@@ -83,10 +82,6 @@ func register() {
 		if len(ips) > 0 {
 			master.Host = ips[0]
 		}
-	}
-
-	if master.Id == "" {
-		master.Id = uuid.NewV4().String()
 	}
 
 	if master.Name == "" {
@@ -117,10 +112,18 @@ func start() {
 		timeout := 5 * time.Second
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
-		node := &models.Node{
-			Id: master.Id,
+
+		// 当主节点关闭时，先检查是否有其他在线主节点
+		if count, err := models.Engine.Where("mode = ? AND status = ? AND id != ?", "master", "online", master.Id).Count(&models.Node{}); err != nil {
+			log.Println(err)
+		} else {
+			if count == 0 {
+				node := &models.Node{
+					Id: master.Id,
+				}
+				node.Offline()
+			}
 		}
-		node.Offline()
 		cancelFunc()
 		if err := app.Shutdown(ctx); err != nil {
 			log.Println(err)

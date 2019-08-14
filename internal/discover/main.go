@@ -66,6 +66,7 @@ func (service *Service) Register(ttlSecond int64) error {
 		Port        int    `json:"port"`
 		Mode        string `json:"mode"`
 		Status      string `json:"status"`
+		Version     string `json:"version"`
 		Description string `json:"description"`
 	}{
 		service.node.Id,
@@ -74,6 +75,7 @@ func (service *Service) Register(ttlSecond int64) error {
 		service.node.Port,
 		service.node.Mode,
 		service.node.Status,
+		service.node.Version,
 		service.node.Description,
 	})
 	if err != nil {
@@ -86,7 +88,7 @@ func (service *Service) Register(ttlSecond int64) error {
 		return err
 	}
 
-	log.Printf("Node is runing, register id is %s", service.node.Id)
+	log.Printf("启动成功, ID为: %s", service.node.Id)
 
 	ch, err := Client.KeepAlive(context.TODO(), service.leaseID)
 	if nil != err {
