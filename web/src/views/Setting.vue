@@ -4,7 +4,7 @@
       <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
           <el-tab-pane label="系统通知" name="notification">
-            <el-form :model="notification" :rules="rules" ref="database">
+            <el-form :model="notification" :rules="rules" ref="setting">
               <el-col :span="24">
                 <el-form-item prop="url">
                   <el-input v-model="notification.url" placeholder="后台URL用于邮件内链接跳转到ECTS后台，如: https://ects.betterde.com"></el-input>
@@ -48,7 +48,7 @@
               </el-col>
               <el-col :span="24">
                 <el-form-item prop="pass" style="text-align: right">
-                  <el-button type="primary" plain>保存</el-button>
+                  <el-button type="primary" plain @click="submit">保存</el-button>
                 </el-form-item>
               </el-col>
             </el-form>
@@ -56,7 +56,7 @@
           <el-tab-pane label="系统升级" name="upgrade">
             <el-upload class="upgrade" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
               <i class="el-icon-upload"></i>
-              <div class="el-upload__text">Drag the latest ECTS binary executable file here，or <em>click to upload</em></div>
+              <div class="el-upload__text">请将最新版的ECTS二进制文件拖拽到这里或 <em>点击上传</em></div>
             </el-upload>
           </el-tab-pane>
           <el-tab-pane label="系统信息" name="info">
@@ -80,6 +80,8 @@
 </template>
 
 <script>
+  import api from '../apis'
+
   export default {
     name: "Setting",
     data() {
@@ -99,7 +101,7 @@
         },
         notification: {
           url: '',
-          host: "smtp.mailtrap.io",
+          host: "",
           port: 25,
           user: '',
           pass: '',
@@ -134,10 +136,21 @@
       }
     },
     methods: {
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
+      submit() {
+        this.$refs.setting.validate((valid) => {
           if (valid) {
-            alert('submit!');
+            api.setting.updateNotification(this.notification).then(res => {
+              this.notification = res.data;
+              this.$message.success({
+                offset: 95,
+                message: res.message
+              })
+            }).catch(err => {
+              this.$message.error({
+                offset: 95,
+                message: err.message
+              })
+            })
           } else {
             return false;
           }
@@ -146,6 +159,16 @@
       resetForm(formName) {
         this.$refs[formName].resetFields();
       }
+    },
+    mounted() {
+      api.setting.fetchNotification().then(res => {
+        this.notification = res.data;
+      }).catch(err => {
+        this.$message.error({
+          offset: 95,
+          message: err.message
+        })
+      })
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {

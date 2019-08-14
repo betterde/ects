@@ -5,6 +5,8 @@ import user from './modules/user'
 import account from './modules/account'
 import pipeline from './modules/pipeline'
 import log from './modules/log'
+import dashboard from './modules/dashboard'
+import setting from './modules/setting'
 
 export default {
   task,
@@ -12,6 +14,8 @@ export default {
   user,
   system,
   account,
+  dashboard,
   pipeline,
-  log
+  log,
+  setting
 }
