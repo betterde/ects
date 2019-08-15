@@ -1,6 +1,9 @@
 package models
 
-import "github.com/betterde/ects/internal/utils"
+import (
+	"encoding/json"
+	"github.com/betterde/ects/internal/utils"
+)
 
 type TaskRecords struct {
 	Id               int64      `json:"id" xorm:"pk autoincr comment('ID') BIGINT(20)"`
@@ -25,4 +28,22 @@ type TaskRecords struct {
 // 定义模型的数据表名称
 func (records *TaskRecords) TableName() string {
 	return "task_records"
+}
+
+// 保存流水线记录
+func (records *TaskRecords) Store() error {
+	_, err := Engine.InsertOne(records)
+	return err
+}
+
+// 更新记录
+func (records *TaskRecords) Update() error {
+	_, err := Engine.Update(records)
+	return err
+}
+
+// 序列化
+func (records *TaskRecords) ToString() (string, error) {
+	result, err := json.Marshal(records)
+	return string(result), err
 }
