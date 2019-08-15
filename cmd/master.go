@@ -94,8 +94,6 @@ func register() {
 		}
 	}
 
-	config.Node = master
-
 	service, err := discover.NewService(master)
 	if err != nil {
 		log.Println(err)

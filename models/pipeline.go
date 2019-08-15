@@ -3,7 +3,6 @@ package models
 import (
 	"context"
 	"encoding/json"
-	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/go-xorm/builder"
 	"github.com/gorhill/cronexpr"
@@ -62,8 +61,8 @@ func (pipeline *Pipeline) Exec(ctx context.Context) {
 		record := &PipelineRecords{
 			Id:         uuid.NewV4().String(),
 			PipelineId: pipeline.Id,
-			NodeId:     config.Node.Id,
-			WorkerName: config.Node.Name,
+			NodeId:     "",
+			WorkerName: "",
 			Spec:       pipeline.Spec,
 			Status:     1,
 			Duration:   0,
@@ -87,10 +86,10 @@ func (pipeline *Pipeline) Exec(ctx context.Context) {
 				goto END
 			}
 
-			taskRecord.NodeId = config.Node.Id
+			taskRecord.NodeId = ""
 			taskRecord.Timeout = pivot.Timeout
 			taskRecord.Retries = pivot.Retries
-			taskRecord.WorkerName = config.Node.Name
+			taskRecord.WorkerName = ""
 			taskRecord.CreatedAt = utils.Time(time.Now())
 			taskRecord.UpdatedAt = utils.Time(time.Now())
 

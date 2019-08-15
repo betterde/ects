@@ -82,7 +82,7 @@ func (task *Task) Exec(ctx context.Context, username string, dir string, env []s
 
 	switch task.Mode {
 	case MODESHELL:
-		cmd := exec.Command("/bin/bash", "-c", task.Content)
+		cmd := exec.CommandContext(ctx, "/bin/bash", "-c", task.Content)
 		cmd.Env = env
 		cmd.Dir = dir
 		cmd.SysProcAttr = &syscall.SysProcAttr{
@@ -118,13 +118,6 @@ func (task *Task) Exec(ctx context.Context, username string, dir string, env []s
 		}()
 
 		select {
-		case <-ctx.Done():
-			if cmd.Process.Pid > 0 {
-				if err := syscall.Kill(cmd.Process.Pid, syscall.SIGKILL); err != nil {
-					return nil, err
-				}
-			}
-			return nil, nil
 		case result := <-resChan:
 			record.Result = string(result.output)
 			if result.err != nil {
