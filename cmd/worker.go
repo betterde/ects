@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/pipeline"
 	"github.com/betterde/ects/internal/utils"
@@ -34,11 +35,6 @@ var (
 	EndPoints []string
 )
 
-type (
-	Server struct {
-	}
-)
-
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(workerCmd)
@@ -54,8 +50,13 @@ func listen() {
 		worker.Id = uuid.NewV4().String()
 	}
 
+	var err error
 	if worker.Name == "" {
-		worker.Name = "worker-" + worker.Id
+		worker.Name, err = os.Hostname()
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	discover.NewClient()
@@ -65,6 +66,8 @@ func listen() {
 	if len(ips) > 0 {
 		worker.Host = ips[0]
 	}
+
+	config.Node = worker
 
 	service, err := discover.NewService(worker)
 	if err != nil {
@@ -94,4 +97,9 @@ func listen() {
 			return
 		}
 	}
+}
+
+// 获取实例信息
+func GetInstance() *models.Node {
+	return worker
 }
