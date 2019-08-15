@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/betterde/ects/internal/utils"
 )
 
@@ -22,4 +23,22 @@ type PipelineRecords struct {
 // 定义模型的数据表名称
 func (records *PipelineRecords) TableName() string {
 	return "pipeline_records"
+}
+
+// 保存流水线记录
+func (records *PipelineRecords) Store() error {
+	_, err := Engine.InsertOne(records)
+	return err
+}
+
+// 更新记录
+func (records *PipelineRecords) Update() error {
+	_, err := Engine.Update(records)
+	return err
+}
+
+// 序列化
+func (records *PipelineRecords) ToString() (string, error) {
+	result, err := json.Marshal(records)
+	return string(result), err
 }

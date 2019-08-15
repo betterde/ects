@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/betterde/ects/models"
 	"io/ioutil"
 	"log"
 	"os"
@@ -55,6 +56,7 @@ type (
 var (
 	Conf *Config
 	Path string
+	Node *models.Node
 )
 
 func Init() *Config {
