@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
+	"github.com/betterde/ects/internal/scheduler"
 	"github.com/betterde/ects/models"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
@@ -12,12 +13,21 @@ import (
 	"time"
 )
 
-var Pipelines map[string]*models.Pipeline
+const (
+	PUT  = 1
+	DEL  = 2
+	KILL = 3
+)
+
+type (
+	Event struct {
+		Type     int
+		Pipeline *models.Pipeline
+	}
+)
 
 func WatchPipelines(local string) {
-	Pipelines = make(map[string]*models.Pipeline)
 	var curRevision int64 = 0
-
 	rangeResp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
 	if err != nil {
 		panic(err)
@@ -30,7 +40,10 @@ func WatchPipelines(local string) {
 			log.Println(err)
 		}
 
-		Pipelines[pipeline.Id] = &pipeline
+		scheduler.Instance.PushEvent(&Event{
+			Type:     PUT,
+			Pipeline: &pipeline,
+		})
 	}
 
 	watchChan := discover.Client.Watch(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
@@ -39,21 +52,26 @@ func WatchPipelines(local string) {
 			var pipeline models.Pipeline
 			switch event.Type {
 			case mvccpb.PUT:
-				log.Printf("%s", event.Kv.Value)
 				if err := json.Unmarshal(event.Kv.Value, &pipeline); err != nil {
 					log.Println(err)
 				}
 
 				for _, node := range pipeline.Nodes {
 					if node == local {
-						Pipelines[pipeline.Id] = &pipeline
+						scheduler.Instance.PushEvent(&Event{
+							Type:     PUT,
+							Pipeline: &pipeline,
+						})
 					}
 				}
 			case mvccpb.DELETE:
 				if err := json.Unmarshal(event.PrevKv.Value, &pipeline); err != nil {
 					log.Println(err)
 				}
-				delete(Pipelines, pipeline.Id)
+				scheduler.Instance.PushEvent(&Event{
+					Type:     DEL,
+					Pipeline: &pipeline,
+				})
 			}
 		}
 

@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/pipeline"
+	"github.com/betterde/ects/internal/scheduler"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/satori/go.uuid"
@@ -79,10 +81,12 @@ func listen() {
 		}
 	}(service)
 
+	scheduler.New()
+	ctx, cancelFunc := context.WithCancel(context.Background())
+	go scheduler.Instance.Run(ctx)
 	go pipeline.WatchPipelines(worker.Id)
 
 	sign := make(chan os.Signal, 1)
-
 	signal.Notify(sign, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM)
 
 	for {
@@ -91,6 +95,7 @@ func listen() {
 		switch receiver {
 		case syscall.SIGHUP, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL:
 			service.Stop()
+			cancelFunc()
 			return
 		}
 	}
