@@ -2,39 +2,63 @@ package scheduler
 
 import (
 	"context"
-	"github.com/betterde/ects/internal/pipeline"
 	"github.com/betterde/ects/models"
+	"github.com/gorhill/cronexpr"
+	"log"
 	"time"
 )
 
+const (
+	PUT  = 1 // 新增或更新事件
+	DEL  = 2 // 删除事件
+	KILL = 3 // 强行终止进程事件
+)
+
+type (
+	Event struct {
+		Type     int              // 事件类型
+		Pipeline *models.Pipeline // 流水线
+	}
+	Result struct {
+		Pipeline *models.PipelineRecords // 流水线执行记录
+		Steps    []*models.TaskRecords   // 流水线中任务执行记录
+	}
+	Contract interface {
+		Run(ctx context.Context)      // 运行调度器
+		DispatchEvent(event *Event)   // 分发事件
+		eventHandler(event *Event)    // 事件处理
+		ResultHandler(result *Result) // 调度结果处理
+	}
+)
+
 type Scheduler struct {
-	EventsChan chan *pipeline.Event
-	Plan       map[string]*models.Pipeline
-	Running    map[string]*models.Pipeline
+	EventsChan chan *Event                 // 事件通道
+	ResultChan chan *Result                // 执行结果通道
+	Plan       map[string]*models.Pipeline // 调度计划
+	Running    map[string]*models.Pipeline // 正在运行的流水线
 }
 
 var Instance *Scheduler
 
 // 运行调度器
 func (scheduler *Scheduler) Run(ctx context.Context) {
-	afterTimer := scheduler.TryExecute()
+	afterTimer := scheduler.TryExecute(ctx)
 	scheduleTimer := time.NewTimer(afterTimer)
-	
+
 	for {
 		select {
 		case event := <-scheduler.EventsChan:
 			scheduler.eventHandler(event)
 		case <-scheduleTimer.C:
-
 		}
 
-		after := scheduler.TryExecute()
+		after := scheduler.TryExecute(ctx)
 		scheduleTimer.Reset(after)
 	}
 }
 
 // 尝试执行Pipeline
-func (scheduler *Scheduler) TryExecute() (after time.Duration) {
+func (scheduler *Scheduler) TryExecute(ctx context.Context) (after time.Duration) {
 	var nearTime time.Time
 	if len(scheduler.Plan) == 0 {
 		after = 1 * time.Second
@@ -45,7 +69,8 @@ func (scheduler *Scheduler) TryExecute() (after time.Duration) {
 
 	for _, pipe := range scheduler.Plan {
 		if pipe.NextTime.Before(now) || pipe.NextTime.Equal(now) {
-			// TODO Execute Pipeline
+			//pipe.Exec(ctx)
+			log.Println(pipe.Name)
 			pipe.NextTime = pipe.Expression.Next(now)
 		}
 
@@ -59,26 +84,28 @@ func (scheduler *Scheduler) TryExecute() (after time.Duration) {
 }
 
 // ETCD事件处理
-func (scheduler *Scheduler) eventHandler(event *pipeline.Event) {
+func (scheduler *Scheduler) eventHandler(event *Event) {
 	switch event.Type {
-	case pipeline.PUT:
+	case PUT:
+		event.Pipeline.Expression = cronexpr.MustParse(event.Pipeline.Spec)
 		scheduler.Plan[event.Pipeline.Id] = event.Pipeline
-	case pipeline.DEL:
+	case DEL:
 		delete(scheduler.Plan, event.Pipeline.Id)
-	case pipeline.KILL:
+	case KILL:
 		// TODO KILL handler
 	}
 }
 
 // 加入队列
-func (scheduler *Scheduler) PushEvent(event *pipeline.Event) {
+func (scheduler *Scheduler) DispatchEvent(event *Event) {
 	scheduler.EventsChan <- event
 }
 
 // 创建调度器
 func New() {
 	Instance = &Scheduler{
-		EventsChan: make(chan *pipeline.Event, 100),
+		EventsChan: make(chan *Event, 100),
+		ResultChan: make(chan *Result, 100),
 		Plan:       make(map[string]*models.Pipeline),
 		Running:    make(map[string]*models.Pipeline),
 	}

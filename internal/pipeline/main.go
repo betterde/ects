@@ -13,19 +13,6 @@ import (
 	"time"
 )
 
-const (
-	PUT  = 1
-	DEL  = 2
-	KILL = 3
-)
-
-type (
-	Event struct {
-		Type     int
-		Pipeline *models.Pipeline
-	}
-)
-
 func WatchPipelines(local string) {
 	var curRevision int64 = 0
 	rangeResp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
@@ -40,8 +27,8 @@ func WatchPipelines(local string) {
 			log.Println(err)
 		}
 
-		scheduler.Instance.PushEvent(&Event{
-			Type:     PUT,
+		scheduler.Instance.DispatchEvent(&scheduler.Event{
+			Type:     scheduler.PUT,
 			Pipeline: &pipeline,
 		})
 	}
@@ -58,8 +45,8 @@ func WatchPipelines(local string) {
 
 				for _, node := range pipeline.Nodes {
 					if node == local {
-						scheduler.Instance.PushEvent(&Event{
-							Type:     PUT,
+						scheduler.Instance.DispatchEvent(&scheduler.Event{
+							Type:     scheduler.PUT,
 							Pipeline: &pipeline,
 						})
 					}
@@ -68,8 +55,8 @@ func WatchPipelines(local string) {
 				if err := json.Unmarshal(event.PrevKv.Value, &pipeline); err != nil {
 					log.Println(err)
 				}
-				scheduler.Instance.PushEvent(&Event{
-					Type:     DEL,
+				scheduler.Instance.DispatchEvent(&scheduler.Event{
+					Type:     scheduler.DEL,
 					Pipeline: &pipeline,
 				})
 			}
