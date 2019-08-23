@@ -35,12 +35,13 @@ type (
 	}
 )
 
+// 路由分发
 func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signin", "SignInHandler")
 	request.Handle("POST", "/signout", "SignOutHandler")
 }
 
-// User sign in
+// 用户登录逻辑
 func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
 	var params SignIn
 	validate := validator.New()
@@ -71,7 +72,7 @@ func (instance *Controller) SignOutHandler(ctx iris.Context) {
 
 }
 
-// User register
+// 用户注册逻辑
 func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Result {
 	var params SignUp
 	validate := validator.New()

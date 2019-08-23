@@ -89,11 +89,7 @@ func WatchKiller() {
 
 			switch event.Type {
 			case mvccpb.PUT:
-				// TODO 添加或修改本地 Pipeline 属性
-				log.Printf("节点：%s 注册成功", pipeline.Id)
 			case mvccpb.DELETE:
-				// TODO 删除本地 Pipeline
-				log.Printf("Pipeline：%s 离线", pipeline.Id)
 			}
 		}
 	}
