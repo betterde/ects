@@ -2,7 +2,7 @@ package actuator
 
 import (
 	"context"
-	"github.com/betterde/ects/internal/scheduler"
+	"github.com/betterde/ects/models"
 )
 
 type (
@@ -11,6 +11,6 @@ type (
 	}
 )
 
-func (actuator *Hook) Exec(ctx context.Context, result chan *scheduler.Result) {
+func (actuator *Hook) Exec(ctx context.Context, result chan *models.Result) {
 
 }

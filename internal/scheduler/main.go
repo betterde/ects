@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"context"
+	"github.com/betterde/ects/internal/actuator"
 	"github.com/betterde/ects/models"
 	"github.com/gorhill/cronexpr"
 	"log"
@@ -19,21 +20,17 @@ type (
 		Type     int              // 事件类型
 		Pipeline *models.Pipeline // 流水线
 	}
-	Result struct {
-		Pipeline *models.PipelineRecords // 流水线执行记录
-		Steps    []*models.TaskRecords   // 流水线中任务执行记录
-	}
 	Contract interface {
-		Run(ctx context.Context)      // 运行调度器
-		DispatchEvent(event *Event)   // 分发事件
-		eventHandler(event *Event)    // 事件处理
-		ResultHandler(result *Result) // 调度结果处理
+		Run(ctx context.Context)             // 运行调度器
+		DispatchEvent(event *Event)          // 分发事件
+		eventHandler(event *Event)           // 事件处理
+		ResultHandler(result *models.Result) // 调度结果处理
 	}
 )
 
 type Scheduler struct {
 	EventsChan chan *Event                 // 事件通道
-	ResultChan chan *Result                // 执行结果通道
+	ResultChan chan *models.Result         // 执行结果通道
 	Plan       map[string]*models.Pipeline // 调度计划
 	Running    map[string]*models.Pipeline // 正在运行的流水线
 }
@@ -65,11 +62,13 @@ func (scheduler *Scheduler) TryExecute(ctx context.Context) (after time.Duration
 		return
 	}
 
+	scheduler.ResultChan = make(chan *models.Result, 1000)
+
 	now := time.Now()
 
 	for _, pipe := range scheduler.Plan {
 		if pipe.NextTime.Before(now) || pipe.NextTime.Equal(now) {
-			//pipe.Exec(ctx)
+			actuator.RunPipeline(ctx, pipe, scheduler.ResultChan)
 			log.Println(pipe.Name)
 			pipe.NextTime = pipe.Expression.Next(now)
 		}
@@ -105,7 +104,7 @@ func (scheduler *Scheduler) DispatchEvent(event *Event) {
 func New() {
 	Instance = &Scheduler{
 		EventsChan: make(chan *Event, 100),
-		ResultChan: make(chan *Result, 100),
+		ResultChan: make(chan *models.Result, 100),
 		Plan:       make(map[string]*models.Pipeline),
 		Running:    make(map[string]*models.Pipeline),
 	}

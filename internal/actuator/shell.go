@@ -2,7 +2,8 @@ package actuator
 
 import (
 	"context"
-	"github.com/betterde/ects/internal/scheduler"
+	"github.com/betterde/ects/internal/utils"
+	"github.com/betterde/ects/models"
 	"os/exec"
 	"os/user"
 	"strconv"
@@ -19,7 +20,7 @@ type (
 )
 
 // 执行 Shell 任务
-func (actuator *Shell) Exec(ctx context.Context, result chan *scheduler.Result) {
+func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", actuator.Command)
 	if actuator.User != "" {
 		sysuser, err := user.Lookup(actuator.User)
@@ -34,6 +35,26 @@ func (actuator *Shell) Exec(ctx context.Context, result chan *scheduler.Result) 
 			Groups:      nil,
 			NoSetGroups: false,
 		}
+	}
+
+	return &models.TaskRecords{
+		Id:               0,
+		PipelineRecordId: "",
+		TaskId:           "",
+		NodeId:           "",
+		TaskName:         "",
+		WorkerName:       "",
+		Content:          "",
+		Mode:             "",
+		Timeout:          0,
+		Retries:          0,
+		Status:           "",
+		Result:           "",
+		Duration:         0,
+		BeginWith:        utils.Time{},
+		FinishWith:       utils.Time{},
+		CreatedAt:        utils.Time{},
+		UpdatedAt:        utils.Time{},
 	}
 }
 
