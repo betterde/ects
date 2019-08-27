@@ -293,7 +293,7 @@ func (instance *Controller) DeletePipelineBy(id string, ctx iris.Context) mvc.Re
 
 	// 如果流水线未关联任何节点，则立即删除ETCD中的流水线
 	if count == 0 {
-		key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, relation.Pipeline.Id)
+		key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, relation.PipelineId)
 		if _, err := discover.Client.Delete(context.TODO(), key); err != nil {
 			return response.InternalServerError("删除ETCD中的流水线失败", err)
 		}

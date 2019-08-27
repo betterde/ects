@@ -28,8 +28,8 @@ type Pipeline struct {
 	Steps        []*PipelineTaskPivot `json:"steps" xorm:"-"`
 	Expression   *cronexpr.Expression `json:"-" xorm:"-"`
 	NextTime     time.Time            `json:"-" xorm:"-"`
-	FinishedTask *Task                `json:"finished_task" xorm:"-"`
-	FailedTask   *Task                `json:"failed_task" xorm:"-"`
+	FinishedTask *Task                `json:"finished_task,omitempty" xorm:"-"`
+	FailedTask   *Task                `json:"failed_task,omitempty" xorm:"-"`
 }
 
 // 定义模型的数据表名称
@@ -160,10 +160,14 @@ func (pipeline *Pipeline) Build() (origin []byte, err error) {
 		return []byte{}, err
 	}
 
-	finishedTask := tasks[pipeline.Finished]
-	failedTask := tasks[pipeline.Failed]
-	pipeline.FinishedTask = &finishedTask
-	pipeline.FailedTask = &failedTask
+	finishedTask, exist := tasks[pipeline.Finished]
+	if exist {
+		pipeline.FinishedTask = &finishedTask
+	}
+	failedTask, exist := tasks[pipeline.Failed]
+	if exist {
+		pipeline.FailedTask = &failedTask
+	}
 
 	for index, relation := range pipeline.Steps {
 		task := tasks[relation.TaskId]
