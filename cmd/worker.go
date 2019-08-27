@@ -62,6 +62,11 @@ func listen() {
 
 	discover.NewClient()
 	discover.GetConf(confKey)
+	models.Engine, err = models.Connection()
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
 
 	ips := utils.GetIPs()
 	if len(ips) > 0 {
