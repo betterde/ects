@@ -17,11 +17,17 @@
       <div class="panel-body" :class="classes">
         <el-tabs v-model="active" @tab-click="handleClick">
           <el-tab-pane label="流水线日志" name="pipeline">
-            <el-table :data="logs" style="width: 100%">
+            <el-table :data="logs" style="width: 100%" ref="pipeline" @expand-change="handleTableExpand">
               <el-table-column type="expand">
                 <template slot-scope="props">
-                  <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
-                  <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
+                  <el-timeline :reverse="reverse">
+                    <el-timeline-item :timestamp="step.created_at" placement="top" :type="step.status === 'finished' ? 'success' : 'danger'" size="large" :icon="step.status === 'finished' ? 'el-icon-success' : 'el-icon-error'" v-for="(step, index) in props.row.steps">
+                      <el-card>
+                        <h4>{{ step.task_name }}</h4>
+                        <pre class="task-pre"><code class="task-content">{{ step.content }}</code></pre>
+                      </el-card>
+                    </el-timeline-item>
+                  </el-timeline>
                 </template>
               </el-table-column>
               <el-table-column prop="pipeline_id" label="流水线" width="300">
@@ -104,12 +110,18 @@
       return {
         search: "",
         active: 'pipeline',
+        reverse: true,
         classes: ['animated', 'fade-in', 'fast'],
         loading: false,
         params: {
+          field: "id",
           scene: "pipeline",
           search: "",
           page: 1
+        },
+        current: {
+          id: null,
+          index: null
         },
         logs: [],
         meta: {
@@ -126,6 +138,50 @@
         this.params.page = 1;
         this.fetchLogs();
         window.console.log(tab, event);
+      },
+      /**
+       * 点击站看行的处理逻辑
+       * @param row
+       * @param rows
+       */
+      handleTableExpand(row, rows) {
+        // 如果当前展开超过一行
+        if (rows.length > 1) {
+          // 则遍历行，进行关闭，保证同时只有一个行展开
+          rows.forEach(item => {
+            if (row.id !== item.id) {
+              this.$refs.pipeline.toggleRowExpansion(item, false);
+            }
+          });
+        }
+
+        // 判断当前展开的行如果大于0
+        if (rows.length > 0) {
+          // 最后一个行为当前行
+          let instance = rows.pop();
+          // 考虑到展开新行和关闭行都会触发 handleTableExpand 所以需要判断是否是当前行
+          if (instance.id === row.id) {
+            for (let index = 0; index < this.logs.length; index++) {
+              if (this.logs[index].id === instance.id) {
+                Vue.set(this.current, 'id', instance.id);
+                Vue.set(this.current, 'index', index);
+                this.params.field = 'pipeline_record_id';
+                this.params.search = instance.id;
+                this.params.scene = 'task';
+                // 调用 API 获取流水线关联的任务
+                api.log.fetch(this.params).then(res => {
+                  // 将返回数据设置到对应流水线下的执行步骤属性中
+                  Vue.set(this.logs[index], 'steps', res.data);
+                }).catch(err => {
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
+                });
+              }
+            }
+          }
+        }
       },
       fetchLogs () {
         this.loading = true;
@@ -173,5 +229,12 @@
 <style lang="scss">
   .el-tabs__item {
     color: #909399;
+  }
+  .task-pre {
+    width: 100%;
+    margin: 15px 0 0 0;
+    color: #5e6d82;
+    padding: 10px 20px;
+    background-color: #e6effb;
   }
 </style>
