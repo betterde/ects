@@ -40,18 +40,18 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		total int64
 		err   error
 	)
-	search := ctx.Params().GetStringDefault("search", "")
+	search := ctx.URLParamDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
 	nodes := make([]models.Node, 0)
 
-	if search == "" {
-		total, err = models.Engine.Limit(limit, start).FindAndCount(&nodes)
+	if search != "" {
+		total, err = models.Engine.Where(builder.Eq{"id": search}.Or(builder.Like{"name", search})).Limit(limit, start).FindAndCount(&nodes)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&models.Node{})
+		total, err = models.Engine.Limit(limit, start).FindAndCount(&nodes)
 	}
 
 	if err != nil {
-		log.Println(err)
+		return response.InternalServerError("获取节点列表失败", err)
 	}
 
 	nids := make([]string, 0)
