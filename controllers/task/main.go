@@ -31,7 +31,7 @@ var (
 	validate = validator.New()
 )
 
-// Get tasks list
+// 获取任务列表
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
 		total int64
@@ -71,7 +71,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	return response.Success("数据使用场景有误", response.Payload{"data": make([]interface{}, 0)})
 }
 
-// Create task
+// 创建任务
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task := models.Task{}
 
@@ -93,7 +93,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	return response.Success("Created successful", response.Payload{"data": task})
 }
 
-// Modify task
+// 更新任务
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	validate := validator.New()
@@ -116,13 +116,13 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	}
 
 	if err := task.Update(); err != err {
-		return response.InternalServerError("Failed to update task", err)
+		return response.InternalServerError("更新失败", err)
 	}
 
-	return response.Success("Updated successful", response.Payload{"data": task})
+	return response.Success("更新成功", response.Payload{"data": task})
 }
 
-// Delete task
+// 删除任务
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	task := &models.Task{
 		Id: id,
