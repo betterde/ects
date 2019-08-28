@@ -47,6 +47,15 @@ func (scheduler *Scheduler) Run(ctx context.Context) {
 		case event := <-scheduler.EventsChan:
 			scheduler.eventHandler(event)
 		case <-scheduleTimer.C:
+		case result := <-scheduler.ResultChan:
+			if err := result.Pipeline.Store(); err != nil {
+				log.Fatal(err)
+			}
+			for _, step := range result.Steps {
+				if err := step.Store(); err != nil {
+					log.Fatal(err)
+				}
+			}
 		}
 
 		after := scheduler.TryExecute(ctx)
@@ -69,7 +78,6 @@ func (scheduler *Scheduler) TryExecute(ctx context.Context) (after time.Duration
 	for _, pipe := range scheduler.Plan {
 		if pipe.NextTime.Before(now) || pipe.NextTime.Equal(now) {
 			actuator.RunPipeline(ctx, pipe, scheduler.ResultChan)
-			log.Println(pipe.Name)
 			pipe.NextTime = pipe.Expression.Next(now)
 		}
 

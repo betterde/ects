@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"gopkg.in/gomail.v2"
 	"io/ioutil"
@@ -20,8 +21,6 @@ import (
 )
 
 const (
-	STATUSNORMAL   = "normal"
-	STATUSDISABLED = "disabled"
 	MODESHELL      = "shell"
 	MODEHTTP       = "http"
 	MODEMAIL       = "mail"
@@ -74,6 +73,8 @@ func (task *Task) ToString() (string, error) {
 func (task *Task) Exec(ctx context.Context, username string, dir string, env []string) (record *TaskRecords, err error) {
 	record = &TaskRecords{
 		TaskId:     task.Id,
+		NodeId:     service.Runtime.Id,
+		WorkerName: service.Runtime.Name,
 		TaskName:   task.Name,
 		Mode:       task.Mode,
 		Content:    task.Content,
@@ -173,14 +174,14 @@ func (task *Task) Exec(ctx context.Context, username string, dir string, env []s
 		resChan := make(chan error)
 		go func(resChan chan error) {
 			if err := mailer.DialAndSend(message); err != nil {
-				resChan <-err
+				resChan <- err
 			}
-			resChan <-nil
+			resChan <- nil
 		}(resChan)
 		err = <-resChan
 	}
 
-	END:
+END:
 
 	finishWith := time.Now()
 

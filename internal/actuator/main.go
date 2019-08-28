@@ -2,6 +2,7 @@ package actuator
 
 import (
 	"context"
+	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	uuid "github.com/satori/go.uuid"
@@ -22,8 +23,8 @@ func RunPipeline(ctx context.Context, pipeline *models.Pipeline, resChan chan *m
 		record := &models.PipelineRecords{
 			Id:         uuid.NewV4().String(),
 			PipelineId: pipeline.Id,
-			NodeId:     "",
-			WorkerName: "",
+			NodeId:     service.Runtime.Id,
+			WorkerName: service.Runtime.Name,
 			Spec:       pipeline.Spec,
 			Status:     1,
 			Duration:   0,
@@ -48,10 +49,9 @@ func RunPipeline(ctx context.Context, pipeline *models.Pipeline, resChan chan *m
 				goto END
 			}
 
-			taskRecord.NodeId = ""
 			taskRecord.Timeout = pivot.Timeout
 			taskRecord.Retries = pivot.Retries
-			taskRecord.WorkerName = ""
+			taskRecord.PipelineRecordId = record.Id
 			taskRecord.CreatedAt = utils.Time(time.Now())
 			taskRecord.UpdatedAt = utils.Time(time.Now())
 
@@ -73,9 +73,6 @@ func RunPipeline(ctx context.Context, pipeline *models.Pipeline, resChan chan *m
 		record.FinishWith = utils.Time(time.Now())
 		record.CreatedAt = utils.Time(time.Now())
 		record.UpdatedAt = utils.Time(time.Now())
-		if err := record.Store(); err != nil {
-			// TODO
-		}
 
 		// 当流水线成功时触发
 		if record.Status == 1 && pipeline.Finished != "" {

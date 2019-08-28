@@ -8,12 +8,12 @@ import (
 type (
 	// 流水线调度记录模型
 	PipelineRecords struct {
-		Id         string     `xorm:"not null pk comment('ID') CHAR(36)"`
-		PipelineId string     `xorm:"not null comment('流水线ID') index CHAR(36)"`
-		NodeId     string     `xorm:"not null comment('节点ID') index CHAR(36)"`
-		WorkerName string     `xorm:"not null comment('节点名称') VARCHAR(255)"`
-		Spec       string     `xorm:"comment('定时器') CHAR(64)"`
-		Status     int        `xorm:"not null default 1 comment('状态') TINYINT(1)"`
+		Id         string     `json:"id" xorm:"not null pk comment('ID') CHAR(36)"`
+		PipelineId string     `json:"pipeline_id" xorm:"not null comment('流水线ID') index CHAR(36)"`
+		NodeId     string     `json:"node_id" xorm:"not null comment('节点ID') index CHAR(36)"`
+		WorkerName string     `json:"worker_name" xorm:"not null comment('节点名称') VARCHAR(255)"`
+		Spec       string     `json:"spec" xorm:"comment('定时器') CHAR(64)"`
+		Status     int        `json:"status" xorm:"not null default 1 comment('状态') TINYINT(1)"`
 		Duration   int64      `json:"duration" xorm:"not null comment('持续时间') INT(10)"`
 		BeginWith  utils.Time `json:"begin_with" xorm:"not null comment('开始于') DATETIME"`
 		FinishWith utils.Time `json:"finish_with" xorm:"not null comment('结束于') DATETIME"`
