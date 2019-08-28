@@ -15,20 +15,78 @@
         </div>
       </div>
       <div class="panel-body" :class="classes">
-        <el-table :data="logs" style="width: 100%">
-          <el-table-column type="expand">
-            <template slot-scope="props">
-              <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
-              <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
-            </template>
-          </el-table-column>
-          <el-table-column prop="user_id" label="用户" width="300"></el-table-column>
-          <el-table-column prop="operation" label="操作"></el-table-column>
-          <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
-        </el-table>
-        <div class="pagination">
-          <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
-        </div>
+        <el-tabs v-model="active" @tab-click="handleClick">
+          <el-tab-pane label="流水线日志" name="pipeline">
+            <el-table :data="logs" style="width: 100%">
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
+                  <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
+                </template>
+              </el-table-column>
+              <el-table-column prop="pipeline_id" label="流水线" width="300">
+                <template slot-scope="scope">
+                  <router-link class="el-link el-link--default is-underline" :to="{path: '/pipeline', query: {id: scope.row.pipeline_id}}"><span>{{ scope.row.pipeline_id }}</span></router-link>
+                </template>
+              </el-table-column>
+              <el-table-column label="节点" width="160">
+                <template slot-scope="scope">
+                  <router-link class="el-link el-link--default is-underline" :to="{path: '/node', query: {id: scope.row.node_id}}"><span>{{ scope.row.worker_name }}</span></router-link>
+                </template>
+              </el-table-column>
+              <el-table-column label="结果">
+                <template slot-scope="scope">
+                  <el-tag v-if="scope.row.status === 0" size="small" type="danger">失败</el-tag>
+                  <el-tag v-else size="small">成功</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column prop="duration" label="耗时(秒)"></el-table-column>
+              <el-table-column prop="begin_with" label="开始于" width="160"></el-table-column>
+              <el-table-column prop="finish_with" label="结束于" width="160"></el-table-column>
+              <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
+            </el-table>
+            <div class="pagination">
+              <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="任务日志" name="task">
+            <el-table :data="logs" style="width: 100%">
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
+                  <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
+                </template>
+              </el-table-column>
+              <el-table-column prop="pipeline_record_id" label="流水线" width="300"></el-table-column>
+              <el-table-column prop="node_id" label="节点" width="300"></el-table-column>
+              <el-table-column prop="task_id" label="任务" width="300"></el-table-column>
+              <el-table-column prop="status" label="结果"></el-table-column>
+              <el-table-column prop="duration" label="耗时(秒)"></el-table-column>
+              <el-table-column prop="begin_with" label="开始于" width="160"></el-table-column>
+              <el-table-column prop="finish_with" label="结束于" width="160"></el-table-column>
+              <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
+            </el-table>
+            <div class="pagination">
+              <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="用户操作日志" name="user">
+            <el-table :data="logs" style="width: 100%">
+              <el-table-column type="expand">
+                <template slot-scope="props">
+                  <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
+                  <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
+                </template>
+              </el-table-column>
+              <el-table-column prop="user_id" label="用户" width="300"></el-table-column>
+              <el-table-column prop="operation" label="操作"></el-table-column>
+              <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
+            </el-table>
+            <div class="pagination">
+              <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
       </div>
     </div>
   </div>
@@ -44,8 +102,12 @@
     name: "Log",
     data() {
       return {
+        search: "",
+        active: 'pipeline',
         classes: ['animated', 'fade-in', 'fast'],
+        loading: false,
         params: {
+          scene: "pipeline",
           search: "",
           page: 1
         },
@@ -58,6 +120,13 @@
       }
     },
     methods: {
+      handleClick(tab, event) {
+        this.params.scene = tab.name;
+        this.params.search = "";
+        this.params.page = 1;
+        this.fetchLogs();
+        window.console.log(tab, event);
+      },
       fetchLogs () {
         this.loading = true;
         api.log.fetch(this.params).then(res => {
@@ -102,5 +171,7 @@
 </script>
 
 <style lang="scss">
-
+  .el-tabs__item {
+    color: #909399;
+  }
 </style>
