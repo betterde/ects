@@ -49,16 +49,16 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		total int64
 		err   error
 	)
-	scene := ctx.Params().GetStringDefault("scene", "table")
+	scene := ctx.URLParamDefault("scene", "table")
 	pipelines := make([]models.Pipeline, 0)
 
 	switch scene {
 	case "table":
-		search := ctx.Params().GetStringDefault("search", "")
+		search := ctx.URLParamDefault("search", "")
 		page, limit, start := utils.Pagination(ctx)
 
 		if search != "" {
-			total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
+			total, err = models.Engine.Where(builder.Eq{"id": search}.Or(builder.Like{"name", search})).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
 		} else {
 			total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
 		}
