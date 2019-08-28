@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
-	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
@@ -62,15 +62,15 @@ var (
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	config.Conf = config.Init()
-	system.Info = &system.Information{
+	rootCmd.AddCommand(initializeCmd)
+	service.Runtime = &service.Instance{
 		Version: rootCmd.Version,
 	}
-	rootCmd.AddCommand(initializeCmd)
-	initializeCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "web", "Set initialize mode with web ui or json, yaml config file")
-	initializeCmd.PersistentFlags().StringVarP(&path, "path", "p", "", "Set config file path")
-	initializeCmd.PersistentFlags().StringVarP(&user.Name, "name", "n", "", "Set admin name")
-	initializeCmd.PersistentFlags().StringVarP(&user.Email, "email", "e", "", "Set admin email")
-	initializeCmd.PersistentFlags().StringVarP(&user.Password, "pass", "P", "", "Set admin pass")
+	initializeCmd.Flags().StringVarP(&mode, "mode", "m", "web", "Set initialize mode with web ui or json, yaml config file")
+	initializeCmd.Flags().StringVarP(&path, "path", "p", "", "Set config file path")
+	initializeCmd.Flags().StringVarP(&user.Name, "name", "n", "", "Set admin name")
+	initializeCmd.Flags().StringVarP(&user.Email, "email", "e", "", "Set admin email")
+	initializeCmd.Flags().StringVarP(&user.Password, "pass", "P", "", "Set admin pass")
 }
 
 func startInitializeWeb() {
@@ -114,26 +114,22 @@ func startInitializeWeb() {
 func startInitializeByConfigFile() {
 	validatePath()
 	if user.Name == "" || user.Email == "" || user.Password == "" {
-		log.Println("Please enter admin user info")
-		os.Exit(1)
+		log.Fatal("Please enter admin user info")
 	}
 	buf, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	if mode == "json" {
 		if err := json.Unmarshal(buf, config.Conf); err != nil {
-			log.Println(err)
-			os.Exit(1)
+			log.Fatal(err)
 		}
 	}
 
 	if mode == "yaml" {
 		if err := yaml.Unmarshal(buf, config.Conf); err != nil {
-			log.Println(err)
-			os.Exit(1)
+			log.Fatal(err)
 		}
 	}
 
@@ -141,13 +137,11 @@ func startInitializeByConfigFile() {
 
 	buf, err = json.Marshal(config.Conf)
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	if res, err := discover.Client.Put(context.TODO(), config.Conf.Etcd.Config, string(buf), clientv3.WithPrevKV()); err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	} else {
 		if len(res.PrevKv.Value) > 0 {
 			log.Printf("%s %s \n", "OLD CONFIG IS", string(res.PrevKv.Value))
@@ -155,30 +149,26 @@ func startInitializeByConfigFile() {
 	}
 
 	if err := utils.CreateDatabase(); err != nil {
-		log.Println("Failed to create database", err)
-		os.Exit(1)
+		log.Fatal("Failed to create database", err)
 	}
 
 	if models.Engine == nil {
 		// Create database engine
 		models.Engine, err = models.Connection()
 		if err != nil {
-			log.Println("Failed to connect to database", err)
-			os.Exit(1)
+			log.Fatal("Failed to connect to database", err)
 		}
 	}
 
 	if err := models.Migrate(); err != nil {
-		log.Println("Failed to migrate the table", err)
-		os.Exit(1)
+		log.Fatal("Failed to migrate the table", err)
 	}
 
 	pass, err := models.GeneratePassword(user.Password)
 	user.Password = string(pass)
 
 	if _, err := models.Engine.Insert(user); err != nil {
-		log.Println("Failed to create system manager", err)
-		os.Exit(1)
+		log.Fatal("Failed to create system manager", err)
 	}
 
 	log.Println("INITIALIZE SUCCESSFUL")
@@ -186,18 +176,15 @@ func startInitializeByConfigFile() {
 
 func validatePath() {
 	if path == "" {
-		log.Println("Please enter your config file path or use --mode=web")
-		os.Exit(1)
+		log.Fatal("Please enter your config file path or use --mode=web")
 	}
 
 	exist, err := config.CheckConfigFile(path)
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
 	if exist == false {
-		log.Println("Config file does not exist")
-		os.Exit(1)
+		log.Fatal("Config file does not exist")
 	}
 }

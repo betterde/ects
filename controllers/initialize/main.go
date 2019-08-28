@@ -6,7 +6,7 @@ import (
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/controllers/auth"
 	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
@@ -32,7 +32,7 @@ type (
 
 // Get system info
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
-	return response.Success("请求成功", response.Payload{"data": system.Info})
+	return response.Success("请求成功", response.Payload{"data": service.Runtime})
 }
 
 // Initialize system config
