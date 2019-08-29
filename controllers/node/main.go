@@ -105,7 +105,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	var params CreateRequest
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -134,7 +134,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	var worker models.Node
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {

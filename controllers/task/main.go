@@ -55,7 +55,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 			log.Println(err)
 		}
 
-		return response.Success("Successful", response.Payload{
+		return response.Success("请求成功", response.Payload{
 			"data": tasks,
 			"meta": &response.Meta{
 				Limit: limit,
@@ -76,7 +76,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task := models.Task{}
 
 	if err := ctx.ReadJSON(&task); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(task); err != nil {
@@ -99,7 +99,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {

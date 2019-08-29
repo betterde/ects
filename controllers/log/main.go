@@ -4,7 +4,6 @@ import (
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
-	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
@@ -12,12 +11,10 @@ import (
 )
 
 type (
-	Controller struct {
-		Service services.LogService
-	}
+	Controller struct {}
 )
 
-// Query user operation log
+// 获取日志
 func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
 		total  int64

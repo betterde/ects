@@ -30,13 +30,13 @@ type (
 	}
 )
 
-// Get system info
-func (instance *Controller) Get(ctx iris.Context) mvc.Result {
+// 获取系统信息
+func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	return response.Success("请求成功", response.Payload{"data": service.Runtime})
 }
 
-// Initialize system config
-func (instance *Controller) Post(ctx iris.Context) mvc.Result {
+// 创建服务配置
+func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	var (
 		params = &PostRequest{}
 		err    error
@@ -44,7 +44,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -120,13 +120,13 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	}})
 }
 
-// Get JWT Secret
-func (instance *Controller) GetSecret(ctx iris.Context) mvc.Result {
+// 生成 JWT Secret
+func (instance *Controller) GetSecret(ctx iris.Context) mvc.Response {
 	return response.Success("Success", response.Payload{"data": utils.Random(64)})
 }
 
-// Validate database exist
-func (instance *Controller) GetDatabase(ctx iris.Context) mvc.Result {
+// 验证数据库是否存在
+func (instance *Controller) GetDatabase(ctx iris.Context) mvc.Response {
 	config.Conf.Database.User = ctx.URLParam("user")
 	config.Conf.Database.Pass = ctx.URLParam("pass")
 	config.Conf.Database.Host = ctx.URLParam("host")

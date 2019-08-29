@@ -38,6 +38,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	}})
 }
 
-func (instance *Controller) Post(ctx iris.Context) {
+// 修改用户信息
+func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 
 }

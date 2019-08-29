@@ -42,7 +42,7 @@ func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 }
 
 // 用户登录逻辑
-func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
+func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Response {
 	var params SignIn
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -67,13 +67,13 @@ func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
 	}})
 }
 
-// User sign out
-func (instance *Controller) SignOutHandler(ctx iris.Context) {
-
+// 用户注销逻辑
+func (instance *Controller) SignOutHandler(ctx iris.Context) mvc.Response {
+	return response.Success("", response.Payload{"data": make([]interface{}, 0)})
 }
 
 // 用户注册逻辑
-func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Result {
+func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Response {
 	var params SignUp
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {

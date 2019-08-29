@@ -29,6 +29,7 @@ func (instance *Controller) GetNotification(ctx iris.Context) mvc.Response {
 	return response.Success("请求成功", response.Payload{"data": conf.Notification})
 }
 
+// 测试发送邮件功能
 func (instance *Controller) PostMail(ctx iris.Context) mvc.Response {
 	return response.Success("请求成功", response.Payload{"data": make([]interface{}, 0)})
 }
