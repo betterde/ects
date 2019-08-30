@@ -15,5 +15,13 @@ export default {
    */
   updateNotification(params) {
     return Vue.axios.put('/api/setting/notification', params)
+  },
+  /**
+   * 发送测试邮件
+   * @param params
+   * @returns {AxiosPromise<any>}
+   */
+  sendMail(params) {
+    return Vue.axios.post('/api/setting/mail', params)
   }
 }
