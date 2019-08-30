@@ -2,12 +2,16 @@ package setting
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/response"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"gopkg.in/gomail.v2"
+	"log"
 )
 
 type (
@@ -31,6 +35,30 @@ func (instance *Controller) GetNotification(ctx iris.Context) mvc.Response {
 
 // 测试发送邮件功能
 func (instance *Controller) PostMail(ctx iris.Context) mvc.Response {
+	type Request struct {
+		Email string `json:"email" validate:"email"`
+	}
+
+	params := Request{}
+
+	if err := ctx.ReadJSON(&params); err != nil {
+		return response.InternalServerError("参数解析失败", err)
+	}
+
+	log.Printf("%#v", config.Conf.Notification)
+
+	dialer := gomail.NewDialer(config.Conf.Notification.Host, config.Conf.Notification.Port, config.Conf.Notification.User, config.Conf.Notification.Pass)
+	dialer.TLSConfig = &tls.Config{InsecureSkipVerify: true}
+	message := gomail.NewMessage()
+	message.SetHeader("From", fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User))
+	message.SetHeader("To", params.Email)
+	message.SetHeader("Subject", "Notification")
+	message.SetBody("text/html", "测试发送邮件功能")
+	if err := dialer.DialAndSend(message); err != nil {
+		log.Println(err)
+		return response.InternalServerError("发送失败", err)
+	}
+
 	return response.Success("请求成功", response.Payload{"data": make([]interface{}, 0)})
 }
 

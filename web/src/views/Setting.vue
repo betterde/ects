@@ -1,6 +1,19 @@
 <template>
   <div class="main-content">
     <div class="panel">
+      <div class="panel-header" :class="classes">
+        <div class="panel-tools">
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" clearable>
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              </el-input>
+            </el-col>
+            <el-col :span="16" style="text-align: right">
+            </el-col>
+          </el-row>
+        </div>
+      </div>
       <div class="panel-body" :class="classes">
         <el-tabs v-model="active" tab-position="left" class="setting-menu">
           <el-tab-pane label="系统通知" name="notification">
@@ -15,7 +28,7 @@
                   <el-input v-model="notification.host" placeholder="主机地址"></el-input>
                 </el-form-item>
               </el-col>
-              <el-col :span="2">
+              <el-col :span="3">
                 <el-form-item prop="port" label-width="0">
                   <el-input v-model.number="notification.port" placeholder="端口"></el-input>
                 </el-form-item>
@@ -28,7 +41,7 @@
                   </el-select>
                 </el-form-item>
               </el-col>
-              <el-col :span="6">
+              <el-col :span="5">
                 <el-form-item prop="char">
                   <el-select v-model="notification.encryption" placeholder="请选择加密类型">
                     <el-option key="tls" label="TLS" value="tls"></el-option>
@@ -48,6 +61,18 @@
               </el-col>
               <el-col :span="24">
                 <el-form-item prop="pass" style="text-align: right">
+                  <el-popover placement="top" width="300" v-model="visible">
+                    <el-form :model="sendmail.params" :rules="sendmail.rules" ref="sendmail">
+                      <el-form-item prop="email">
+                        <el-input v-model="sendmail.params.email" placeholder="请输入接收测试邮件的邮箱"></el-input>
+                      </el-form-item>
+                    </el-form>
+                    <div style="text-align: right; margin: 0">
+                      <el-button size="mini" type="text" @click="closePopover">取消</el-button>
+                      <el-button type="primary" size="mini" @click="send">确定</el-button>
+                    </div>
+                    <el-button type="info" slot="reference" plain style="margin-right: 20px">发送测试邮件</el-button>
+                  </el-popover>
                   <el-button type="primary" plain @click="submit">保存</el-button>
                 </el-form-item>
               </el-col>
@@ -86,6 +111,18 @@
     name: "Setting",
     data() {
       return {
+        sendmail: {
+          params: {
+            email: ''
+          },
+          rules: {
+            email: [
+              { required: true, message: '请输入邮件地址', trigger: 'blur' },
+              { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }
+            ]
+          }
+        },
+        visible: false,
         classes: ['animated', 'fade-in', 'fast'],
         active: "notification",
         basic: {
@@ -155,6 +192,25 @@
             return false;
           }
         });
+      },
+      send() {
+        api.setting.sendMail(this.sendmail.params).then(res => {
+          this.$message.success({
+            offset: 95,
+            message: res.message
+          });
+          this.$refs.sendmail.resetFields();
+          this.visible = false;
+        }).catch(err => {
+          this.$message.error({
+            offset: 95,
+            message: err.message
+          })
+        })
+      },
+      closePopover() {
+        this.$refs.sendmail.resetFields();
+        this.visible = false;
       },
       resetForm(formName) {
         this.$refs[formName].resetFields();
