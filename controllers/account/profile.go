@@ -40,5 +40,5 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 
 // 修改用户信息
 func (instance *Controller) Post(ctx iris.Context) mvc.Response {
-
+	return response.Success("业务逻辑尚未实现", response.Payload{"data": make([]interface{}, 0)})
 }

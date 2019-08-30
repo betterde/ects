@@ -21,10 +21,58 @@
               <el-table-column type="expand">
                 <template slot-scope="props">
                   <el-timeline :reverse="reverse">
-                    <el-timeline-item :timestamp="step.created_at" placement="top" :type="step.status === 'finished' ? 'success' : 'danger'" size="large" :icon="step.status === 'finished' ? 'el-icon-success' : 'el-icon-error'" v-for="(step, index) in props.row.steps">
+                    <el-timeline-item :timestamp="step.created_at" placement="top" :key="index" :type="step.status === 'finished' ? 'success' : 'danger'" size="large" :icon="step.status === 'finished' ? 'el-icon-success' : 'el-icon-error'" v-for="(step, index) in props.row.steps">
                       <el-card>
-                        <h4>{{ step.task_name }}</h4>
-                        <pre class="task-pre"><code class="task-content">{{ step.content }}</code></pre>
+                        <h3>{{ step.task_name }}</h3>
+                        <el-form label-position="top" inline class="table-expand">
+                          <el-row :gutter="10">
+                            <el-col :span="2">
+                              <el-form-item label="ID">
+                                <span>{{ step.id }}</span>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="6">
+                              <el-form-item label="任务">
+                                <router-link class="el-link el-link--default is-underline" :to="{path: '/task', query: {id: step.task_id}}"><span>{{ step.task_id }}</span></router-link>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="2">
+                              <el-form-item label="类型">
+                                <span>{{ step.mode }}</span>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="2">
+                              <el-form-item label="超时">
+                                <span>{{ step.timeout }}</span>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="2">
+                              <el-form-item label="重试">
+                                <span>{{ step.retries }}</span>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="2">
+                              <el-form-item label="耗时">
+                                <span>{{ step.duration }}</span>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="4">
+                              <el-form-item label="开始于">
+                                <span>{{ step.begin_with }}</span>
+                              </el-form-item>
+                            </el-col>
+                            <el-col :span="4">
+                              <el-form-item label="结束于">
+                                <span>{{ step.finish_with }}</span>
+                              </el-form-item>
+                            </el-col>
+                          </el-row>
+                        </el-form>
+                        <pre class="task-pre"><code class="task-content" :class="{ bash: step.mode === 'shell' }">{{ step.content }}</code></pre>
+                        <collapse-view content="执行结果">
+                          <pre class="task-pre"><code class="task-content bash" v-html="step.result"></code>
+                          </pre>
+                        </collapse-view>
                       </el-card>
                     </el-timeline-item>
                   </el-timeline>
@@ -46,27 +94,6 @@
                   <el-tag v-else size="small">成功</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="duration" label="耗时(秒)"></el-table-column>
-              <el-table-column prop="begin_with" label="开始于" width="160"></el-table-column>
-              <el-table-column prop="finish_with" label="结束于" width="160"></el-table-column>
-              <el-table-column prop="created_at" label="创建于" width="160"></el-table-column>
-            </el-table>
-            <div class="pagination">
-              <el-pagination background layout="prev, pager, next" :current-page.sync="meta.page" :total="meta.total" @current-change="changePage"></el-pagination>
-            </div>
-          </el-tab-pane>
-          <el-tab-pane label="任务日志" name="task">
-            <el-table :data="logs" style="width: 100%">
-              <el-table-column type="expand">
-                <template slot-scope="props">
-                  <json-viewer :copyable="true" style="background-color: #e6effb" v-if="props.row.result !== ''" :value="JSON.parse(props.row.result)"></json-viewer>
-                  <pre v-else><div style="text-align: center; color: #909399">没有数据</div></pre>
-                </template>
-              </el-table-column>
-              <el-table-column prop="pipeline_record_id" label="流水线" width="300"></el-table-column>
-              <el-table-column prop="node_id" label="节点" width="300"></el-table-column>
-              <el-table-column prop="task_id" label="任务" width="300"></el-table-column>
-              <el-table-column prop="status" label="结果"></el-table-column>
               <el-table-column prop="duration" label="耗时(秒)"></el-table-column>
               <el-table-column prop="begin_with" label="开始于" width="160"></el-table-column>
               <el-table-column prop="finish_with" label="结束于" width="160"></el-table-column>
@@ -102,7 +129,18 @@
   import api from '../apis'
   import Vue from 'vue'
   import JsonViewer from 'vue-json-viewer'
+  import hljs from 'highlight.js';
+  import 'highlight.js/styles/github.css';
   Vue.use(JsonViewer);
+
+  const highlightCode = () => {
+    const elements = document.querySelectorAll('pre');
+    elements.forEach((element) => {
+      if (element.children.item(0).classList.contains("bash")) {
+        hljs.highlightBlock(element)
+      }
+    })
+  };
 
   export default {
     name: "Log",
@@ -172,6 +210,7 @@
                 api.log.fetch(this.params).then(res => {
                   // 将返回数据设置到对应流水线下的执行步骤属性中
                   Vue.set(this.logs[index], 'steps', res.data);
+                  this.$nextTick(() => setTimeout(highlightCode, 0));
                 }).catch(err => {
                   this.$message.error({
                     offset: 95,
@@ -212,7 +251,7 @@
       if (this.$route.query.hasOwnProperty("id")) {
         this.params.search = this.$route.query.id;
       }
-      this.fetchLogs()
+      this.fetchLogs();
     },
     beforeRouteEnter(to, from, next) {
       next(vm => {

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "element-ui": "^2.8.2",
+    "highlight.js": "^9.15.10",
     "sortablejs": "^1.10.0-rc3",
     "vue": "^2.6.6",
     "vue-json-viewer": "^2.2.1",
