@@ -52,7 +52,7 @@
                               </el-form-item>
                             </el-col>
                             <el-col :span="2">
-                              <el-form-item label="耗时">
+                              <el-form-item label="耗时(秒)">
                                 <span>{{ step.duration }}</span>
                               </el-form-item>
                             </el-col>
@@ -130,7 +130,7 @@
   import Vue from 'vue'
   import JsonViewer from 'vue-json-viewer'
   import hljs from 'highlight.js';
-  import 'highlight.js/styles/github.css';
+  import 'highlight.js/styles/dracula.css';
   Vue.use(JsonViewer);
 
   const highlightCode = () => {
@@ -271,9 +271,16 @@
   }
   .task-pre {
     width: 100%;
-    margin: 15px 0 0 0;
-    color: #5e6d82;
+    color: #f8f8f2;
     padding: 10px 20px;
-    background-color: #e6effb;
+    border-radius: 4px;
+    background-color: #282a36;
+
+    /*color: #5e6d82;*/
+    /*background-color: #e6effb;*/
+  }
+  .content-block .description code.bash {
+    color: #f8f8f2;
+    background-color: #282a36;
   }
 </style>
