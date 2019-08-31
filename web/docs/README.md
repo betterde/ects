@@ -2,7 +2,7 @@
 home: true
 heroImage: /cover.png
 actionText: 快速开始
-actionLink: /introduction/
+actionLink: /introduction/architecture
 sidebar: auto
 features:
 - title: 分布式
