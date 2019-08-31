@@ -54,7 +54,6 @@ func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 		BeginWith:        utils.Time{},
 		FinishWith:       utils.Time{},
 		CreatedAt:        utils.Time{},
-		UpdatedAt:        utils.Time{},
 	}
 }
 

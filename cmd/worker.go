@@ -85,9 +85,6 @@ func listen() {
 
 	service.Runtime = worker
 
-	log.Printf("%#v", service.Runtime)
-	log.Printf("%#v", worker)
-
 	ser, err := discover.NewService(service.Runtime)
 	if err != nil {
 		log.Fatal(err)

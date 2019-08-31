@@ -53,7 +53,6 @@ func RunPipeline(ctx context.Context, pipeline *models.Pipeline, resChan chan *m
 			taskRecord.Retries = pivot.Retries
 			taskRecord.PipelineRecordId = record.Id
 			taskRecord.CreatedAt = utils.Time(time.Now())
-			taskRecord.UpdatedAt = utils.Time(time.Now())
 
 			result.Steps = append(result.Steps, taskRecord)
 
