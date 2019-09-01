@@ -5,10 +5,13 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs"
   },
   "dependencies": {
     "element-ui": "^2.8.2",
+    "highlight.js": "^9.15.10",
     "sortablejs": "^1.10.0-rc3",
     "vue": "^2.6.6",
     "vue-json-viewer": "^2.2.1",

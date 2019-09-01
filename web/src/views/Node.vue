@@ -5,7 +5,9 @@
         <div class="panel-tools">
           <el-row :gutter="20">
             <el-col :span="8">
-              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchWorkers"><i slot="prefix" class="el-input__icon el-icon-search"></i></el-input>
+              <el-input placeholder="在这里输入要搜索的内容，按下回车进行搜索" v-model="params.search" @keyup.enter.native="fetchWorkers" @clear="handleClear" clearable>
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              </el-input>
             </el-col>
             <el-col :span="16" style="text-align: right">
               <el-button type="primary" plain @click="handleCreate">创建</el-button>
@@ -377,9 +379,24 @@
             message: err.message
           });
         });
-      }
+      },
+      /**
+       * 清空搜索框时触发
+       */
+      handleClear() {
+        // 判断是否有 Pipeline 页面跳转传入的参数
+        if (this.$route.query.hasOwnProperty("id")) {
+          // 如果有则替换路由
+          this.$router.replace("/node");
+        }
+        this.fetchPipelines();
+      },
     },
     mounted() {
+      // 如果存在查询参数则
+      if (this.$route.query.hasOwnProperty("id")) {
+        this.params.search = this.$route.query.id;
+      }
       this.fetchWorkers();
     },
     beforeRouteEnter(to, from, next) {

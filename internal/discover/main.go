@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/models"
+	"github.com/betterde/ects/internal/service"
 	"github.com/coreos/etcd/clientv3"
 	"log"
 	"sync"
@@ -15,10 +15,10 @@ import (
 
 type (
 	Service struct {
-		node    *models.Node
-		leaseID clientv3.LeaseID
-		close   chan struct{}
-		wg      sync.WaitGroup
+		instance *service.Instance
+		leaseID  clientv3.LeaseID
+		close    chan struct{}
+		wg       sync.WaitGroup
 	}
 )
 
@@ -37,17 +37,15 @@ func NewClient() {
 	}
 }
 
-func NewService(node *models.Node) (*Service, error) {
+func NewService(instance *service.Instance) (*Service, error) {
 	if nil != err {
 		return nil, err
 	}
 
-	service := &Service{
+	return &Service{
 		close: make(chan struct{}),
-		node:  node,
-	}
-
-	return service, nil
+		instance:  instance,
+	}, nil
 }
 
 // Register service
@@ -59,36 +57,18 @@ func (service *Service) Register(ttlSecond int64) error {
 
 	service.leaseID = res.ID
 
-	val, err := json.Marshal(&struct {
-		Id          string `json:"id"`
-		Name        string `json:"name"`
-		Host        string `json:"host"`
-		Port        int    `json:"port"`
-		Mode        string `json:"mode"`
-		Status      string `json:"status"`
-		Version     string `json:"version"`
-		Description string `json:"description"`
-	}{
-		service.node.Id,
-		service.node.Name,
-		service.node.Host,
-		service.node.Port,
-		service.node.Mode,
-		service.node.Status,
-		service.node.Version,
-		service.node.Description,
-	})
+	val, err := json.Marshal(&service.instance)
 	if err != nil {
 		log.Println(err)
 	}
 
-	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Service, service.node.Id)
+	key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Service, service.instance.Id)
 
 	if _, err = Client.Put(context.TODO(), key, string(val), clientv3.WithLease(service.leaseID)); err != nil {
 		return err
 	}
 
-	log.Printf("启动成功, ID为: %s", service.node.Id)
+	log.Printf("启动成功, ID为: %s", service.instance.Id)
 
 	ch, err := Client.KeepAlive(context.TODO(), service.leaseID)
 	if nil != err {
@@ -125,9 +105,9 @@ func (service *Service) Stop() {
 func (service *Service) revoke() error {
 	_, err := Client.Revoke(context.TODO(), service.leaseID)
 	if err != nil {
-		log.Printf("[discovery] Service revoke %s error: %s", service.node.Id, err.Error())
+		log.Printf("[discovery] Service revoke %s error: %s", service.instance.Id, err.Error())
 	} else {
-		log.Printf("[discovery] Service revoke successfully %s", service.node.Id)
+		log.Printf("[discovery] Service revoke successfully %s", service.instance.Id)
 	}
 
 	return err

@@ -81,7 +81,7 @@
 
     watch: {
       isExpanded(val) {
-        this.codeArea.style.height = val ? `${this.codeAreaHeight + 1}px` : '0';
+        this.codeArea.style.height = val ? `${this.codeAreaHeight + 15}px` : '0';
 
         if (!val) {
           this.fixedControl = false;
@@ -144,7 +144,6 @@
         color: #5e6d82;
         background-color: #e6effb;
         margin: 0 4px;
-        margin: 0 4px;
         display: inline-block;
         padding: 1px 5px;
         font-size: 12px;
@@ -179,7 +178,6 @@
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
       text-align: center;
-      margin-top: -1px;
       color: #d3dce6;
       cursor: pointer;
       position: relative;

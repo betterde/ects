@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
-	"github.com/betterde/ects/internal/system"
+	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
@@ -32,13 +32,12 @@ var (
 			start()
 		},
 	}
-	master = &models.Node{
-		Mode:   models.MASTER,
-		Status: models.ONLINE,
+
+	master = &service.Instance{
+		Mode:    models.MASTER,
+		Status:  models.ONLINE,
 		Version: rootCmd.Version,
 	}
-
-	confKey string
 
 	ctx, cancelFunc = context.WithCancel(context.Background())
 )
@@ -47,27 +46,24 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(masterCmd)
 	config.Conf = config.Init()
-	masterCmd.PersistentFlags().StringVar(&master.Host, "host", "0.0.0.0", "Set listen on IP")
-	masterCmd.PersistentFlags().IntVar(&master.Port, "port", 9701, "Set listen on port")
-	masterCmd.PersistentFlags().StringSliceVar(&config.Conf.Etcd.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
-	masterCmd.PersistentFlags().StringVarP(&master.Id, "node", "n", uuid.NewV4().String(), "Set master node id")
-	masterCmd.PersistentFlags().StringVar(&master.Name, "name", "", "Set master node name")
-	masterCmd.PersistentFlags().StringVar(&master.Description, "desc", "master node", "Set master node description")
-	masterCmd.PersistentFlags().StringVar(&confKey, "config", "/ects/config", "Set the key used to get configuration information")
+	service.Initialize()
+	masterCmd.Flags().StringVar(&master.Host, "host", "0.0.0.0", "Set listen on IP")
+	masterCmd.Flags().IntVar(&master.Port, "port", 9701, "Set listen on port")
+	masterCmd.Flags().StringSliceVar(&service.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")
+	masterCmd.Flags().StringVarP(&master.Id, "node", "n", uuid.NewV4().String(), "Set master node id")
+	masterCmd.Flags().StringVar(&master.Name, "name", "", "Set master node name")
+	masterCmd.Flags().StringVar(&master.Description, "desc", "master node", "Set master node description")
+	masterCmd.Flags().StringVar(&service.ConfigKey, "config", "/ects/config", "Set the key used to get configuration information")
 }
 
 func bootstrap() {
 	var err error
-	system.Info = &system.Information{
-		Version: rootCmd.Version,
-	}
-
+	config.Conf.Etcd.EndPoints = service.EndPoints
 	discover.NewClient()
-	discover.GetConf(confKey)
+	discover.GetConf(service.ConfigKey)
 	models.Engine, err = models.Connection()
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 
@@ -84,23 +80,28 @@ func register() {
 		}
 	}
 
+	var err error
+
 	if master.Name == "" {
-		master.Name = "master-" + master.Id
+		master.Name, err = os.Hostname()
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
-	service, err := discover.NewService(master)
+	ser, err := discover.NewService(master)
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
-	if err := service.Register(5); err != nil {
-		log.Println(err)
-		os.Exit(1)
+
+	if err := ser.Register(5); err != nil {
+		log.Fatal(err)
 	}
 }
 
 func start() {
-	addr := fmt.Sprintf("%s:%d", master.Host, master.Port)
+	service.Runtime = master
+	addr := fmt.Sprintf("%s:%d", service.Runtime.Host, service.Runtime.Port)
 	app := iris.New()
 	app.Use(recover.New())
 	app.Use(logger.New())
@@ -114,12 +115,12 @@ func start() {
 		defer cancel()
 
 		// 当主节点关闭时，先检查是否有其他在线主节点
-		if count, err := models.Engine.Where("mode = ? AND status = ? AND id != ?", "master", "online", master.Id).Count(&models.Node{}); err != nil {
+		if count, err := models.Engine.Where("mode = ? AND status = ? AND id != ?", "master", "online", service.Runtime.Id).Count(&models.Node{}); err != nil {
 			log.Println(err)
 		} else {
 			if count == 0 {
 				node := &models.Node{
-					Id: master.Id,
+					Id: service.Runtime.Id,
 				}
 				node.Offline()
 			}
@@ -133,6 +134,6 @@ func start() {
 	go register()
 
 	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithOptimizations, iris.WithCharset("UTF-8")); err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 }

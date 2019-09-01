@@ -35,8 +35,8 @@ type (
 	}
 )
 
-// Get users list
-func (instance *UserController) Get(ctx iris.Context) mvc.Result {
+// 获取用户列表
+func (instance *UserController) Get(ctx iris.Context) mvc.Response {
 	var (
 		total int64
 		err   error
@@ -84,8 +84,8 @@ func (instance *UserController) Get(ctx iris.Context) mvc.Result {
 	return response.Success("请求成功", response.Payload{"data": make([]interface{}, 0)})
 }
 
-// Create user
-func (instance *UserController) Post(ctx iris.Context) mvc.Result {
+// 创建用户
+func (instance *UserController) Post(ctx iris.Context) mvc.Response {
 	var (
 		params CreateRequest
 	)
@@ -93,7 +93,7 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -127,8 +127,8 @@ func (instance *UserController) Post(ctx iris.Context) mvc.Result {
 	return response.Success("创建成功", response.Payload{"data": user})
 }
 
-// Modify user attribute
-func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
+// 修改用户信息
+func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Response {
 	var params UpdateRequest
 	var user models.User
 
@@ -159,8 +159,8 @@ func (instance *UserController) PutBy(id string, ctx iris.Context) mvc.Result {
 	return response.Success("Updated successful", response.Payload{"data": user})
 }
 
-// Delete user
-func (instance *UserController) DeleteBy(id string) mvc.Result {
+// 删除用户
+func (instance *UserController) DeleteBy(id string) mvc.Response {
 	user := &models.User{
 		Id: id,
 	}

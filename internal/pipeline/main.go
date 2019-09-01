@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
+	"github.com/betterde/ects/internal/scheduler"
 	"github.com/betterde/ects/models"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
@@ -12,20 +13,24 @@ import (
 	"time"
 )
 
-var Pipelines map[string]*models.Pipeline
-
 func WatchPipelines(local string) {
-	Pipelines = make(map[string]*models.Pipeline)
 	var curRevision int64 = 0
+	rangeResp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
+	if err != nil {
+		panic(err)
+	}
+	curRevision = rangeResp.Header.Revision + 1
 
-	for {
-		rangeResp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
-
-		if err != nil {
-			continue
+	for _, obj := range rangeResp.Kvs {
+		var pipeline models.Pipeline
+		if err := json.Unmarshal(obj.Value, &pipeline); err != nil {
+			log.Println(err)
 		}
-		curRevision = rangeResp.Header.Revision + 1
-		break
+
+		scheduler.Instance.DispatchEvent(&scheduler.Event{
+			Type:     scheduler.PUT,
+			Pipeline: &pipeline,
+		})
 	}
 
 	watchChan := discover.Client.Watch(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix(), clientv3.WithRev(curRevision), clientv3.WithPrevKV())
@@ -34,21 +39,26 @@ func WatchPipelines(local string) {
 			var pipeline models.Pipeline
 			switch event.Type {
 			case mvccpb.PUT:
-				log.Printf("%s", event.Kv.Value)
 				if err := json.Unmarshal(event.Kv.Value, &pipeline); err != nil {
 					log.Println(err)
 				}
 
 				for _, node := range pipeline.Nodes {
 					if node == local {
-						Pipelines[pipeline.Id] = &pipeline
+						scheduler.Instance.DispatchEvent(&scheduler.Event{
+							Type:     scheduler.PUT,
+							Pipeline: &pipeline,
+						})
 					}
 				}
 			case mvccpb.DELETE:
 				if err := json.Unmarshal(event.PrevKv.Value, &pipeline); err != nil {
 					log.Println(err)
 				}
-				delete(Pipelines, pipeline.Id)
+				scheduler.Instance.DispatchEvent(&scheduler.Event{
+					Type:     scheduler.DEL,
+					Pipeline: &pipeline,
+				})
 			}
 		}
 
@@ -79,11 +89,7 @@ func WatchKiller() {
 
 			switch event.Type {
 			case mvccpb.PUT:
-				// TODO 添加或修改本地 Pipeline 属性
-				log.Printf("节点：%s 注册成功", pipeline.Id)
 			case mvccpb.DELETE:
-				// TODO 删除本地 Pipeline
-				log.Printf("Pipeline：%s 离线", pipeline.Id)
 			}
 		}
 	}

@@ -40,18 +40,18 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		total int64
 		err   error
 	)
-	search := ctx.Params().GetStringDefault("search", "")
+	search := ctx.URLParamDefault("search", "")
 	page, limit, start := utils.Pagination(ctx)
 	nodes := make([]models.Node, 0)
 
-	if search == "" {
-		total, err = models.Engine.Limit(limit, start).FindAndCount(&nodes)
+	if search != "" {
+		total, err = models.Engine.Where(builder.Eq{"id": search}.Or(builder.Like{"name", search})).Limit(limit, start).FindAndCount(&nodes)
 	} else {
-		total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).FindAndCount(&models.Node{})
+		total, err = models.Engine.Limit(limit, start).FindAndCount(&nodes)
 	}
 
 	if err != nil {
-		log.Println(err)
+		return response.InternalServerError("获取节点列表失败", err)
 	}
 
 	nids := make([]string, 0)
@@ -105,7 +105,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	var params CreateRequest
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -134,7 +134,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	var worker models.Node
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -293,7 +293,7 @@ func (instance *Controller) DeletePipelineBy(id string, ctx iris.Context) mvc.Re
 
 	// 如果流水线未关联任何节点，则立即删除ETCD中的流水线
 	if count == 0 {
-		key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, relation.Pipeline.Id)
+		key := fmt.Sprintf("%s/%s", config.Conf.Etcd.Pipeline, relation.PipelineId)
 		if _, err := discover.Client.Delete(context.TODO(), key); err != nil {
 			return response.InternalServerError("删除ETCD中的流水线失败", err)
 		}

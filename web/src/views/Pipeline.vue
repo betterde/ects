@@ -389,22 +389,22 @@
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入名称', trigger: 'blur'}
             ],
             spec: [
-              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入一个 Cron 表达式', trigger: 'blur'}
             ],
             finished: [
-              {type: 'string', required: false, message: 'Please select a task', trigger: 'change'}
+              {type: 'string', required: false, message: '请选择一个流水线执行成功后执行的任务', trigger: 'change'}
             ],
             failed: [
-              {type: 'string', required: false, message: 'Please select a task', trigger: 'change'}
+              {type: 'string', required: false, message: '请选择一个流水线执行失败后执行的任务', trigger: 'change'}
             ],
             status: [
-              {type: 'number', required: true, message: 'Please select pipeline status', trigger: 'change'}
+              {type: 'number', required: true, message: '请选择状态', trigger: 'change'}
             ],
             overlap: [
-              {type: 'number', required: true, message: 'Please select pipeline overlap', trigger: 'change'}
+              {type: 'number', required: true, message: '请选择是否允许重叠', trigger: 'change'}
             ]
           }
         },
@@ -423,22 +423,22 @@
           },
           rules: {
             name: [
-              {type: 'string', required: true, message: 'Please enter a name', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入名称', trigger: 'blur'}
             ],
             spec: [
-              {type: 'string', required: true, message: 'Please enter a spec', trigger: 'blur'}
+              {type: 'string', required: true, message: '请输入一个 Cron 表达式', trigger: 'blur'}
             ],
             finished: [
-              {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
+              {type: 'string', required: false, message: '请选择一个流水线执行成功后执行的任务', trigger: 'change'}
             ],
             failed: [
-              {type: 'string', required: true, message: 'Please select a task', trigger: 'change'}
+              {type: 'string', required: false, message: '请选择一个流水线执行失败后执行的任务', trigger: 'change'}
             ],
             status: [
-              {type: 'number', required: true, message: 'Please select pipeline status', trigger: 'change'}
+              {type: 'number', required: true, message: '请选择状态', trigger: 'change'}
             ],
             overlap: [
-              {type: 'number', required: true, message: 'Please select pipeline overlap', trigger: 'change'}
+              {type: 'number', required: true, message: '请选择是否允许重叠', trigger: 'change'}
             ]
           },
         },
@@ -568,7 +568,7 @@
         this.modify.dialog = true;
       },
       /**
-       * Get pipeline log
+       * 获取流水线日志
        */
       handleDetail(row) {
         this.$router.push({
@@ -579,7 +579,7 @@
         });
       },
       /**
-       * Close create or edit dialog handler
+       * 表单控制逻辑
        * @param form
        */
       handleClose(form) {

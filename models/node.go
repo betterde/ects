@@ -20,12 +20,12 @@ type (
 		Host        string               `json:"host" xorm:"not null comment('主机地址') VARCHAR(255)"`
 		Port        int                  `json:"port" xorm:"not null comment('端口') SMALLINT(5)"`
 		Mode        string               `json:"mode" xorm:"not null comment('节点类型') CHAR(6)"`
-		Status      string               `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"`
-		Version     string               `json:"version" xorm:"not null comment('版本') VARCHAR(255)"`
-		Description string               `json:"description" xorm:"comment('描述') VARCHAR(255)"`
-		CreatedAt   utils.Time           `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`
-		UpdatedAt   utils.Time           `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`
-		Pipelines   []*PipelineNodePivot `json:"pipelines" xorm:"-"`
+		Status      string               `json:"status" xorm:"not null default('connected') comment('状态') VARCHAR(255)"` // 状态
+		Version     string               `json:"version" xorm:"not null comment('版本') VARCHAR(255)"`                     // 版本
+		Description string               `json:"description" xorm:"comment('描述') VARCHAR(255)"`                          // 描述信息
+		CreatedAt   utils.Time           `json:"created_at" xorm:"not null created comment('创建于') DATETIME"`             // 创建于
+		UpdatedAt   utils.Time           `json:"updated_at" xorm:"not null updated comment('更新于') DATETIME"`             // 更新于
+		Pipelines   []*PipelineNodePivot `json:"pipelines" xorm:"-"`                                                     // 关联的流水线
 	}
 )
 

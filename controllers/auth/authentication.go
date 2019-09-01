@@ -35,13 +35,14 @@ type (
 	}
 )
 
+// 路由分发
 func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signin", "SignInHandler")
 	request.Handle("POST", "/signout", "SignOutHandler")
 }
 
-// User sign in
-func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
+// 用户登录逻辑
+func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Response {
 	var params SignIn
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
@@ -66,13 +67,13 @@ func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Result {
 	}})
 }
 
-// User sign out
-func (instance *Controller) SignOutHandler(ctx iris.Context) {
-
+// 用户注销逻辑
+func (instance *Controller) SignOutHandler(ctx iris.Context) mvc.Response {
+	return response.Success("", response.Payload{"data": make([]interface{}, 0)})
 }
 
-// User register
-func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Result {
+// 用户注册逻辑
+func (instance *Controller) SignUpHandler(ctx iris.Context) mvc.Response {
 	var params SignUp
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {

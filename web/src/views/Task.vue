@@ -324,9 +324,15 @@
                     this.tasks.unshift(res.data);
                   }
                   this.handleClose('create');
-                  this.$message.success(res.message);
+                  this.$message.success({
+                    offset: 95,
+                    message: res.message
+                  });
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -342,10 +348,16 @@
                   this.tasks[this.update.index].description = res.data.description;
                   this.tasks[this.update.index].content = res.data.content;
                   this.tasks[this.update.index].updated_at = res.data.updated_at;
-                  this.$message.success(res.message);
+                  this.$message.success({
+                    offset: 95,
+                    message: res.message
+                  });
                   this.update.index = null;
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;

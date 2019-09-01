@@ -5,7 +5,7 @@
        <el-col :span="6">
          <div class="card" :class="classes">
            <div class="card_header">
-             <h4>主要节点</h4>
+             <h4>主节点</h4>
            </div>
            <div class="card_body">
              <h1 class="number">{{ nodes.master }}</h1>
@@ -18,7 +18,7 @@
        <el-col :span="6">
          <div class="card" :class="classes">
            <div class="card_header">
-             <h4>工作节点</h4>
+             <h4>从节点</h4>
            </div>
            <div class="card_body">
              <h1 class="number">{{ nodes.worker }}</h1>

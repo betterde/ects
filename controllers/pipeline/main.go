@@ -49,16 +49,16 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 		total int64
 		err   error
 	)
-	scene := ctx.Params().GetStringDefault("scene", "table")
+	scene := ctx.URLParamDefault("scene", "table")
 	pipelines := make([]models.Pipeline, 0)
 
 	switch scene {
 	case "table":
-		search := ctx.Params().GetStringDefault("search", "")
+		search := ctx.URLParamDefault("search", "")
 		page, limit, start := utils.Pagination(ctx)
 
 		if search != "" {
-			total, err = models.Engine.Where(builder.Like{"name", search}).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
+			total, err = models.Engine.Where(builder.Eq{"id": search}.Or(builder.Like{"name", search})).Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
 		} else {
 			total, err = models.Engine.Limit(limit, start).Desc("created_at").FindAndCount(&pipelines)
 		}
@@ -81,7 +81,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 			return response.InternalServerError("获取流水线列表失败", err)
 		}
 
-		return response.Success("Successful", response.Payload{"data": pipelines})
+		return response.Success("请求成功", response.Payload{"data": pipelines})
 	}
 
 	return response.Success("数据使用场景有误", response.Payload{"data": make([]interface{}, 0)})
@@ -94,7 +94,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	}
 
 	if err := ctx.ReadJSON(&pipeline); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(pipeline); err != nil {
@@ -118,7 +118,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{}
 
 	if err := ctx.ReadJSON(&pipeline); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(pipeline); err != nil {
@@ -231,7 +231,7 @@ func (instance *Controller) PostNodes(ctx iris.Context) mvc.Response {
 	params := BindNodeRequest{}
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -318,7 +318,7 @@ func (instance *Controller) PutSteps(ctx iris.Context) mvc.Response {
 	params := PutStepsRequest{}
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -407,7 +407,7 @@ func (instance *Controller) PostTask(ctx iris.Context) mvc.Response {
 	}
 
 	if err := ctx.ReadJSON(&pivot); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(pivot); err != nil {
@@ -530,7 +530,7 @@ func (instance *Controller) PostKiller(ctx iris.Context) mvc.Response {
 	params := KillPipelineRequest{}
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {

@@ -10,20 +10,22 @@ import (
 
 // 流水线模型
 type Pipeline struct {
-	Id          string               `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
-	Name        string               `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
-	Description string               `json:"description" validate:"-" xorm:"not null comment('描述') VARCHAR(255)"`
-	Spec        string               `json:"spec" validate:"required" xorm:"not null comment('定时器') CHAR(64)"`
-	Status      int                  `json:"status" validate:"numeric" xorm:"not null default 0 comment('状态') TINYINT(1)"`
-	Finished    string               `json:"finished" validate:"omitempty,uuid4" xorm:"null comment('成功时执行') CHAR(36)"`
-	Failed      string               `json:"failed" validate:"omitempty,uuid4" xorm:"null comment('失败时执行') CHAR(36)"`
-	Overlap     int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
-	CreatedAt   utils.Time           `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
-	UpdatedAt   utils.Time           `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
-	Nodes       []string             `json:"nodes" xorm:"-"`
-	Steps       []*PipelineTaskPivot `json:"steps" xorm:"-"`
-	Expression  *cronexpr.Expression `json:"-" xorm:"-"`
-	NextTime    time.Time            `json:"-" xorm:"-"`
+	Id           string               `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
+	Name         string               `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
+	Description  string               `json:"description" validate:"-" xorm:"not null comment('描述') VARCHAR(255)"`
+	Spec         string               `json:"spec" validate:"required" xorm:"not null comment('定时器') CHAR(64)"`
+	Status       int                  `json:"status" validate:"numeric" xorm:"not null default 0 comment('状态') TINYINT(1)"`
+	Finished     string               `json:"finished" validate:"omitempty,uuid4" xorm:"null comment('成功时执行') CHAR(36)"`
+	Failed       string               `json:"failed" validate:"omitempty,uuid4" xorm:"null comment('失败时执行') CHAR(36)"`
+	Overlap      int                  `json:"overlap" validate:"numeric" xorm:"not null default 0 comment('重复执行') TINYINT(1)"`
+	CreatedAt    utils.Time           `json:"created_at" validate:"-" xorm:"not null created comment('创建于') DATETIME"`
+	UpdatedAt    utils.Time           `json:"updated_at" validate:"-" xorm:"not null updated comment('更新于') DATETIME"`
+	Nodes        []string             `json:"nodes" xorm:"-"`
+	Steps        []*PipelineTaskPivot `json:"steps" xorm:"-"`
+	Expression   *cronexpr.Expression `json:"-" xorm:"-"`
+	NextTime     time.Time            `json:"-" xorm:"-"`
+	FinishedTask *Task                `json:"finished_task,omitempty" xorm:"-"`
+	FailedTask   *Task                `json:"failed_task,omitempty" xorm:"-"`
 }
 
 // 定义模型的数据表名称
@@ -70,9 +72,21 @@ func (pipeline *Pipeline) Build() (origin []byte, err error) {
 		ids = append(ids, relation.TaskId)
 	}
 
+	ids = append(ids, pipeline.Finished)
+	ids = append(ids, pipeline.Failed)
+
 	tasks := make(map[string]Task)
 	if err := Engine.Where(builder.Eq{"id": ids}).Find(&tasks); err != nil {
 		return []byte{}, err
+	}
+
+	finishedTask, exist := tasks[pipeline.Finished]
+	if exist {
+		pipeline.FinishedTask = &finishedTask
+	}
+	failedTask, exist := tasks[pipeline.Failed]
+	if exist {
+		pipeline.FailedTask = &failedTask
 	}
 
 	for index, relation := range pipeline.Steps {

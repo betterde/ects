@@ -31,7 +31,7 @@ var (
 	validate = validator.New()
 )
 
-// Get tasks list
+// 获取任务列表
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
 		total int64
@@ -55,7 +55,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 			log.Println(err)
 		}
 
-		return response.Success("Successful", response.Payload{
+		return response.Success("请求成功", response.Payload{
 			"data": tasks,
 			"meta": &response.Meta{
 				Limit: limit,
@@ -71,12 +71,12 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	return response.Success("数据使用场景有误", response.Payload{"data": make([]interface{}, 0)})
 }
 
-// Create task
+// 创建任务
 func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	task := models.Task{}
 
 	if err := ctx.ReadJSON(&task); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(task); err != nil {
@@ -93,13 +93,13 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Result {
 	return response.Success("Created successful", response.Payload{"data": task})
 }
 
-// Modify task
+// 更新任务
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	var params UpdateRequest
 	validate := validator.New()
 
 	if err := ctx.ReadJSON(&params); err != nil {
-		return response.InternalServerError("Failed to Unmarshal JSON", err)
+		return response.InternalServerError("参数解析失败", err)
 	}
 
 	if err := validate.Struct(params); err != nil {
@@ -116,13 +116,13 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Result {
 	}
 
 	if err := task.Update(); err != err {
-		return response.InternalServerError("Failed to update task", err)
+		return response.InternalServerError("更新失败", err)
 	}
 
-	return response.Success("Updated successful", response.Payload{"data": task})
+	return response.Success("更新成功", response.Payload{"data": task})
 }
 
-// Delete task
+// 删除任务
 func (instance *Controller) DeleteBy(id string) mvc.Result {
 	task := &models.Task{
 		Id: id,
