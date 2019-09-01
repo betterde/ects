@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/betterde/ects)](https://github.com/betterde/ects/stargazers)
 [![GitHub license](https://img.shields.io/github/license/betterde/ects)](https://github.com/betterde/ects/blob/master/LICENSE)
 
-基于 ETCD 实现的分布式定时任务管理系统，让跨主机的定时任务管理变得更加简单高效。
+基于 ETCD 实现的简单易用的分布式定时任务管理系统，让跨主机的定时任务管理变得更加简单高效。
 
 ## 架构设计
 
