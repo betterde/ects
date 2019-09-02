@@ -21,7 +21,7 @@ module.exports = {
   devServer: {
     host: 'ects.betterde.com',
     port: 443,
-    // http2: true,
+    http2: true,
     https: {
       key: fs.readFileSync('./cert/betterde.com.key'),
       cert: fs.readFileSync('./cert/fullchain.cer'),

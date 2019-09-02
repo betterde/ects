@@ -9,6 +9,8 @@ module.exports = {
     sidebarDepth: 3,
     nav: [
       { text: '项目介绍', link: '/introduction/architecture' },
+      { text: '开发文档', link: '/developer/' },
+      { text: '下载', link: 'https://github.com/betterde/ects/releases' },
       { text: 'Github', link: 'https://github.com/betterde/ects' },
     ],
     sidebar: {
@@ -19,6 +21,10 @@ module.exports = {
         'services',
         'managerment',
         'more'
+      ],
+      '/developer/': [
+        '',
+        'api'
       ]
     }
   }
