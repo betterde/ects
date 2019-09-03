@@ -1,6 +1,6 @@
 # 架构设计
 
-![Architecture](/architecture.png)
+![Architecture](/ects/architecture.png)
 
 ## 主节点
 
@@ -162,7 +162,7 @@ $ etcdctl get /ects/nodes/7935d870-99b0-4d32-b799-dd1ec0c1795d
 
 ## 关联关系
 
-![Relations](/pipelines_relations.png)
+![Relations](/ects/pipelines_relations.png)
 
 如果想在某台 Worker 节点上运行一个定时任务，你必须将任务添加到流水线的执行步骤中，紧接着将流水线绑定到对应的节点上，这样实现的目的是尽可能的避免跨主机的任务重复定义的问题。
 

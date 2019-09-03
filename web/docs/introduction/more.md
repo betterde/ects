@@ -10,7 +10,7 @@
 
 ## 捐助
 
-![WeChat](/qrcode/wechatpay.jpg)
-![AliPay](/qrcode/alipay.jpg)
+![WeChat](/ects/qrcode/wechatpay.jpg)
+![AliPay](/ects/qrcode/alipay.jpg)
 
 > 捐款不会让你得到什么，不捐也不会让你失去什么
