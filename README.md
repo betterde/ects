@@ -9,7 +9,7 @@
 
 ## 架构设计
 
-![dashboard](docs/overview/architecture.jpg)
+![dashboard](web/docs/.vuepress/public/architecture.png)
 
 ## 源码安装
 
