@@ -11,36 +11,35 @@
 
 ![dashboard](docs/overview/architecture.jpg)
 
-### Master 
-* RESTful API
-* 服务注册
-* 服务发现
-* Web UI
-
-### Worker
-* 调度器
-* 执行器
-
-## 安装
+## 源码安装
 
 ```bash
-go get github.com/betterde/ects
+# 克隆到本地
+$ git clone git@github.com:betterde/ects.git
 
 # 安装前端依赖
-cd web && yarn install
+$ cd web && yarn install
 
-# build frontend asset
-yarn build
+# 打包前端资源
+$ yarn build
 
-# install go-bindata
-cd ../ && go get -u github.com/shuLhan/go-bindata/...
+# 安装打包静态资源到二进制的工具
+$ cd ../ && go get -u github.com/shuLhan/go-bindata/...
 
 # 打包静态资源
-go-bindata -pkg web -o web/bindata.go web/dist/...
+$ go-bindata -pkg web -o web/bindata.go web/dist/...
 
-go build -o ects main.go
-
+# 编译
+$ go build -o ects main.go
 ```
+
+## 下载可执行程序
+
+[下载地址](https://github.com/betterde/ects/releases)
+
+## 了解更多细节
+
+[文档地址](https://betterde.github.io/ects/)
 
 ## TODO
 
@@ -60,6 +59,3 @@ go build -o ects main.go
 - [] 热重启；
 - [] 软件更新；
 - [] 项目文档。
-
-## LICENSE
-ECTS is open-sourced software licensed under the MIT license.
