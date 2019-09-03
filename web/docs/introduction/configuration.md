@@ -91,23 +91,23 @@ Application started. Press CMD+C to shut down.
 ### 生成配置
 
 #### ETCD 配置
-![ETCD](/configuration/etcd.png)
+![ETCD](/ects/configuration/etcd.png)
 
 #### JWT 配置
 
-![JWT](/configuration/jwt.png)
+![JWT](/ects/configuration/jwt.png)
 
 #### MySQL 配置
 
-![JWT](/configuration/db.png)
+![JWT](/ects/configuration/db.png)
 
 如果数据库已存在则会提示是否覆盖现有数据：
-![JWT](/configuration/db_alert.png)
+![JWT](/ects/configuration/db_alert.png)
 
 #### 创建管理员
 
-![JWT](/configuration/user.png)
+![JWT](/ects/configuration/user.png)
 
 #### 初始化完成
 
-![JWT](/configuration/finish.png)
+![JWT](/ects/configuration/finish.png)

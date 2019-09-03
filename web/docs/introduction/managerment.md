@@ -16,21 +16,21 @@
 
 ## 创建任务
 
-![Task List](/task/create_task.png)
+![Task List](/ects/task/create_task.png)
 
-![Task](/task/list.png)
+![Task](/ects/task/list.png)
 
 ## 创建流水线
 
-![Task List](/pipeline/create_pipeline.png)
+![Task List](/ects/pipeline/create_pipeline.png)
 
-![Task](/pipeline/list.png)
+![Task](/ects/pipeline/list.png)
 
 ## 绑定节点
 
-![Task List](/pipeline/bind_node.png)
+![Task List](/ects/pipeline/bind_node.png)
 
-![Task](/pipeline/node.png)
+![Task](/ects/pipeline/node.png)
 
 ::: tip 注意
 只有 Worker 节点才能绑定流水线
@@ -38,8 +38,8 @@
 
 ## 用户管理
 
-![User](/user.png)
+![User](/ects/user.png)
 
 ## 日志查询
 
-![Log](/log.png)
+![Log](/ects/log.png)
