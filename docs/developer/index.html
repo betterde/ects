@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>目录结构 | Elastic Crontab System</title>
+    <meta name="description" content="一款简单易用的分布式定时任务管理系统">
+    
+    
+    <link rel="preload" href="/ects/assets/css/0.styles.048efcc2.css" as="style"><link rel="preload" href="/ects/assets/js/app.2749cedd.js" as="script"><link rel="preload" href="/ects/assets/js/4.efeec8cc.js" as="script"><link rel="prefetch" href="/ects/assets/js/10.d1ba5c10.js"><link rel="prefetch" href="/ects/assets/js/11.1f45e276.js"><link rel="prefetch" href="/ects/assets/js/12.0beeb557.js"><link rel="prefetch" href="/ects/assets/js/13.171fce05.js"><link rel="prefetch" href="/ects/assets/js/14.3ab2d6bc.js"><link rel="prefetch" href="/ects/assets/js/2.037b87e7.js"><link rel="prefetch" href="/ects/assets/js/3.88e3f723.js"><link rel="prefetch" href="/ects/assets/js/5.338e9a1b.js"><link rel="prefetch" href="/ects/assets/js/6.a252cc0f.js"><link rel="prefetch" href="/ects/assets/js/7.79b060f8.js"><link rel="prefetch" href="/ects/assets/js/8.3ae275e8.js"><link rel="prefetch" href="/ects/assets/js/9.c620737e.js">
+    <link rel="stylesheet" href="/ects/assets/css/0.styles.048efcc2.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/ects/" class="home-link router-link-active"><!----> <span class="site-name">Elastic Crontab System</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/ects/introduction/architecture.html" class="nav-link">项目介绍</a></div><div class="nav-item"><a href="/ects/developer/" class="nav-link router-link-exact-active router-link-active">开发文档</a></div><div class="nav-item"><a href="https://github.com/betterde/ects/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  下载
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://github.com/betterde/ects" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/ects/introduction/architecture.html" class="nav-link">项目介绍</a></div><div class="nav-item"><a href="/ects/developer/" class="nav-link router-link-exact-active router-link-active">开发文档</a></div><div class="nav-item"><a href="https://github.com/betterde/ects/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  下载
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://github.com/betterde/ects" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/ects/developer/" class="active sidebar-link">目录结构</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/developer/#主目录" class="sidebar-link">主目录</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#后端框架" class="sidebar-link">后端框架</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/developer/#命令行" class="sidebar-link">命令行</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#路由" class="sidebar-link">路由</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#控制器" class="sidebar-link">控制器</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#模型" class="sidebar-link">模型</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#开发环境" class="sidebar-link">开发环境</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#初始化" class="sidebar-link">初始化</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#打包前端资源到二进制" class="sidebar-link">打包前端资源到二进制</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#启动服务" class="sidebar-link">启动服务</a></li></ul></li><li class="sidebar-sub-header"><a href="/ects/developer/#前端框架" class="sidebar-link">前端框架</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/developer/#安装依赖" class="sidebar-link">安装依赖</a></li><li class="sidebar-sub-header"><a href="/ects/developer/#项目配置" class="sidebar-link">项目配置</a></li></ul></li></ul></li><li><a href="/ects/developer/api.html" class="sidebar-link">RESTful API</a></li></ul> </div> <div class="page"> <div class="content"><h1 id="目录结构"><a href="#目录结构" aria-hidden="true" class="header-anchor">#</a> 目录结构</h1> <h2 id="主目录"><a href="#主目录" aria-hidden="true" class="header-anchor">#</a> 主目录</h2> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token builtin class-name">.</span>
+├── LICENSE
+├── README.md
+├── cmd <span class="token comment"># 所有命令</span>
+├── config <span class="token comment"># 系统配置</span>
+├── controllers <span class="token comment"># 控制器</span>
+├── docs
+├── ects.example.json <span class="token comment"># JSON 格式配置文件模板</span>
+├── ects.example.yaml <span class="token comment"># YAML 格式配置文件模板</span>
+├── go.mod
+├── go.sum
+├── internal <span class="token comment"># 内部公用模块</span>
+├── main.go <span class="token comment"># 入口文件</span>
+├── models <span class="token comment"># 数据模型</span>
+├── routes <span class="token comment"># RESTful 路由</span>
+├── services <span class="token comment"># 数据服务，后期考虑移除</span>
+├── vendor <span class="token comment"># 依赖的包</span>
+└── web <span class="token comment"># Web UI</span>
+
+<span class="token number">10</span> directories, <span class="token number">7</span> files
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br></div></div><h2 id="后端框架"><a href="#后端框架" aria-hidden="true" class="header-anchor">#</a> 后端框架</h2> <p>经过对多个框架的对比，最终决定选择 <a href="https://iris-go.com" target="_blank" rel="noopener noreferrer">iris<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>。</p> <h3 id="命令行"><a href="#命令行" aria-hidden="true" class="header-anchor">#</a> 命令行</h3> <p>命令行采用的是 <a href="https://github.com/spf13/cobra" target="_blank" rel="noopener noreferrer">Cobra<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>，这个包提供了比较全面的命令行常用功能。可以看到包括像 Kubernetes、Docker、Etcd、Linkerd、Istio 和 Pouch 这样的项目都在使用它。</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>├── cmd
+│   ├── initialize.go <span class="token comment"># 初始化命令</span>
+│   ├── master.go <span class="token comment"># master 节点启动命令</span>
+│   ├── root.go
+│   ├── single.go <span class="token comment"># 单节点启动命令，可以不需要 ETCD</span>
+│   └── worker.go <span class="token comment"># worker 节点启动命令</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div><h3 id="路由"><a href="#路由" aria-hidden="true" class="header-anchor">#</a> 路由</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>├── routes
+│   ├── auth.go <span class="token comment"># 用户认证</span>
+│   ├── dashboard.go <span class="token comment"># 概览</span>
+│   ├── initialize.go <span class="token comment"># 初始化</span>
+│   ├── log.go <span class="token comment"># 日志</span>
+│   ├── node.go <span class="token comment"># 节点</span>
+│   ├── pipeline.go <span class="token comment"># 流水线</span>
+│   ├── profile.go <span class="token comment"># 个人信息</span>
+│   ├── register.go <span class="token comment"># 用户注册</span>
+│   ├── setting.go <span class="token comment"># 系统设置</span>
+│   ├── task.go <span class="token comment"># 任务</span>
+│   └── user.go <span class="token comment"># 用户管理</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br></div></div><h3 id="控制器"><a href="#控制器" aria-hidden="true" class="header-anchor">#</a> 控制器</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>├── controllers
+│   ├── account <span class="token comment"># 账户</span>
+│   │   └── profile.go
+│   ├── auth <span class="token comment"># 认证</span>
+│   │   └── authentication.go
+│   ├── dashboard <span class="token comment"># 概览</span>
+│   │   └── main.go
+│   ├── initialize <span class="token comment"># 初始化</span>
+│   │   └── main.go
+│   ├── log <span class="token comment"># 日志</span>
+│   │   └── main.go
+│   ├── node <span class="token comment"># 节点</span>
+│   │   └── main.go
+│   ├── organization <span class="token comment"># 组织</span>
+│   │   └── user.go <span class="token comment"># 用户</span>
+│   ├── pipeline <span class="token comment"># 流水线</span>
+│   │   └── main.go
+│   ├── setting <span class="token comment"># 设置</span>
+│   │   └── main.go
+│   └── task <span class="token comment"># 任务</span>
+│       └── main.go
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br></div></div><h3 id="模型"><a href="#模型" aria-hidden="true" class="header-anchor">#</a> 模型</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>── models
+│   ├── log.go <span class="token comment"># 日志</span>
+│   ├── main.go <span class="token comment"># MySQL 配置信息</span>
+│   ├── node.go <span class="token comment"># 节点</span>
+│   ├── password_reset.go <span class="token comment"># 密码重置</span>
+│   ├── pipeline.go <span class="token comment"># 流水线</span>
+│   ├── pipeline_node_pivot.go <span class="token comment"># 流水线和节点关联关系模型</span>
+│   ├── pipeline_record.go <span class="token comment"># 流水线执行记录模型</span>
+│   ├── pipeline_task_pivot.go <span class="token comment"># 流水线和任务关联模型</span>
+│   ├── task.go <span class="token comment"># 任务</span>
+│   ├── task_record.go <span class="token comment"># 任务执行记录</span>
+│   └── user.go <span class="token comment"># 用户</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br></div></div><h3 id="开发环境"><a href="#开发环境" aria-hidden="true" class="header-anchor">#</a> 开发环境</h3> <ul><li>MySQL 8.0.11</li> <li>ETCD 3.3.12</li></ul> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token comment"># 启动 MySQL</span>
+$ docker run -d <span class="token punctuation">\</span>
+    --name mysql <span class="token punctuation">\</span>
+    -p <span class="token number">3306</span>:3306 <span class="token punctuation">\</span>
+    -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>your-secret-pw mysql:8.0.11 <span class="token punctuation">\</span>
+    --character-set-server<span class="token operator">=</span>utf8mb4 <span class="token punctuation">\</span>
+    --collation-server<span class="token operator">=</span>utf8mb4_unicode_ci
+
+<span class="token comment"># 启动 ETCD</span>
+$ docker run -d <span class="token punctuation">\</span>
+    --name etcd <span class="token punctuation">\</span>
+    -p <span class="token number">2379</span>:2379 <span class="token punctuation">\</span>
+    -p <span class="token number">2380</span>:2380 <span class="token punctuation">\</span>
+    --volume<span class="token operator">=</span>/private/var/local/etcd/data:/data <span class="token punctuation">\</span>
+    gcr.io/etcd-development/etcd:v3.3.12 <span class="token punctuation">\</span>
+    /usr/local/bin/etcd <span class="token punctuation">\</span>
+    --name etcd <span class="token punctuation">\</span>
+    --data-dir /data <span class="token punctuation">\</span>
+    --listen-client-urls http://0.0.0.0:2379 <span class="token punctuation">\</span>
+    --advertise-client-urls http://0.0.0.0:2379 <span class="token punctuation">\</span>
+    --listen-peer-urls http://0.0.0.0:2380 <span class="token punctuation">\</span>
+    --initial-advertise-peer-urls http://0.0.0.0:2380 <span class="token punctuation">\</span>
+    --initial-cluster <span class="token assign-left variable">etcd</span><span class="token operator">=</span>http://0.0.0.0:2380 <span class="token punctuation">\</span>
+    --initial-cluster-token betterde <span class="token punctuation">\</span>
+    --initial-cluster-state new
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br></div></div><h3 id="初始化"><a href="#初始化" aria-hidden="true" class="header-anchor">#</a> 初始化</h3> <p>这一步主要是将配置信息写入到 ETCD 中</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ go run main.go init -h
+Run initialize elastic <span class="token function">crontab</span> system <span class="token function">service</span>
+
+Usage:
+  ects init <span class="token punctuation">[</span>flags<span class="token punctuation">]</span>
+
+Examples:
+ects init
+
+Flags:
+  -e, --email string   Set admin email <span class="token comment"># 如果是采用配置文件方式初始化，则需要提供管理员邮箱</span>
+  -h, --help           <span class="token builtin class-name">help</span> <span class="token keyword">for</span> init
+  -m, --mode string    Set initialize mode with web ui or json, yaml config <span class="token function">file</span> <span class="token punctuation">(</span>default <span class="token string">&quot;web&quot;</span><span class="token punctuation">)</span> <span class="token comment"># 支持的模式有 web、json、yaml</span>
+  -n, --name string    Set admin name <span class="token comment"># 如果是采用配置文件方式初始化，则需要提供管理员用户名</span>
+  -P, --pass string    Set admin pass <span class="token comment"># 如果是采用配置文件方式初始化，则需要提供管理员密码</span>
+  -p, --path string    Set config <span class="token function">file</span> path <span class="token comment"># 如果是采用配置文件方式初始化，则需要提供配置文件路径</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br></div></div><h3 id="打包前端资源到二进制"><a href="#打包前端资源到二进制" aria-hidden="true" class="header-anchor">#</a> 打包前端资源到二进制</h3> <p>在打包之前，请参照前端框架的内容，先眼妆依赖，并打包前端资源。</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token comment"># install go-bindata</span>
+$ go get -u github.com/shuLhan/go-bindata/<span class="token punctuation">..</span>.
+
+<span class="token comment"># 打包静态资源</span>
+$ go-bindata -pkg web -o web/bindata.go web/dist/<span class="token punctuation">..</span>.
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><h3 id="启动服务"><a href="#启动服务" aria-hidden="true" class="header-anchor">#</a> 启动服务</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ go run main.go master
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h2 id="前端框架"><a href="#前端框架" aria-hidden="true" class="header-anchor">#</a> 前端框架</h2> <p>前端框架我们采用的是 <code>Vue Cli 3.*</code> 搭建的 SPA，以及基于 Vue 而开发的组件库 <a href="https://element.eleme.cn/" target="_blank" rel="noopener noreferrer">Element-UI<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a>。</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code><span class="token builtin class-name">.</span>
+├── README.md
+├── babel.config.js
+├── bindata.go <span class="token comment"># 前端静态资源打包成二进制后的文件</span>
+├── dist <span class="token comment"># 执行 yarn build 后的输出目录</span>
+├── docs <span class="token comment"># 项目文档目录，采用 Vuepress 搭建</span>
+│   ├── README.md
+│   ├── developer
+│   │   ├── README.md
+│   │   └── api.md
+│   ├── introduction
+│   │   ├── README.md
+│   │   ├── architecture.md
+│   │   ├── configuration.md
+│   │   ├── dependencies.md
+│   │   ├── managerment.md
+│   │   ├── more.md
+│   │   └── services.md
+│   └── version
+│       └── README.md
+├── package.json
+├── public
+│   ├── favicon.ico
+│   └── index.html
+├── src
+│   ├── App.vue <span class="token comment"># 根组件</span>
+│   ├── apis <span class="token comment"># 与后端交互的 API</span>
+│   │   ├── index.js
+│   │   └── modules <span class="token comment"># API 模块</span>
+│   ├── assets <span class="token comment"># 前端静态资源</span>
+│   │   └── styles
+│   ├── components <span class="token comment"># 自定义公共组件</span>
+│   │   ├── Collapse.vue
+│   │   └── CronExpression.vue
+│   ├── element-variables.scss
+│   ├── entries <span class="token comment"># 入口文件</span>
+│   │   ├── index.js
+│   │   └── initialize.js
+│   ├── language <span class="token comment"># 本地化</span>
+│   │   ├── en.js
+│   │   └── index.js
+│   ├── layouts <span class="token comment"># 页面布局</span>
+│   │   ├── Backend.vue <span class="token comment"># 登录后的布局</span>
+│   │   └── Guest.vue <span class="token comment"># 未登录时的布局</span>
+│   ├── plugins <span class="token comment"># Vue cli 3.* 的插件目录</span>
+│   │   ├── axios.js <span class="token comment"># 发起 XHR 请求的插件</span>
+│   │   └── element.js <span class="token comment"># Element-UI 插件</span>
+│   ├── router
+│   │   └── index.js <span class="token comment"># 前端路由</span>
+│   ├── store <span class="token comment"># vuex 目录</span>
+│   │   ├── actions.js
+│   │   ├── index.js
+│   │   ├── modules <span class="token comment"># 模块</span>
+│   │   ├── mutations.js
+│   │   └── types.js
+│   └── views <span class="token comment"># 模块页面</span>
+│       ├── About.vue <span class="token comment"># 关于</span>
+│       ├── Dashboard.vue <span class="token comment"># 概览</span>
+│       ├── Initialize.vue <span class="token comment"># 初始化配置</span>
+│       ├── Log.vue <span class="token comment"># 日志查询</span>
+│       ├── Node.vue <span class="token comment"># 节点管理</span>
+│       ├── NotFound.vue <span class="token comment"># 404 所有前端为定义的路由将跳转至该页面</span>
+│       ├── Pipeline.vue <span class="token comment"># 流水线管理</span>
+│       ├── Setting.vue <span class="token comment"># 系统设置</span>
+│       ├── SignIn.vue <span class="token comment"># 用户登录</span>
+│       ├── Task.vue <span class="token comment"># 任务管理</span>
+│       └── User.vue <span class="token comment"># 系统用户管理</span>
+├── vue.config.js <span class="token comment"># 项目配置，代理、HTTPS</span>
+├── yarn-error.log
+└── yarn.lock
+
+<span class="token number">24</span> directories, <span class="token number">93</span> files
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br><span class="line-number">58</span><br><span class="line-number">59</span><br><span class="line-number">60</span><br><span class="line-number">61</span><br><span class="line-number">62</span><br><span class="line-number">63</span><br><span class="line-number">64</span><br><span class="line-number">65</span><br><span class="line-number">66</span><br><span class="line-number">67</span><br><span class="line-number">68</span><br><span class="line-number">69</span><br><span class="line-number">70</span><br><span class="line-number">71</span><br><span class="line-number">72</span><br></div></div><h3 id="安装依赖"><a href="#安装依赖" aria-hidden="true" class="header-anchor">#</a> 安装依赖</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ <span class="token builtin class-name">cd</span> web
+$ <span class="token function">yarn</span> <span class="token function">install</span>
+$ <span class="token function">yarn</span> build
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><h3 id="项目配置"><a href="#项目配置" aria-hidden="true" class="header-anchor">#</a> 项目配置</h3> <p>前端项目的打包配置都在 <code>web/vue.config.js</code> 文件中，其中 <code>devServer</code> 配置根据自己的需要进行设置。</p></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><!----> <span class="next"><a href="/ects/developer/api.html">
+          RESTful API
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/ects/assets/js/app.2749cedd.js" defer></script><script src="/ects/assets/js/4.efeec8cc.js" defer></script>
+  </body>
+</html>

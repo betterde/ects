@@ -27,5 +27,7 @@ module.exports = {
         'api'
       ]
     }
-  }
+  },
+  base: '/ects/',
+  dest: '../docs'
 };

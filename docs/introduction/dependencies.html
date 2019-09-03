@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>环境依赖 | Elastic Crontab System</title>
+    <meta name="description" content="一款简单易用的分布式定时任务管理系统">
+    
+    
+    <link rel="preload" href="/ects/assets/css/0.styles.048efcc2.css" as="style"><link rel="preload" href="/ects/assets/js/app.2749cedd.js" as="script"><link rel="preload" href="/ects/assets/js/9.c620737e.js" as="script"><link rel="prefetch" href="/ects/assets/js/10.d1ba5c10.js"><link rel="prefetch" href="/ects/assets/js/11.1f45e276.js"><link rel="prefetch" href="/ects/assets/js/12.0beeb557.js"><link rel="prefetch" href="/ects/assets/js/13.171fce05.js"><link rel="prefetch" href="/ects/assets/js/14.3ab2d6bc.js"><link rel="prefetch" href="/ects/assets/js/2.037b87e7.js"><link rel="prefetch" href="/ects/assets/js/3.88e3f723.js"><link rel="prefetch" href="/ects/assets/js/4.efeec8cc.js"><link rel="prefetch" href="/ects/assets/js/5.338e9a1b.js"><link rel="prefetch" href="/ects/assets/js/6.a252cc0f.js"><link rel="prefetch" href="/ects/assets/js/7.79b060f8.js"><link rel="prefetch" href="/ects/assets/js/8.3ae275e8.js">
+    <link rel="stylesheet" href="/ects/assets/css/0.styles.048efcc2.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/ects/" class="home-link router-link-active"><!----> <span class="site-name">Elastic Crontab System</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/ects/introduction/architecture.html" class="nav-link">项目介绍</a></div><div class="nav-item"><a href="/ects/developer/" class="nav-link">开发文档</a></div><div class="nav-item"><a href="https://github.com/betterde/ects/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  下载
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://github.com/betterde/ects" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/ects/introduction/architecture.html" class="nav-link">项目介绍</a></div><div class="nav-item"><a href="/ects/developer/" class="nav-link">开发文档</a></div><div class="nav-item"><a href="https://github.com/betterde/ects/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  下载
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://github.com/betterde/ects" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/ects/introduction/architecture.html" class="sidebar-link">架构设计</a></li><li><a href="/ects/introduction/dependencies.html" class="active sidebar-link">环境依赖</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/introduction/dependencies.html#etcd" class="sidebar-link">ETCD</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/introduction/dependencies.html#安装" class="sidebar-link">安装</a></li></ul></li><li class="sidebar-sub-header"><a href="/ects/introduction/dependencies.html#mysql" class="sidebar-link">MySQL</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/introduction/dependencies.html#安装-2" class="sidebar-link">安装</a></li></ul></li></ul></li><li><a href="/ects/introduction/configuration.html" class="sidebar-link">服务配置</a></li><li><a href="/ects/introduction/services.html" class="sidebar-link">运行服务</a></li><li><a href="/ects/introduction/managerment.html" class="sidebar-link">管理任务</a></li><li><a href="/ects/introduction/more.html" class="sidebar-link">更多</a></li></ul> </div> <div class="page"> <div class="content"><h1 id="环境依赖"><a href="#环境依赖" aria-hidden="true" class="header-anchor">#</a> 环境依赖</h1> <h2 id="etcd"><a href="#etcd" aria-hidden="true" class="header-anchor">#</a> ETCD</h2> <p>考虑到性能，这里采用的是 <code>ETCD 3.3.12</code> 版本，如果只有单机环境可以直接运行 <code>etcd single</code> 命令来部署单节点服务。</p> <h3 id="安装"><a href="#安装" aria-hidden="true" class="header-anchor">#</a> 安装</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ docker run -d <span class="token punctuation">\</span>
+    --name etcd <span class="token punctuation">\</span>
+    -p <span class="token number">2379</span>:2379 <span class="token punctuation">\</span>
+    -p <span class="token number">2380</span>:2380 <span class="token punctuation">\</span>
+    --volume<span class="token operator">=</span>/private/var/local/etcd/data:/data <span class="token punctuation">\</span>
+    gcr.io/etcd-development/etcd:v3.3.12 <span class="token punctuation">\</span>
+    /usr/local/bin/etcd <span class="token punctuation">\</span>
+    --name etcd <span class="token punctuation">\</span>
+    --data-dir /data <span class="token punctuation">\</span>
+    --listen-client-urls http://0.0.0.0:2379 <span class="token punctuation">\</span>
+    --advertise-client-urls http://0.0.0.0:2379 <span class="token punctuation">\</span>
+    --listen-peer-urls http://0.0.0.0:2380 <span class="token punctuation">\</span>
+    --initial-advertise-peer-urls http://0.0.0.0:2380 <span class="token punctuation">\</span>
+    --initial-cluster <span class="token assign-left variable">etcd</span><span class="token operator">=</span>http://0.0.0.0:2380 <span class="token punctuation">\</span>
+    --initial-cluster-token betterde <span class="token punctuation">\</span>
+    --initial-cluster-state new
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br></div></div><h2 id="mysql"><a href="#mysql" aria-hidden="true" class="header-anchor">#</a> MySQL</h2> <p>开发环境中 MySQL 采用的是 8.0.11，所以至少需要 7.* 及以上的 MySQL 版本。</p> <h3 id="安装-2"><a href="#安装-2" aria-hidden="true" class="header-anchor">#</a> 安装</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ docker run -d <span class="token punctuation">\</span>
+    --name mysql <span class="token punctuation">\</span>
+    -p <span class="token number">3306</span>:3306 <span class="token punctuation">\</span>
+    -e <span class="token assign-left variable">MYSQL_ROOT_PASSWORD</span><span class="token operator">=</span>your-secret-pw mysql:8.0.11 <span class="token punctuation">\</span>
+    --character-set-server<span class="token operator">=</span>utf8mb4 <span class="token punctuation">\</span>
+    --collation-server<span class="token operator">=</span>utf8mb4_unicode_ci
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><span class="prev">
+        ←
+        <a href="/ects/introduction/architecture.html" class="prev">
+          架构设计
+        </a></span> <span class="next"><a href="/ects/introduction/configuration.html">
+          服务配置
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/ects/assets/js/app.2749cedd.js" defer></script><script src="/ects/assets/js/9.c620737e.js" defer></script>
+  </body>
+</html>

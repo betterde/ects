@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>服务配置 | Elastic Crontab System</title>
+    <meta name="description" content="一款简单易用的分布式定时任务管理系统">
+    
+    
+    <link rel="preload" href="/ects/assets/css/0.styles.048efcc2.css" as="style"><link rel="preload" href="/ects/assets/js/app.2749cedd.js" as="script"><link rel="preload" href="/ects/assets/js/8.3ae275e8.js" as="script"><link rel="prefetch" href="/ects/assets/js/10.d1ba5c10.js"><link rel="prefetch" href="/ects/assets/js/11.1f45e276.js"><link rel="prefetch" href="/ects/assets/js/12.0beeb557.js"><link rel="prefetch" href="/ects/assets/js/13.171fce05.js"><link rel="prefetch" href="/ects/assets/js/14.3ab2d6bc.js"><link rel="prefetch" href="/ects/assets/js/2.037b87e7.js"><link rel="prefetch" href="/ects/assets/js/3.88e3f723.js"><link rel="prefetch" href="/ects/assets/js/4.efeec8cc.js"><link rel="prefetch" href="/ects/assets/js/5.338e9a1b.js"><link rel="prefetch" href="/ects/assets/js/6.a252cc0f.js"><link rel="prefetch" href="/ects/assets/js/7.79b060f8.js"><link rel="prefetch" href="/ects/assets/js/9.c620737e.js">
+    <link rel="stylesheet" href="/ects/assets/css/0.styles.048efcc2.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/ects/" class="home-link router-link-active"><!----> <span class="site-name">Elastic Crontab System</span></a> <div class="links" style="max-width:nullpx;"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/ects/introduction/architecture.html" class="nav-link">项目介绍</a></div><div class="nav-item"><a href="/ects/developer/" class="nav-link">开发文档</a></div><div class="nav-item"><a href="https://github.com/betterde/ects/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  下载
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://github.com/betterde/ects" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <div class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/ects/introduction/architecture.html" class="nav-link">项目介绍</a></div><div class="nav-item"><a href="/ects/developer/" class="nav-link">开发文档</a></div><div class="nav-item"><a href="https://github.com/betterde/ects/releases" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  下载
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div><div class="nav-item"><a href="https://github.com/betterde/ects" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/ects/introduction/architecture.html" class="sidebar-link">架构设计</a></li><li><a href="/ects/introduction/dependencies.html" class="sidebar-link">环境依赖</a></li><li><a href="/ects/introduction/configuration.html" class="active sidebar-link">服务配置</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/introduction/configuration.html#文件配置方式" class="sidebar-link">文件配置方式</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/introduction/configuration.html#json-配置文件" class="sidebar-link">JSON 配置文件</a></li><li class="sidebar-sub-header"><a href="/ects/introduction/configuration.html#yaml-配置文件" class="sidebar-link">YAML 配置文件</a></li></ul></li><li class="sidebar-sub-header"><a href="/ects/introduction/configuration.html#web-ui-配置方式" class="sidebar-link">Web UI 配置方式</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/ects/introduction/configuration.html#启动初始化服务" class="sidebar-link">启动初始化服务</a></li><li class="sidebar-sub-header"><a href="/ects/introduction/configuration.html#生成配置" class="sidebar-link">生成配置</a></li></ul></li></ul></li><li><a href="/ects/introduction/services.html" class="sidebar-link">运行服务</a></li><li><a href="/ects/introduction/managerment.html" class="sidebar-link">管理任务</a></li><li><a href="/ects/introduction/more.html" class="sidebar-link">更多</a></li></ul> </div> <div class="page"> <div class="content"><h1 id="服务配置"><a href="#服务配置" aria-hidden="true" class="header-anchor">#</a> 服务配置</h1> <h2 id="文件配置方式"><a href="#文件配置方式" aria-hidden="true" class="header-anchor">#</a> 文件配置方式</h2> <p>支持从 JSON 或 YAML 配置文件倒入配置到 ETCD。</p> <h3 id="json-配置文件"><a href="#json-配置文件" aria-hidden="true" class="header-anchor">#</a> JSON 配置文件</h3> <p>将如下配置保存到 <code>ects.json</code>：</p> <div class="language-json line-numbers-mode"><pre class="language-json"><code><span class="token punctuation">{</span>
+  <span class="token property">&quot;database&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;host&quot;</span><span class="token operator">:</span> <span class="token string">&quot;localhost&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;port&quot;</span><span class="token operator">:</span> <span class="token number">3306</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;name&quot;</span><span class="token operator">:</span> <span class="token string">&quot;ects&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;user&quot;</span><span class="token operator">:</span> <span class="token string">&quot;root&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;pass&quot;</span><span class="token operator">:</span> <span class="token string">&quot;PASSWORD&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;char&quot;</span><span class="token operator">:</span> <span class="token string">&quot;utf8mb4&quot;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;auth&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;secret&quot;</span><span class="token operator">:</span> <span class="token string">&quot;SECRET&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;ttl&quot;</span><span class="token operator">:</span> <span class="token number">86400</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">&quot;etcd&quot;</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">&quot;killer&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/ects/killer&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;locker&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/ects/locker&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;service&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/ects/nodes&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;pipeline&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/ects/pipelines&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;config&quot;</span><span class="token operator">:</span> <span class="token string">&quot;/ects/config&quot;</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;endpoints&quot;</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">&quot;localhost:2379&quot;</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">&quot;timeout&quot;</span><span class="token operator">:</span> <span class="token number">5</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br></div></div><p>运行如下命令，将配置倒入的 ETCD：</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ ects init --mode<span class="token operator">=</span>json <span class="token punctuation">\</span>
+--path<span class="token operator">=</span>./ects.json <span class="token punctuation">\</span>
+--name<span class="token operator">=</span>User <span class="token punctuation">\</span>
+--pass<span class="token operator">=</span>Password <span class="token punctuation">\</span>
+--email<span class="token operator">=</span>user@mail.com
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><h3 id="yaml-配置文件"><a href="#yaml-配置文件" aria-hidden="true" class="header-anchor">#</a> YAML 配置文件</h3> <p>将如下配置保存到 <code>ects.yaml</code>：</p> <div class="language-yaml line-numbers-mode"><pre class="language-yaml"><code><span class="token key atrule">database</span><span class="token punctuation">:</span>
+  <span class="token key atrule">host</span><span class="token punctuation">:</span> localhost
+  <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">3306</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> ects
+  <span class="token key atrule">user</span><span class="token punctuation">:</span> root
+  <span class="token key atrule">pass</span><span class="token punctuation">:</span> PASSWORD
+  <span class="token key atrule">char</span><span class="token punctuation">:</span> utf8mb4
+<span class="token key atrule">auth</span><span class="token punctuation">:</span>
+  <span class="token key atrule">secret</span><span class="token punctuation">:</span> SECRET
+  <span class="token key atrule">ttl</span><span class="token punctuation">:</span> <span class="token number">86400</span>
+<span class="token key atrule">etcd</span><span class="token punctuation">:</span>
+  <span class="token key atrule">killer</span><span class="token punctuation">:</span> /ects/killer
+  <span class="token key atrule">locker</span><span class="token punctuation">:</span> /ects/locker
+  <span class="token key atrule">service</span><span class="token punctuation">:</span> /ects/service
+  <span class="token key atrule">pipeline</span><span class="token punctuation">:</span> /ects/pipeline
+  <span class="token key atrule">config</span><span class="token punctuation">:</span> /ects/config
+  <span class="token key atrule">endpoints</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> localhost<span class="token punctuation">:</span><span class="token number">2379</span>
+  <span class="token key atrule">timeout</span><span class="token punctuation">:</span> <span class="token number">5</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br></div></div><p>运行如下命令，将配置倒入的 ETCD：</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ ects init --mode<span class="token operator">=</span>yaml <span class="token punctuation">\</span>
+--path<span class="token operator">=</span>./ects.json <span class="token punctuation">\</span>
+--name<span class="token operator">=</span>User <span class="token punctuation">\</span>
+--pass<span class="token operator">=</span>Password <span class="token punctuation">\</span>
+--email<span class="token operator">=</span>user@mail.com
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><h2 id="web-ui-配置方式"><a href="#web-ui-配置方式" aria-hidden="true" class="header-anchor">#</a> Web UI 配置方式</h2> <h3 id="启动初始化服务"><a href="#启动初始化服务" aria-hidden="true" class="header-anchor">#</a> 启动初始化服务</h3> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>$ ects init --mode<span class="token operator">=</span>web
+Now listening on: http://localhost:9701
+Application started. Press CMD+C to shut down.
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><h3 id="生成配置"><a href="#生成配置" aria-hidden="true" class="header-anchor">#</a> 生成配置</h3> <h4 id="etcd-配置"><a href="#etcd-配置" aria-hidden="true" class="header-anchor">#</a> ETCD 配置</h4> <p><img src="/configuration/etcd.png" alt="ETCD"></p> <h4 id="jwt-配置"><a href="#jwt-配置" aria-hidden="true" class="header-anchor">#</a> JWT 配置</h4> <p><img src="/configuration/jwt.png" alt="JWT"></p> <h4 id="mysql-配置"><a href="#mysql-配置" aria-hidden="true" class="header-anchor">#</a> MySQL 配置</h4> <p><img src="/configuration/db.png" alt="JWT"></p> <p>如果数据库已存在则会提示是否覆盖现有数据：
+<img src="/configuration/db_alert.png" alt="JWT"></p> <h4 id="创建管理员"><a href="#创建管理员" aria-hidden="true" class="header-anchor">#</a> 创建管理员</h4> <p><img src="/configuration/user.png" alt="JWT"></p> <h4 id="初始化完成"><a href="#初始化完成" aria-hidden="true" class="header-anchor">#</a> 初始化完成</h4> <p><img src="/configuration/finish.png" alt="JWT"></p></div> <div class="page-edit"><!----> <!----></div> <div class="page-nav"><p class="inner"><span class="prev">
+        ←
+        <a href="/ects/introduction/dependencies.html" class="prev">
+          环境依赖
+        </a></span> <span class="next"><a href="/ects/introduction/services.html">
+          运行服务
+        </a>
+        →
+      </span></p></div> </div> <!----></div></div>
+    <script src="/ects/assets/js/app.2749cedd.js" defer></script><script src="/ects/assets/js/8.3ae275e8.js" defer></script>
+  </body>
+</html>
