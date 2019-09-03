@@ -2,15 +2,17 @@ package setting
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
+	"github.com/betterde/ects/internal/notify"
 	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/internal/utils"
+	"github.com/betterde/ects/models"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"gopkg.in/gomail.v2"
+	"time"
 )
 
 type (
@@ -44,14 +46,27 @@ func (instance *Controller) PostMail(ctx iris.Context) mvc.Response {
 		return response.InternalServerError("参数解析失败", err)
 	}
 
-	dialer := gomail.NewDialer(config.Conf.Notification.Host, config.Conf.Notification.Port, config.Conf.Notification.User, config.Conf.Notification.Pass)
-	dialer.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-	message := gomail.NewMessage()
-	message.SetHeader("From", fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User))
-	message.SetHeader("To", params.Email)
-	message.SetHeader("Subject", "Notification")
-	message.SetBody("text/html", "测试发送邮件功能")
-	if err := dialer.DialAndSend(message); err != nil {
+	user := models.User{
+		Id: utils.GetUID(ctx),
+	}
+
+	if _, err := models.Engine.Get(&user); err != nil {
+		return response.InternalServerError("获取用户信息失败", err)
+	}
+
+	mailer := notify.Mail{
+		From:    fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User),
+		To:      params.Email,
+		Subject: "Notification",
+		Year: time.Now().Year(),
+		SiteURL: "https://ects.betterde.com",
+		SiteTitle: "Elastic Crontab System",
+		Greeting: user.Name,
+		Intro: "这是一封来自 Elastic Crontab System 的测试邮件，如果你收到这封邮件则表明系统的邮件发送服务正常。",
+		Salutation: "Regards",
+	}
+
+	if err := mailer.Generator("info").Send(); err != nil {
 		return response.InternalServerError("发送失败", err)
 	}
 
