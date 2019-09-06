@@ -39,10 +39,10 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row :gutter="10" v-if="['http', 'hook'].includes(create.params.mode)">
-            <el-col :span="4">
+          <el-row :gutter="10" v-if="['http', 'hook', 'mail'].includes(create.params.mode)">
+            <el-col :span="5">
               <el-form-item label="方法" prop="method">
-                <el-select v-model="create.params.method" placeholder="方法">
+                <el-select v-model="create.params.method" placeholder="方法" :disabled="create.params.mode === 'mail'">
                   <el-option key="get" label="GET" value="get"></el-option>
                   <el-option key="post" label="POST" value="post"></el-option>
                   <el-option key="put" label="PUT" value="put"></el-option>
@@ -53,24 +53,24 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="20">
-              <el-form-item label="URL" prop="mode">
-                <el-input v-model="create.params.url" placeholder="请输入请求的URL地址" clearable></el-input>
+            <el-col :span="19">
+              <el-form-item label="地址" prop="mode">
+                <el-autocomplete style="width: 100%" v-if="create.params.mode === 'mail'"
+                                 value-key="email"
+                                 v-model="create.params.url" :fetch-suggestions="searchAsync" placeholder="请输入邮箱地址" clearable>
+                  <template slot-scope="{ item }">
+                    <span style="float: left;">{{ item.name }}</span>
+                    <span style="float: right; color: rgb(132, 146, 166)">{{ item.email }}</span>
+                  </template>
+                </el-autocomplete>
+                <el-input v-else v-model="create.params.url" placeholder="请输入请求的URL地址" clearable></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24" v-if="['shell', 'mail', 'http'].includes(create.params.mode)">
               <el-form-item label="内容" prop="content">
-                <el-autocomplete style="width: 100%" v-if="create.params.mode === 'mail'"
-                                 value-key="email"
-                                 v-model="create.params.content" :fetch-suggestions="searchAsync" placeholder="请输入邮箱地址" clearable>
-                  <template slot-scope="{ item }">
-                    <span style="float: left;">{{ item.name }}</span>
-                    <span style="float: right; color: rgb(132, 146, 166)">{{ item.email }}</span>
-                  </template>
-                </el-autocomplete>
-                <el-input v-else v-model="create.params.content" placeholder="此处填写Shell命令或HTTP请求体（JSON字符串）"
+                <el-input v-model="create.params.content" placeholder="此处填写Shell命令、HTTP请求体（JSON字符串）或邮件内容"
                           autocomplete="off" @keyup.enter.native="submit('create')" clearable></el-input>
               </el-form-item>
             </el-col>
@@ -105,10 +105,10 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-row :gutter="10" v-if="['http', 'hook'].includes(update.params.mode)">
-            <el-col :span="4">
+          <el-row :gutter="10" v-if="['http', 'hook', 'mail'].includes(update.params.mode)">
+            <el-col :span="5">
               <el-form-item label="方法" prop="method">
-                <el-select v-model="update.params.method" placeholder="方法">
+                <el-select v-model="update.params.method" placeholder="方法" :disabled="create.params.mode === 'mail'">
                   <el-option key="get" label="GET" value="get"></el-option>
                   <el-option key="post" label="POST" value="post"></el-option>
                   <el-option key="put" label="PUT" value="put"></el-option>
@@ -119,24 +119,24 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="20">
+            <el-col :span="19">
               <el-form-item label="URL" prop="mode">
-                <el-input v-model="update.params.url" placeholder="请输入请求的URL地址" clearable></el-input>
+                <el-autocomplete style="width: 100%" v-if="update.params.mode === 'mail'"
+                                 value-key="email"
+                                 v-model="update.params.url" :fetch-suggestions="searchAsync" placeholder="请输入邮箱地址" clearable>
+                  <template slot-scope="{ item }">
+                    <span style="float: left;">{{ item.name }}</span>
+                    <span style="float: right; color: rgb(132, 146, 166)">{{ item.email }}</span>
+                  </template>
+                </el-autocomplete>
+                <el-input v-else v-model="update.params.url" placeholder="请输入请求的URL地址" clearable></el-input>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row :gutter="10">
             <el-col :span="24" v-if="['shell', 'mail', 'http'].includes(update.params.mode)">
               <el-form-item label="内容" prop="content">
-                <el-autocomplete style="width: 100%" v-if="create.params.mode === 'mail'"
-                                 value-key="email"
-                                 v-model="update.params.content" :fetch-suggestions="searchAsync" placeholder="请输入邮箱地址" clearable>
-                  <template slot-scope="{ item }">
-                    <span style="float: left;">{{ item.name }}</span>
-                    <span style="float: right; color: rgb(132, 146, 166)">{{ item.email }}</span>
-                  </template>
-                </el-autocomplete>
-                <el-input v-else v-model="update.params.content" placeholder="此处填写Shell命令或HTTP请求体（JSON字符串）"
+                <el-input v-model="update.params.content" placeholder="此处填写Shell命令、HTTP请求体（JSON字符串）或邮件内容"
                           autocomplete="off" @keyup.enter.native="submit('create')" clearable></el-input>
               </el-form-item>
             </el-col>
@@ -175,7 +175,11 @@
           <el-table-column prop="id" label="ID" width="300"></el-table-column>
           <el-table-column prop="name" label="名称" width="200"></el-table-column>
           <el-table-column prop="description" label="描述"></el-table-column>
-          <el-table-column prop="mode" label="模式" width="60"></el-table-column>
+          <el-table-column prop="mode" label="模式" width="70">
+            <template slot-scope="scope">
+              {{ scope.row.mode.toLocaleUpperCase() }}
+            </template>
+          </el-table-column>
           <el-table-column prop="created_at" label="创建于" width="155"></el-table-column>
           <el-table-column prop="option" label="操作" width="130">
             <template slot-scope="scope">

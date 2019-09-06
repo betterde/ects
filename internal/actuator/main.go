@@ -164,7 +164,7 @@ func runActuator(ctx context.Context, pivot *models.PipelineTaskPivot) *models.T
 	case models.MODEMAIL:
 		mail := Mail{
 			Mail: &notify.Mail{
-				From:        fmt.Sprintf("%s<%s>", config.Conf.Notification.Name, config.Conf.Notification.User),
+				From:        fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User),
 				To:          pivot.Task.Url,
 				Subject:     pivot.Task.Name,
 				Year:        time.Now().Year(),

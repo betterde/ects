@@ -48,10 +48,10 @@ $ go build -o ects main.go
 - [x] 基于 ETCD 的服务注册于发现；
 - [x] 基于 ETCD 的流水线发布于订阅；
 - [x] 基于 ETCD 实现的分布式锁，用于更新 Worker 节点的状态；
+- [x] 实现 Mail 任务执行器；
+- [x] 实现 HTTP 任务执行器；
+- [x] 实现 Hook 任务执行器；
 - [] 实现单节点部署模式，即不依赖 ETCD 实现分布式，在一个节点上融合 Master 和 Worker 的所有功能；
-- [] 实现 HTTP 任务执行器，类似 Postman；
-- [] 实现 Mail 任务执行器；
-- [] 实现 Hook 任务执行器；
 - [] 角色权限管理模块；
 - [] 集成单元测试；
 - [] 集成 Docker 部署；

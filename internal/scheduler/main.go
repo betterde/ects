@@ -48,7 +48,6 @@ func (scheduler *Scheduler) Run(ctx context.Context) {
 			scheduler.eventHandler(event)
 		case <-scheduleTimer.C:
 		case result := <-scheduler.ResultChan:
-			//log.Printf("%#v", result)
 			if err := result.Pipeline.Store(); err != nil {
 				log.Fatal(err)
 			}
@@ -96,6 +95,7 @@ func (scheduler *Scheduler) eventHandler(event *Event) {
 	switch event.Type {
 	case PUT:
 		event.Pipeline.Expression = cronexpr.MustParse(event.Pipeline.Spec)
+		event.Pipeline.NextTime = event.Pipeline.Expression.Next(time.Now())
 		scheduler.Plan[event.Pipeline.Id] = event.Pipeline
 	case DEL:
 		delete(scheduler.Plan, event.Pipeline.Id)
