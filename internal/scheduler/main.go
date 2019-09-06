@@ -48,6 +48,7 @@ func (scheduler *Scheduler) Run(ctx context.Context) {
 			scheduler.eventHandler(event)
 		case <-scheduleTimer.C:
 		case result := <-scheduler.ResultChan:
+			//log.Printf("%#v", result)
 			if err := result.Pipeline.Store(); err != nil {
 				log.Fatal(err)
 			}

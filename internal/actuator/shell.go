@@ -2,7 +2,6 @@ package actuator
 
 import (
 	"context"
-	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"os/exec"
 	"os/user"
@@ -22,39 +21,37 @@ type (
 // 执行 Shell 任务
 func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", actuator.Command)
+	record :=  &models.TaskRecords{}
 	if actuator.User != "" {
-		sysuser, err := user.Lookup(actuator.User)
+		credential, err := getCredential(actuator.User)
 		if err != nil {
-			//
+			record.Status = "failed"
+			record.Result = err.Error()
+			return record
 		}
-		uid, err := strconv.Atoi(sysuser.Uid)
-		gid, err := strconv.Atoi(sysuser.Gid)
-		cmd.SysProcAttr.Credential = &syscall.Credential{
-			Uid:         uint32(uid),
-			Gid:         uint32(gid),
-			Groups:      nil,
-			NoSetGroups: false,
-		}
+		cmd.SysProcAttr.Credential = credential
 	}
 
-	return &models.TaskRecords{
-		Id:               0,
-		PipelineRecordId: "",
-		TaskId:           "",
-		NodeId:           "",
-		TaskName:         "",
-		WorkerName:       "",
-		Content:          "",
-		Mode:             "",
-		Timeout:          0,
-		Retries:          0,
-		Status:           "",
-		Result:           "",
-		Duration:         0,
-		BeginWith:        utils.Time{},
-		FinishWith:       utils.Time{},
-		CreatedAt:        utils.Time{},
+	resChan := make(chan struct {
+		output []byte
+		err    error
+	})
+
+	go func() {
+		output, err := cmd.CombinedOutput()
+		resChan <- struct {
+			output []byte
+			err    error
+		}{output: output, err: err}
+	}()
+	res := <-resChan
+	record.Result = string(res.output)
+	if res.err != nil {
+		record.Status = "failed"
+	} else {
+		record.Status = "finished"
 	}
+	return record
 }
 
 // 获取执行证书
@@ -71,13 +68,4 @@ func getCredential(username string) (*syscall.Credential, error) {
 		Groups:      nil,
 		NoSetGroups: false,
 	}, nil
-}
-
-// 创建一个 Shell 执行器
-func NewShell(username, dir string, env []string) *Shell {
-	return &Shell{
-		User: username,
-		Env:  env,
-		Dir:  dir,
-	}
 }

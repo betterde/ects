@@ -19,7 +19,6 @@ type (
 		SiteTitle   string
 		ActionLabel string
 		ActionUrl   string
-		ActionType  string
 		Greeting    string
 		Intro       string
 		Outro       string
