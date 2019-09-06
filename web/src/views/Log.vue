@@ -146,7 +146,6 @@
     name: "Log",
     data() {
       return {
-        search: "",
         active: 'pipeline',
         reverse: true,
         classes: ['animated', 'fade-in', 'fast'],
@@ -241,6 +240,8 @@
         this.fetchLogs();
       },
       changePage(page) {
+        this.params.search = '';
+        this.params.scene = this.active;
         this.meta.page = page;
         this.params.page = page;
         this.fetchLogs();

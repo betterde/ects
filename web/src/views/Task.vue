@@ -165,7 +165,7 @@
                   </el-col>
                   <el-col :span="24">
                     <el-form-item label="内容">
-                      <pre class="task-pre"><code class="task-content">{{ props.row.content === '' ? props.row.method.toLocaleUpperCase() + ' ' + props.row.url : props.row.content }}</code></pre>
+                      <pre class="task-content-pre"><code class="task-content">{{ props.row.content === '' ? props.row.method.toLocaleUpperCase() + ' ' + props.row.url : props.row.content }}</code></pre>
                     </el-form-item>
                   </el-col>
                 </el-row>
@@ -470,7 +470,7 @@
 </script>
 
 <style lang="scss">
-  .task-pre {
+  .task-content-pre {
     width: 100%;
     margin: 0 0;
     color: #5e6d82;
