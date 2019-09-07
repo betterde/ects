@@ -85,4 +85,4 @@ crashlytics-build.properties
 fabric.properties
 
 # Binary file
-ects
+bin/ects_*
