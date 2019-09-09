@@ -1,0 +1,27 @@
+language: go
+
+go:
+  - "1.12"
+  - "1.13"
+
+GO111MODULE: 1
+
+before_script:
+  - go get
+
+stages:
+  - name: test
+    if: branch = master
+  - build
+  - install
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - ls
+        - echo $GOPATH
+        - echo $PWD
+        - mv $GOPATH/src/github.com/betterde/ects $GOPATH/src/
+        - cd $GOPATH/src/ects
+        - make test
