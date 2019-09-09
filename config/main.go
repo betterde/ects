@@ -45,9 +45,9 @@ type (
 		Encryption string `json:"encryption" yaml:"encryption" validate:"required"`
 	}
 	Config struct {
-		Database `json:"database"`
-		Auth     `json:"auth"`
-		Etcd     `json:"etcd"`
+		Database     `json:"database"`
+		Auth         `json:"auth"`
+		Etcd         `json:"etcd"`
 		Notification `json:"notification"`
 	}
 )

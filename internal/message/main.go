@@ -7,10 +7,10 @@ import (
 
 var (
 	modules = map[string]map[string]map[string]string{
-		"task": taskMessage(),
-		"user": userMessage(),
-		"role": roleMessage(),
-		"team": teamMessage(),
+		"task":     taskMessage(),
+		"user":     userMessage(),
+		"role":     roleMessage(),
+		"team":     teamMessage(),
 		"pipeline": pipelineMessage(),
 	}
 )

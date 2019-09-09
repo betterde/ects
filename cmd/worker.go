@@ -40,7 +40,7 @@ func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(workerCmd)
 	service.Runtime = &service.Instance{
-		Mode:   models.WORKER,
+		Mode:    models.WORKER,
 		Version: rootCmd.Version,
 	}
 	workerCmd.Flags().StringVar(&worker.Name, "name", "", "Set worker node name")

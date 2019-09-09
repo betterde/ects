@@ -11,14 +11,14 @@ import (
 )
 
 type (
-	Controller struct {}
+	Controller struct{}
 )
 
 // 获取日志
 func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
-		total  int64
-		err    error
+		total int64
+		err   error
 	)
 
 	scene := ctx.URLParamDefault("scene", "pipeline")

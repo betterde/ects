@@ -37,15 +37,15 @@ func (pivot *PipelineTaskPivot) Store() error {
 // 更新中间表
 func (pivot *PipelineTaskPivot) Update() error {
 	_, err := Engine.Table(pivot.TableName()).Where(builder.Eq{"id": pivot.Id}).Update(map[string]interface{}{
-		"task_id": pivot.TaskId,
-		"step": pivot.Step,
-		"timeout": pivot.Timeout,
-		"interval": pivot.Interval,
-		"retries": pivot.Retries,
-		"directory": pivot.Directory,
-		"user": pivot.User,
+		"task_id":     pivot.TaskId,
+		"step":        pivot.Step,
+		"timeout":     pivot.Timeout,
+		"interval":    pivot.Interval,
+		"retries":     pivot.Retries,
+		"directory":   pivot.Directory,
+		"user":        pivot.User,
 		"environment": pivot.Environment,
-		"dependence": pivot.Dependence,
+		"dependence":  pivot.Dependence,
 	})
 	return err
 }
@@ -58,6 +58,6 @@ func (pivot *PipelineTaskPivot) Destroy() error {
 
 // 序列化
 func (pivot *PipelineTaskPivot) ToString() (string, error) {
-	result, err :=  json.Marshal(pivot)
+	result, err := json.Marshal(pivot)
 	return string(result), err
 }

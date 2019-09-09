@@ -31,7 +31,7 @@ func (cluster *Cluster) WatchNodes(id string, ctx context.Context) {
 	for watchResp := range watchChan {
 		for _, event := range watchResp.Events {
 			var node models.Node
-			leaseCtx, cancelFunc := context.WithTimeout(ctx, 5 * time.Second)
+			leaseCtx, cancelFunc := context.WithTimeout(ctx, 5*time.Second)
 
 			switch event.Type {
 			case mvccpb.PUT:

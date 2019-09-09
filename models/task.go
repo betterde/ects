@@ -6,10 +6,10 @@ import (
 )
 
 const (
-	MODESHELL      = "shell"
-	MODEHTTP       = "http"
-	MODEMAIL       = "mail"
-	MODEHOOK       = "hook"
+	MODESHELL = "shell"
+	MODEHTTP  = "http"
+	MODEMAIL  = "mail"
+	MODEHOOK  = "hook"
 )
 
 // 任务模型

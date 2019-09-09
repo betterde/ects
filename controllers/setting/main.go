@@ -55,14 +55,14 @@ func (instance *Controller) PostMail(ctx iris.Context) mvc.Response {
 	}
 
 	mailer := notify.Mail{
-		From:    fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User),
-		To:      params.Email,
-		Subject: "Notification",
-		Year: time.Now().Year(),
-		SiteURL: "https://ects.betterde.com",
-		SiteTitle: "Elastic Crontab System",
-		Greeting: user.Name,
-		Intro: "这是一封来自 Elastic Crontab System 的测试邮件，如果你收到这封邮件则表明系统的邮件发送服务正常。",
+		From:       fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User),
+		To:         params.Email,
+		Subject:    "Notification",
+		Year:       time.Now().Year(),
+		SiteURL:    "https://ects.betterde.com",
+		SiteTitle:  "Elastic Crontab System",
+		Greeting:   user.Name,
+		Intro:      "这是一封来自 Elastic Crontab System 的测试邮件，如果你收到这封邮件则表明系统的邮件发送服务正常。",
 		Salutation: "Regards",
 	}
 

@@ -78,7 +78,7 @@ func RunPipeline(ctx context.Context, pipeline *models.Pipeline, resChan chan *m
 		if record.Status == 1 && pipeline.Finished != "" {
 			switch pipeline.FinishedTask.Mode {
 			case models.MODESHELL:
-				shell :=&Shell{
+				shell := &Shell{
 					User:    "",
 					Env:     nil,
 					Dir:     "",
@@ -99,7 +99,7 @@ func RunPipeline(ctx context.Context, pipeline *models.Pipeline, resChan chan *m
 		if record.Status == 0 && pipeline.Failed != "" {
 			switch pipeline.FailedTask.Mode {
 			case models.MODESHELL:
-				shell :=&Shell{
+				shell := &Shell{
 					User:    "",
 					Env:     nil,
 					Dir:     "",
@@ -128,7 +128,7 @@ func RunStep(ctx context.Context, pivot *models.PipelineTaskPivot) *models.TaskR
 	if pivot.Retries == 0 {
 		record = runActuator(ctx, pivot)
 	} else {
-		for i := 0; i < pivot.Retries; i ++ {
+		for i := 0; i < pivot.Retries; i++ {
 			record = runActuator(ctx, pivot)
 			if record.Status == "finished" {
 				break
@@ -140,7 +140,7 @@ func RunStep(ctx context.Context, pivot *models.PipelineTaskPivot) *models.TaskR
 	record.NodeId = service.Runtime.Id
 	record.TaskName = pivot.Task.Name
 	record.WorkerName = service.Runtime.Name
-	record.Content =  pivot.Task.Content
+	record.Content = pivot.Task.Content
 	record.Mode = pivot.Task.Mode
 	record.Timeout = pivot.Timeout
 	record.Retries = pivot.Retries
@@ -154,7 +154,7 @@ func RunStep(ctx context.Context, pivot *models.PipelineTaskPivot) *models.TaskR
 func runActuator(ctx context.Context, pivot *models.PipelineTaskPivot) *models.TaskRecords {
 	switch pivot.Task.Mode {
 	case models.MODESHELL:
-		shell :=&Shell{
+		shell := &Shell{
 			User:    pivot.User,
 			Env:     strings.Split(pivot.Environment, " "),
 			Dir:     pivot.Directory,
@@ -164,16 +164,16 @@ func runActuator(ctx context.Context, pivot *models.PipelineTaskPivot) *models.T
 	case models.MODEMAIL:
 		mail := Mail{
 			Mail: &notify.Mail{
-				From:        fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User),
-				To:          pivot.Task.Url,
-				Subject:     pivot.Task.Name,
-				Year:        time.Now().Year(),
-				SiteURL:     config.Conf.Notification.Url,
-				SiteTitle:   "Elastic Crontab System",
-				Greeting:    "Hello",
-				Intro:       pivot.Task.Content,
-				Outro:       "",
-				Salutation:  "Regards",
+				From:       fmt.Sprintf("%s<%s>", "ECTS", config.Conf.Notification.User),
+				To:         pivot.Task.Url,
+				Subject:    pivot.Task.Name,
+				Year:       time.Now().Year(),
+				SiteURL:    config.Conf.Notification.Url,
+				SiteTitle:  "Elastic Crontab System",
+				Greeting:   "Hello",
+				Intro:      pivot.Task.Content,
+				Outro:      "",
+				Salutation: "Regards",
 			},
 		}
 

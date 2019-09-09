@@ -551,12 +551,10 @@ func (db *mysql) CreateTableSql(table *core.Table, tableName, storeEngine, chars
 
 	if len(charset) == 0 {
 		charset = db.URI().Charset
-	} 
+	}
 	if len(charset) != 0 {
 		sql += " DEFAULT CHARSET " + charset
 	}
-	
-	
 
 	if db.rowFormat != "" {
 		sql += " ROW_FORMAT=" + db.rowFormat

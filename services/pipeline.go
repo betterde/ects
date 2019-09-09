@@ -2,11 +2,9 @@ package services
 
 type (
 	PipelineInterface interface {
-		
 	}
-	
+
 	PipelineService struct {
-		
 	}
 )
 

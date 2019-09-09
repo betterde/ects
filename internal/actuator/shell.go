@@ -11,9 +11,9 @@ import (
 
 type (
 	Shell struct {
-		User string
-		Env  []string
-		Dir  string
+		User    string
+		Env     []string
+		Dir     string
 		Command string
 	}
 )
@@ -21,7 +21,7 @@ type (
 // 执行 Shell 任务
 func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", actuator.Command)
-	record :=  &models.TaskRecords{}
+	record := &models.TaskRecords{}
 	if actuator.User != "" {
 		credential, err := getCredential(actuator.User)
 		if err != nil {

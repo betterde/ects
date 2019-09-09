@@ -2,10 +2,8 @@ package services
 
 type (
 	RoleInterface interface {
-
 	}
 	RoleService struct {
-
 	}
 )
 

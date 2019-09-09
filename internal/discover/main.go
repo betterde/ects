@@ -43,8 +43,8 @@ func NewService(instance *service.Instance) (*Service, error) {
 	}
 
 	return &Service{
-		close: make(chan struct{}),
-		instance:  instance,
+		close:    make(chan struct{}),
+		instance: instance,
 	}, nil
 }
 

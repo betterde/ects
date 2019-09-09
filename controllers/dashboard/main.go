@@ -26,10 +26,10 @@ func (instance *Controller) GetNodes() mvc.Response {
 	for _, node := range nodes {
 		switch node.Mode {
 		case "worker":
-			worker ++
+			worker++
 			break
 		case "master":
-			master ++
+			master++
 			break
 		}
 	}

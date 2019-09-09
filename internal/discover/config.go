@@ -13,7 +13,7 @@ func GetConf(key string) {
 	if res, err := Client.Get(context.TODO(), key, clientv3.WithFirstKey()...); err != nil {
 		log.Fatal(err)
 	} else if res != nil {
-		if res.Kvs == nil{
+		if res.Kvs == nil {
 			log.Fatal("config key not exist")
 		}
 		if err := json.Unmarshal(res.Kvs[0].Value, &config.Conf); err != nil {

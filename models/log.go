@@ -28,7 +28,7 @@ func (log *Log) Store() error {
 func CreateLog(model Model, uid string, operation string) error {
 	var (
 		result string
-		err error
+		err    error
 	)
 
 	result, err = model.ToString()

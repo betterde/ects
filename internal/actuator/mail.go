@@ -20,7 +20,7 @@ func (actuator *Mail) Exec(ctx context.Context) *models.TaskRecords {
 			Result: err.Error(),
 		}
 	}
-	
+
 	return &models.TaskRecords{
 		Status: "finished",
 	}
