@@ -12,11 +12,15 @@ test:
 	CGO_ENABLED=1 go test -race ./...
 
 build:
+	cd web && yarn build
+	go-bindata -pkg web -o web/bindata.go web/dist/...
 	GOOS=darwin go build -ldflags "-s -w" -o "bin/$(BINARY_NAME)_darwin" main.go
 	GOOS=linux go build -ldflags "-s -w" -o "bin/$(BINARY_NAME)_linux" main.go
 	GOOS=windows go build -ldflags "-s -w" -o "bin/$(BINARY_NAME)_windows" main.go
 
 install:
+	cd web && yarn install
+	go get -u github.com/shuLhan/go-bindata/...
 
 clean:
 	go clean -testcache
