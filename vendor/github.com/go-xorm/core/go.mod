@@ -1,1 +1,1 @@
-module github.com/go-xorm/core
+module "github.com/go-xorm/core"

@@ -13,11 +13,13 @@ var (
 	errParse          = "parsing error [col %d]"
 )
 
+
 const start int = 1
 const first_final int = 44
 
 const en_fail int = 46
 const en_main int = 1
+
 
 // Machine is the interface representing the FSM
 type Machine interface {
@@ -65,6 +67,7 @@ func (m *machine) Parse(input []byte) (*URN, error) {
 	{
 		m.cs = start
 	}
+
 
 	{
 		if (m.p) == (m.pe) {

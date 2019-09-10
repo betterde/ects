@@ -1,20 +1,28 @@
-# This image is used to create bleeding edge docker image and is not compatible with any other image
-FROM golang:1.13.0-alpine3.10
+FROM alpine:latest AS web
+ARG NODEJS_VERSION=10.16.3-r0
+ARG YARN_VERSION=1.17.3
+RUN apk update && \
+    apk add nodejs=${NODEJS_VERSION} nodejs-npm=${NODEJS_VERSION} && \
+    npm config set unsafe-perm true && \
+    npm install --global yarn@${YARN_VERSION}
+ADD web /web
+WORKDIR /web
+RUN yarn && yarn build
 
-# Copy sources
+FROM golang:1.13.0-alpine3.10 AS binary
+ADD . /go/src/ects
 WORKDIR /go/src/ects
-COPY . .
+COPY --from=web /web/dist /go/src/ects/web/dist
+RUN apk update && \
+    apk add git && \
+    cd $GOPATH/src && \
+    go get -u github.com/shuLhan/go-bindata/... && \
+    cd $GOPATH/src/ects && \
+    go-bindata -pkg web -o web/bindata.go web/dist/...
+RUN go mod tidy && \
+    GOOS=linux go build -ldflags "-s -w" -o "bin/ects_linux" main.go
 
-# Build development version
-ENV BUILD_PLATFORMS -osarch=linux/amd64
-RUN make
-
-# Install runner
-RUN packaging/root/usr/share/gitlab-runner/post-install
-
-# Preserve runner's data
-VOLUME ["/etc/gitlab-runner", "/home/gitlab-runner"]
-
-# init sets up the environment and launches gitlab-runner
-CMD ["run", "--user=gitlab-runner", "--working-directory=/home/gitlab-runner"]
-ENTRYPOINT ["/usr/bin/gitlab-runner"]
+FROM alpine:3.10
+COPY --from=binary /go/src/ects/bin/ects_linux /usr/local/bin/ects
+EXPOSE 9701
+CMD ["ects"]

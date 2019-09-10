@@ -1,3 +1,8 @@
 .idea/
 out/
 builds/
+web/cert
+web/dist
+web/node_modules
+web/bindata.go
+web/docs
