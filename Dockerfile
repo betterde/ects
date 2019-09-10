@@ -1,3 +1,4 @@
+# 构建前端静态资源
 FROM alpine:latest AS web
 ARG NODEJS_VERSION=10.16.3-r0
 ARG YARN_VERSION=1.17.3
@@ -9,6 +10,7 @@ ADD web /web
 WORKDIR /web
 RUN yarn && yarn build
 
+# 构建后端可执行文件
 FROM golang:1.13.0-alpine3.10 AS binary
 ADD . /go/src/ects
 WORKDIR /go/src/ects
@@ -22,6 +24,7 @@ RUN apk update && \
 RUN go mod tidy && \
     GOOS=linux go build -ldflags "-s -w" -o "bin/ects_linux" main.go
 
+# 构建运行环境
 FROM alpine:3.10
 COPY --from=binary /go/src/ects/bin/ects_linux /usr/local/bin/ects
 EXPOSE 9701
