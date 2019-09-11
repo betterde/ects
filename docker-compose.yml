@@ -1,21 +1,33 @@
 version: "3.7"
 services:
-  etcd:
-    image: gcr.io/etcd-development/etcd:v3.4.0
-    ports:
-      - "2379"
-      - "2380"
+  etcd_dev:
+    image: gcr.io/etcd-development/etcd:v3.3.12
+    hostname: etcd_dev
+    container_name: etcd_dev
     networks:
       - ects
   mysql:
-    image: mysql
-    ports:
-      - 3306
+    image: mysql:latest
+    hostname: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ects
     networks:
       - ects
   ects:
-    image: betterde/ects:latest
+    image: ects:0.5.1
+    hostname: ects
+    container_name: ects
+    command: ects init -m web
+    ports:
+      - 9701:9701
+    depends_on:
+      - mysql
+      - etcd_dev
+    networks:
+      - ects
 networks:
   ects:
-volumes:
-  data:
+    name: ects
