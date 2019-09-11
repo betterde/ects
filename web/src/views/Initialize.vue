@@ -381,7 +381,7 @@
         }).catch(err => {
           this.$notify.error({
             title: "Error",
-            message: err.data.message,
+            message: err.message,
           });
         });
       },
