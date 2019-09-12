@@ -1,9 +1,20 @@
 version: "3.7"
 services:
-  etcd_dev:
-    image: gcr.io/etcd-development/etcd:v3.3.12
-    hostname: etcd_dev
-    container_name: etcd_dev
+  etcd:
+    image: gcr.io/etcd-development/etcd:v3.4.0
+    hostname: etcd
+    container_name: etcd
+    environment:
+      ETCD_NAME: "etcd"
+      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
+      ETCD_LISTEN_CLIENT_URLS: "http://etcd:2379"
+      ETCD_LISTEN_PEER_URLS: "http://etcd:2380"
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: "http://etcd:2380"
+      ETCD_INITIAL_CLUSTER: "etcd=http://etcd:2380"
+      ETCD_INITIAL_CLUSTER_TOKEN: "etcd_cluster"
+      ETCD_INITIAL_CLUSTER_STATE: "new"
+    volumes:
+      - ./data/default.etcd:/default.etcd
     networks:
       - ects
   mysql:
@@ -14,18 +25,20 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ects
+    volumes:
+      - ./data/mysql:/var/lib/mysql
     networks:
       - ects
   ects:
     image: ects:0.5.1
     hostname: ects
     container_name: ects
-    command: ects init -m web
+    command: ects master --etcd etcd:2379
     ports:
       - 9701:9701
     depends_on:
       - mysql
-      - etcd_dev
+      - etcd
     networks:
       - ects
 networks:
