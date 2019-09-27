@@ -28,4 +28,5 @@ RUN go mod tidy && \
 FROM alpine:3.10
 COPY --from=binary /go/src/ects/bin/ects_linux /usr/local/bin/ects
 EXPOSE 9701
-CMD ["ects"]
+CMD ["master"]
+ENTRYPOINT ["/usr/local/bin/ects"]
