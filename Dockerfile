@@ -16,7 +16,7 @@ ADD . /go/src/ects
 WORKDIR /go/src/ects
 COPY --from=web /web/dist /go/src/ects/web/dist
 RUN apk update && \
-    apk add git && \
+    apk add --no-cache git && \
     cd $GOPATH/src && \
     go get -u github.com/shuLhan/go-bindata/... && \
     cd $GOPATH/src/ects && \
@@ -26,6 +26,7 @@ RUN go mod tidy && \
 
 # 构建运行环境
 FROM alpine:3.10
+MAINTAINER George "george@betterde.com"
 COPY --from=binary /go/src/ects/bin/ects_linux /usr/local/bin/ects
 EXPOSE 9701
 CMD ["master"]

@@ -48,7 +48,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	}
 
 	if err := validate.Struct(params); err != nil {
-		return response.ValidationError("Please check whether the configuration information is complete")
+		return response.ValidationError("配置参数有误")
 	}
 
 	client, err := clientv3.New(clientv3.Config{
@@ -57,7 +57,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	})
 
 	if err != nil {
-		return response.InternalServerError("Failed to connect to etcd endpoints", err)
+		return response.InternalServerError("无法连接ETCD", err)
 	}
 
 	defer func() {
@@ -72,27 +72,27 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 
 	buf, err := json.Marshal(config.Conf)
 	if err != nil {
-		return response.InternalServerError("Failed to Marshal JSON", err)
+		return response.InternalServerError("序列化配置信息失败", err)
 	}
 
 	if _, err = client.Put(context.TODO(), params.Etcd.Config, string(buf)); err != nil {
-		return response.InternalServerError("Failed to put config to etcd", err)
+		return response.InternalServerError("保存配置信息失败", err)
 	}
 
 	if err := utils.CreateDatabase(); err != nil {
-		return response.InternalServerError("Failed to create database", err)
+		return response.InternalServerError("创建数据库失败", err)
 	}
 
 	if models.Engine == nil {
 		// Create database engine
 		models.Engine, err = models.Connection()
 		if err != nil {
-			return response.InternalServerError("Failed to connect to database", err)
+			return response.InternalServerError("链接数据库失败", err)
 		}
 	}
 
 	if err := models.Migrate(); err != nil {
-		return response.InternalServerError("Failed to migrate the table", err)
+		return response.InternalServerError("迁移数据表失败", err)
 	}
 
 	pass, err := models.GeneratePassword(params.User.Pass)
@@ -108,12 +108,12 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	}
 
 	if _, err := models.Engine.Insert(user); err != nil {
-		return response.InternalServerError("Failed to create system manager", err)
+		return response.InternalServerError("创建系统管理员失败", err)
 	}
 
 	token, err := services.IssueToken(user)
 
-	return response.Success("Congratulations! successful installation", response.Payload{"data": auth.SignInSuccess{
+	return response.Success("初始化成功", response.Payload{"data": auth.SignInSuccess{
 		AccessToken: token,
 		TokenType:   "Bearer",
 		ExpiresIn:   time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
