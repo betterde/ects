@@ -60,3 +60,7 @@ $ go build -o ects main.go
 - [] 软件更新；
 - [] 角色权限管理模块。
 
+## 赞助商
+
+[![jetbrains](web/docs/.vuepress/public/jetbrains.svg)](https://www.jetbrains.com/?from=ects)
+

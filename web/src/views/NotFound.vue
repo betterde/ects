@@ -11,7 +11,7 @@
     <el-row type="flex" align="bottom" class="footer-row">
       <el-col :span="24">
         <footer class="copyright page-copyright-inverse text-center">
-          <p>Copyright © 2018 Betterde.Inc. All Rights Reserved.</p>
+          <p>Copyright © 2017-2019 Betterde Inc. All Rights Reserved.</p>
         </footer>
       </el-col>
     </el-row>

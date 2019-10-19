@@ -11,7 +11,7 @@ features:
   details: 我们更多的考虑到用户的习惯，从用户交互体验触发，重新设计 Web UI。
 - title: 流水线
   details: 采用流水线模型管理相互以来的任务，对于跨节点任务，无需重复定义。
-footer: Copyright © 2019 Betterde Inc. All rights reserved
+footer: Copyright © 2017-2019 Betterde Inc. All rights reserved
 ---
 
 <style>

@@ -165,7 +165,7 @@
         <el-col :span="24">
           <footer class="copyright page-copyright-inverse text-center">
             <p class="version">ECTS : {{info.version}}</p>
-            <p>Copyright © 2019 Betterde.Inc. All Rights Reserved.</p>
+            <p>Copyright © 2017-2019 Betterde Inc. All Rights Reserved.</p>
           </footer>
         </el-col>
       </el-row>
