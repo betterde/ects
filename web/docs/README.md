@@ -1,6 +1,6 @@
 ---
 home: true
-heroImage: /cover.png
+heroImage: cover.png
 actionText: 快速开始
 actionLink: /introduction/architecture
 sidebar: auto
