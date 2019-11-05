@@ -28,6 +28,6 @@ module.exports = {
       ]
     }
   },
-  base: '/ects',
+  base: '/ects/',
   dest: '../docs'
 };

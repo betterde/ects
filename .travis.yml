@@ -24,4 +24,3 @@ jobs:
         - echo $PWD
         - mv $GOPATH/src/github.com/betterde/ects $GOPATH/src/
         - cd $GOPATH/src/ects
-        - make test
