@@ -4,6 +4,9 @@ go:
   - "1.12"
   - "1.13"
 
+git:
+  depth: false
+
 before_install:
   - sudo apt-get -y install nodejs
   - cd web && npm install && npm run build
