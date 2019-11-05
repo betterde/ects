@@ -4,23 +4,24 @@ go:
   - "1.12"
   - "1.13"
 
-GO111MODULE: 1
-
-before_script:
-  - go get
+before_install:
+  - sudo apt-get -y install nodejs
+  - cd web && npm install && npm run build
+  - cd ../ && GO111MODULE=on go get -u github.com/shuLhan/go-bindata/...
+  - go-bindata -pkg web -o web/bindata.go web/dist/...
 
 stages:
   - name: test
-    if: branch = master
+    if: branch = develop
   - build
-  - install
 
 jobs:
   include:
     - stage: test
       script:
-        - ls
-        - echo $GOPATH
-        - echo $PWD
-        - mv $GOPATH/src/github.com/betterde/ects $GOPATH/src/
-        - cd $GOPATH/src/ects
+        - GO111MODULE=on CGO_ENABLED=1 go test -race ./...
+    - stage: build
+      script:
+        - GO111MODULE=on go get
+        - GO111MODULE=on GOOS=darwin go build -ldflags "-s -w" -o "bin/ects_darwin" main.go
+        - GO111MODULE=on GOOS=linux go build -ldflags "-s -w" -o "bin/ects_linux" main.go
