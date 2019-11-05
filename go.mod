@@ -1,5 +1,7 @@
 module github.com/betterde/ects
 
+go 1.13
+
 require (
 	cloud.google.com/go v0.41.0 // indirect
 	github.com/Joker/jade v1.0.0 // indirect
@@ -86,5 +88,3 @@ require (
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/yaml.v2 v2.2.2
 )
-
-go 1.13
