@@ -1,0 +1,24 @@
+name: Build ECTS
+
+on:
+  push:
+    branches:
+      - master
+  pull-request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build ECTS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build assets
+        run: sudo apt-get -y nodejs && npm install && npm run build
+      - name: Packaging assets
+        run: cd ../ && go get -u github.com/shuLhan/go-bindata/... && go-bindata -pkg web -o web/bindata.go web/dist/...
+      - name: Build ECTS application
+        run: |
+          GO111MODULE=on go ge
+          GO111MODULE=on GOOS=darwin go build -ldflags "-s -w" -o "bin/ects_darwin" main.go
+          GO111MODULE=on GOOS=linux go build -ldflags "-s -w" -o "bin/ects_linux" main.go
