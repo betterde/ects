@@ -226,10 +226,23 @@
         api.log.fetch(this.params).then(res => {
           this.logs = res.data;
           this.meta = res.meta;
+          this.loading = false;
         }).catch(err => {
-          this.$message.warning(err.message)
+          this.loading = false;
+          if (err.hasOwnProperty('message')) {
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            });
+          }
+
+          if (typeof err === 'string' || err instanceof String) {
+            this.$message.error({
+              offset: 95,
+              message: err
+            });
+          }
         });
-        this.loading = false;
       },
       handleClear() {
         // 判断是否有 Pipeline 页面跳转传入的参数

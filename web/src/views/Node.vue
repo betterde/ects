@@ -240,7 +240,10 @@
                   this.$message.success(res.message);
                   this.handleClose(form);
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -256,7 +259,10 @@
                   this.handleClose(form);
                   this.$message.success(res.message);
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -273,7 +279,10 @@
                   this.handleClose(form);
                   this.$message.success(res.message);
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -314,7 +323,10 @@
             Vue.delete(this.nodes, index);
             this.$message.success(res.message);
           }).catch(err => {
-            this.$message.warning(err.message);
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            });
           });
         }
       },
@@ -362,10 +374,23 @@
         api.node.fetch(this.params).then(res => {
           this.nodes = res.data;
           this.meta = res.meta;
+          this.loading = false;
         }).catch(err => {
-          this.$message.warning(err.message)
+          this.loading = false;
+          if (err.hasOwnProperty('message')) {
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            });
+          }
+
+          if (typeof err === 'string' || err instanceof String) {
+            this.$message.error({
+              offset: 95,
+              message: err
+            });
+          }
         });
-        this.loading = false;
       },
       /**
        * 获取流水线列表

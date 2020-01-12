@@ -267,7 +267,10 @@
                   this.handleClose(form);
                   this.$message.success(res.message);
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -286,7 +289,10 @@
                   this.handleClose(form);
                   this.$message.success(res.message);
                 }).catch(err => {
-                  this.$message.warning(err.message);
+                  this.$message.error({
+                    offset: 95,
+                    message: err.message
+                  });
                 });
               } else {
                 return false;
@@ -357,10 +363,23 @@
         api.user.fetch(this.params).then(res => {
           this.users = res.data;
           this.meta = res.meta;
+          this.loading = false;
         }).catch(err => {
-          this.$message.warning(err.message)
+          this.loading = false;
+          if (err.hasOwnProperty('message')) {
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            });
+          }
+
+          if (typeof err === 'string' || err instanceof String) {
+            this.$message.error({
+              offset: 95,
+              message: err
+            });
+          }
         });
-        this.loading = false;
       },
       changePage(page) {
         this.meta.page = page;

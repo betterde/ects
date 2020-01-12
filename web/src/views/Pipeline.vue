@@ -864,10 +864,17 @@
         api.task.fetch(this.params).then(res => {
           Vue.set(this, "tasks", res.data);
         }).catch(err => {
-          this.$message.error({
-            offset: 95,
-            message: err.message
-          });
+          this.loading = false;
+          if (err.hasOwnProperty('message')) {
+            this.$message.error(err.message);
+          }
+
+          if (typeof err === 'string' || err instanceof String) {
+            this.$message.error({
+              offset: 95,
+              message: err
+            });
+          }
         });
       },
       /**
@@ -878,13 +885,23 @@
         api.pipeline.fetch(this.params).then(res => {
           this.pipelines = res.data;
           this.meta = res.meta;
+          this.loading = false;
         }).catch(err => {
-          this.$message.error({
-            offset: 95,
-            message: err.message
-          });
+          this.loading = false;
+          if (err.hasOwnProperty('message')) {
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            });
+          }
+
+          if (typeof err === 'string' || err instanceof String) {
+            this.$message.error({
+              offset: 95,
+              message: err
+            });
+          }
         });
-        this.loading = false;
       },
       /**
        * 分页跳转时触发

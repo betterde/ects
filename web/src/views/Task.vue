@@ -425,10 +425,23 @@
         api.task.fetch(this.params).then(res => {
           this.tasks = res.data;
           this.meta = res.meta;
+          this.loading = false;
         }).catch(err => {
-          this.$message.warning(err.message)
+          this.loading = false;
+          if (err.hasOwnProperty('message')) {
+            this.$message.error({
+              offset: 95,
+              message: err.message
+            });
+          }
+
+          if (typeof err === 'string' || err instanceof String) {
+            this.$message.error({
+              offset: 95,
+              message: err
+            });
+          }
         });
-        this.loading = false;
       },
       /**
        * 异步查询用户列表
