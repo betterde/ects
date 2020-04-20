@@ -82,6 +82,7 @@
 
     .el-header {
       width: 100%;
+      z-index: 100;
       background-color: white;
       box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
       .el-dropdown {
@@ -131,10 +132,6 @@
     .el-main {
       height: 100%;
       display: block;
-
-      .el-row {
-        height: 100%;
-      }
 
       .el-col {
         height: 100%;
