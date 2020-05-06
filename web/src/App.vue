@@ -32,19 +32,11 @@
           this.$store.commit('SET_LAYOUT_CURRENT', 'backend');
         }
       },
-      '$route' (to, from) {
-        if (from.path === '/' && to.name === 'notfound') {
+      '$route' (to) {
+        if (to.meta.hasOwnProperty('requiresAuth') === false || to.meta.requiresAuth === false) {
           this.$store.commit('SET_LAYOUT_CURRENT', 'guest');
-        }
-
-        if (from.path === '/') {
-          if (to.name !== 'notfound') {
-            this.$store.commit('SET_LAYOUT_CURRENT', 'backend');
-          }
-        }
-
-        if (to.name === 'signin') {
-          this.$store.commit('SET_LAYOUT_CURRENT', 'guest');
+        } else {
+          this.$store.commit('SET_LAYOUT_CURRENT', 'backend');
         }
       }
     }
