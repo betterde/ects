@@ -3,21 +3,23 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"runtime"
+	"time"
+
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/middleware/logger"
+	"github.com/kataras/iris/middleware/recover"
+	"github.com/satori/go.uuid"
+	"github.com/spf13/cobra"
+
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/middleware/logger"
-	"github.com/kataras/iris/middleware/recover"
-	"github.com/satori/go.uuid"
-	"github.com/spf13/cobra"
-	"log"
-	"os"
-	"runtime"
-	"time"
 )
 
 // masterCmd represents the master command

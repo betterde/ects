@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+
 	"github.com/betterde/ects/internal/utils"
 )
 
@@ -12,7 +13,7 @@ const (
 	MODEHOOK  = "hook"
 )
 
-// 任务模型
+// Task 任务模型
 type Task struct {
 	Id          string     `json:"id" validate:"-" xorm:"not null pk comment('用户ID') CHAR(36)"`
 	Name        string     `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`

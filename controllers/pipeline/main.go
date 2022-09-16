@@ -4,6 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"sort"
+
+	"github.com/coreos/etcd/clientv3"
+	"github.com/go-xorm/builder"
+	"github.com/kataras/iris"
+	"github.com/kataras/iris/mvc"
+	"github.com/satori/go.uuid"
+	"gopkg.in/go-playground/validator.v9"
+
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/message"
@@ -11,14 +21,6 @@ import (
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
-	"github.com/coreos/etcd/clientv3"
-	"github.com/go-xorm/builder"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
-	"github.com/satori/go.uuid"
-	"gopkg.in/go-playground/validator.v9"
-	"log"
-	"sort"
 )
 
 type (
@@ -43,7 +45,7 @@ var (
 	validate = validator.New()
 )
 
-// 获取流水线列表
+// Get 获取流水线列表
 func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	var (
 		total int64
@@ -87,7 +89,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Response {
 	return response.Success("数据使用场景有误", response.Payload{"data": make([]interface{}, 0)})
 }
 
-// 创建流水线
+// Post 创建流水线
 func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{
 		Id: uuid.NewV4().String(),
@@ -113,7 +115,7 @@ func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	return response.Success("创建成功", response.Payload{"data": pipeline})
 }
 
-// 更新流水线
+// PutBy 更新流水线
 func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{}
 
@@ -145,7 +147,7 @@ func (instance *Controller) PutBy(id string, ctx iris.Context) mvc.Response {
 	return response.Success("更新成功", response.Payload{"data": pipeline})
 }
 
-// 删除流水线
+// DeleteBy 删除流水线
 func (instance *Controller) DeleteBy(id string, ctx iris.Context) mvc.Response {
 	pipeline := models.Pipeline{
 		Id: id,
@@ -525,7 +527,7 @@ func (instance *Controller) PatchBy(id string, ctx iris.Context) mvc.Response {
 	return response.Success("同步成功", response.Payload{"data": pipeline})
 }
 
-// 创建强杀指令
+// PostKiller 创建强杀指令
 func (instance *Controller) PostKiller(ctx iris.Context) mvc.Response {
 	params := KillPipelineRequest{}
 
