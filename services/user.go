@@ -2,14 +2,16 @@ package services
 
 import (
 	"errors"
-	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/models"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/go-xorm/builder"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/go-xorm/builder"
+
+	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/models"
 )
 
 type (
@@ -29,7 +31,7 @@ func NewUserService() UserInterface {
 	return &UserService{}
 }
 
-// Get users list
+// Users Get users list
 func (service *UserService) Users(params map[string]string) (*[]models.User, *response.Meta) {
 	var (
 		page  = 1
@@ -97,7 +99,7 @@ func (service *UserService) Attempt(username, passwod string) (token string, err
 	return token, err
 }
 
-// Get user by credentials
+// RetrieveByCredentials Get user by credentials
 func (service *UserService) RetrieveByCredentials(username, password string) (user *models.User, err error) {
 	user = service.FindByEmail(username)
 	if user == nil {
@@ -113,7 +115,7 @@ func (service *UserService) RetrieveByCredentials(username, password string) (us
 	return nil, errors.New("用户名或密码错误")
 }
 
-// Get user by email
+// FindByEmail Get user by email
 func (service *UserService) FindByEmail(email string) *models.User {
 	user := models.User{}
 	result, _ := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
@@ -125,7 +127,7 @@ func (service *UserService) FindByEmail(email string) *models.User {
 	return nil
 }
 
-// Get user
+// FindByID Get user
 func (service *UserService) FindByID(id string) (*models.User, error) {
 	var user models.User
 	result, err := models.Engine.Id(id).Get(&user)
@@ -140,7 +142,7 @@ func (service *UserService) FindByID(id string) (*models.User, error) {
 	return &user, errors.New("用户不存在")
 }
 
-// Delete user
+// Destroy Delete user
 func (service *UserService) Destroy(id string, force bool) (err error) {
 	var result int64
 	if force {
@@ -156,7 +158,7 @@ func (service *UserService) Destroy(id string, force bool) (err error) {
 	return errors.New("用户删除失败")
 }
 
-// Issue access token
+// IssueToken Issue access token
 func IssueToken(user *models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{

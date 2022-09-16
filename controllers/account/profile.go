@@ -1,11 +1,12 @@
 package account
 
 import (
-	"github.com/betterde/ects/internal/response"
-	"github.com/betterde/ects/services"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+
+	"github.com/betterde/ects/internal/response"
+	"github.com/betterde/ects/services"
 )
 
 type (
@@ -21,7 +22,7 @@ type (
 	}
 )
 
-// 获取用户信息
+// Get 获取用户信息
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	token := ctx.Values().Get("jwt").(*jwt.Token)
 	claims, _ := token.Claims.(jwt.MapClaims)
@@ -38,7 +39,7 @@ func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	}})
 }
 
-// 修改用户信息
+// Post 修改用户信息
 func (instance *Controller) Post(ctx iris.Context) mvc.Response {
 	return response.Success("业务逻辑尚未实现", response.Payload{"data": make([]interface{}, 0)})
 }

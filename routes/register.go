@@ -1,11 +1,13 @@
 package routes
 
 import (
-	"github.com/betterde/ects/internal/middleware"
-	"github.com/betterde/ects/web"
+	"log"
+
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
-	"log"
+
+	"github.com/betterde/ects/internal/middleware"
+	"github.com/betterde/ects/web"
 )
 
 func Register(app *iris.Application) {

@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-// Get config from etcd
+// GetConf Get config from etcd
 func GetConf(key string) {
 	if res, err := Client.Get(context.TODO(), key, clientv3.WithFirstKey()...); err != nil {
 		log.Fatal(err)

@@ -2,13 +2,15 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/betterde/ects/internal/utils"
+	"time"
+
 	"github.com/go-xorm/builder"
 	"github.com/gorhill/cronexpr"
-	"time"
+
+	"github.com/betterde/ects/internal/utils"
 )
 
-// 流水线模型
+// Pipeline 流水线模型
 type Pipeline struct {
 	Id           string               `json:"id" validate:"-" xorm:"not null pk comment('ID') CHAR(36)"`
 	Name         string               `json:"name" validate:"required" xorm:"not null comment('名称') VARCHAR(255)"`
