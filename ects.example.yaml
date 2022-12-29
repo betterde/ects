@@ -1,9 +1,9 @@
 database:
-  host: 47.103.204.136
+  host: localhost
   port: 3306
   name: ects
   user: root
-  pass: 123456
+  pass: PASSWORD
   char: utf8mb4
 auth:
   secret: SECRET
