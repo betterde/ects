@@ -14,8 +14,12 @@ jobs:
       - uses: actions/setup-node@master
       - name: Build assets
         run: sudo apt-get install -y nodejs && cd web && npm install && npm run build
+      - name: Install Go Bindata
+        run: cd ../ && go install github.com/go-bindata/go-bindata/v3/go-bindata@latest
       - name: Packaging assets
-        run: cd ../ && go install github.com/go-bindata/go-bindata/v3/go-bindata@latest && go-bindata -pkg web -o web/bindata.go web/dist/...
+        run: |
+          export PATH=$PATH:$(go env GOPATH)/bin
+          go-bindata -pkg web -o web/bindata.go web/dist/...
       - name: Build ECTS application
         run: |
           GO111MODULE=on go mod download
