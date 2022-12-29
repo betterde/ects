@@ -1,6 +1,6 @@
 ![dashboard](web/docs/.vuepress/public/logo.png)
 
-[![Build Status](https://www.travis-ci.org/betterde/ects.svg?branch=master)](https://www.travis-ci.org/betterde/ects)
+[![Build Status](https://github.com/betterde/ects/actions/workflows/ci.yml/badge.svg)](https://github.com/betterde/ects/actions/workflows/ci.yml/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/betterde/ects)](https://github.com/betterde/ects/issues)
 [![GitHub forks](https://img.shields.io/github/forks/betterde/ects)](https://github.com/betterde/ects/network)
 [![GitHub stars](https://img.shields.io/github/stars/betterde/ects)](https://github.com/betterde/ects/stargazers)
