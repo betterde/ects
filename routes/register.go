@@ -1,10 +1,9 @@
 package routes
 
 import (
-	"log"
-
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/mvc"
+	"log"
 
 	"github.com/betterde/ects/internal/middleware"
 	"github.com/betterde/ects/web"
