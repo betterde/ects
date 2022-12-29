@@ -3,16 +3,15 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
-	"os"
-	"runtime"
-	"time"
-
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/middleware/logger"
 	"github.com/kataras/iris/middleware/recover"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
+	"runtime"
+	"time"
 
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
@@ -96,7 +95,7 @@ func register() {
 		log.Fatal(err)
 	}
 
-	if err := ser.Register(5); err != nil {
+	if err := ser.Register(300); err != nil {
 		log.Fatal(err)
 	}
 }

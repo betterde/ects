@@ -10,8 +10,10 @@ jobs:
     name: Build ECTS
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@master
       - name: Build assets
-        run: sudo apt-get install -y nodejs && cd web && npm install && npm run build
+        run: sudo apt-get install -y nodejs && ls -la && cd web && npm install && npm run build
       - name: Packaging assets
         run: cd ../ && go get -u github.com/shuLhan/go-bindata/... && go-bindata -pkg web -o web/bindata.go web/dist/...
       - name: Build ECTS application

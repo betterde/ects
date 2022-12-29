@@ -15,7 +15,7 @@ type (
 
 var (
 	ConfigKey string    // 配置文件的Key
-	Runtime   *Instance // 运行服务的星系
+	Runtime   *Instance // 运行服务的信息
 	EndPoints []string  // ETCD 节点信息
 )
 

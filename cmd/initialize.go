@@ -16,7 +16,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
 	"os"
 	"runtime"
@@ -116,7 +115,7 @@ func startInitializeByConfigFile() {
 	if user.Name == "" || user.Email == "" || user.Password == "" {
 		log.Fatal("Please enter admin user info")
 	}
-	buf, err := ioutil.ReadFile(path)
+	buf, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatal(err)
 	}
