@@ -1,3 +1,6 @@
+//go:build !windows
+// +build !windows
+
 package actuator
 
 import (
@@ -18,7 +21,7 @@ type (
 	}
 )
 
-// 执行 Shell 任务
+// Exec Execute shell tasks
 func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", actuator.Command)
 	record := &models.TaskRecords{}
@@ -44,13 +47,24 @@ func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 			err    error
 		}{output: output, err: err}
 	}()
-	res := <-resChan
-	record.Result = string(res.output)
-	if res.err != nil {
-		record.Status = "failed"
-	} else {
-		record.Status = "finished"
+
+	select {
+	case <-ctx.Done():
+		if cmd.Process.Pid > 0 {
+			err := syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+			if err != nil {
+				record.Status = "failed"
+			}
+		}
+	case res := <-resChan:
+		record.Result = string(res.output)
+		if res.err != nil {
+			record.Status = "failed"
+		} else {
+			record.Status = "finished"
+		}
 	}
+
 	return record
 }
 
