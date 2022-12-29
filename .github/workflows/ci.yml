@@ -15,7 +15,7 @@ jobs:
       - name: Build assets
         run: sudo apt-get install -y nodejs && ls -la && cd web && npm install && npm run build
       - name: Packaging assets
-        run: cd ../ && go install github.com/shuLhan/go-bindata/v4/cmd/go-bindata && go-bindata -pkg web -o web/bindata.go web/dist/...
+        run: cd ../ && go install github.com/shuLhan/go-bindata/v4/cmd/go-bindata@latest && go-bindata -pkg web -o web/bindata.go web/dist/...
       - name: Build ECTS application
         run: |
           GO111MODULE=on go get
