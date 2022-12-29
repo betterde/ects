@@ -21,24 +21,27 @@ func (instance *Controller) GetNodes() mvc.Response {
 	if err := models.Engine.Where(builder.Eq{"status": "online"}).Find(&nodes); err != nil {
 		return response.InternalServerError("获取节点信息失败", err)
 	}
-	worker := 0
-	master := 0
+
+	res := struct {
+		Master uint `json:"master"`
+		Worker uint `json:"worker"`
+	}{
+		Master: 0,
+		Worker: 0,
+	}
+
 	for _, node := range nodes {
 		switch node.Mode {
 		case "worker":
-			worker++
+			res.Worker++
 			break
 		case "master":
-			master++
+			res.Master++
 			break
 		}
 	}
 
-	result := make(map[string]int)
-	result["master"] = master
-	result["worker"] = worker
-
-	return response.Success("请求成功", response.Payload{"data": result})
+	return response.Success("请求成功", response.Payload{"data": res})
 }
 
 // 获取正在调度的流水线数量

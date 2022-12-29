@@ -22,7 +22,7 @@ type (
 )
 
 // 发送成功响应
-func Success(message string, payload map[string]interface{}) mvc.Response {
+func Success(message string, payload Payload) mvc.Response {
 	data := payload["data"]
 	meta, ok := payload["meta"]
 	if ok {

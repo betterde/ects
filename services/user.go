@@ -118,7 +118,10 @@ func (service *UserService) RetrieveByCredentials(username, password string) (us
 // FindByEmail Get user by email
 func (service *UserService) FindByEmail(email string) *models.User {
 	user := models.User{}
-	result, _ := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
+	result, err := models.Engine.Unscoped().Where(builder.Eq{"email": email}).Get(&user)
+	if err != nil {
+		log.Printf("%v", err)
+	}
 
 	if result {
 		return &user
