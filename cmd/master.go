@@ -3,9 +3,8 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/middleware/logger"
-	"github.com/kataras/iris/middleware/recover"
+	"github.com/betterde/ects/routes"
+	"github.com/kataras/iris/v12"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"log"
@@ -18,7 +17,6 @@ import (
 	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
-	"github.com/betterde/ects/routes"
 )
 
 // masterCmd represents the master command
@@ -104,8 +102,6 @@ func start() {
 	service.Runtime = master
 	addr := fmt.Sprintf("%s:%d", service.Runtime.Host, service.Runtime.Port)
 	app := iris.New()
-	app.Use(recover.New())
-	app.Use(logger.New())
 	app.Logger().SetLevel("disable")
 
 	routes.Register(app)
@@ -115,7 +111,7 @@ func start() {
 		ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		defer cancel()
 
-		// 当主节点关闭时，先检查是否有其他在线主节点
+		// When the master node is shut down, first check whether there are other online master nodes
 		if count, err := models.Engine.Where("mode = ? AND status = ? AND id != ?", "master", "online", service.Runtime.Id).Count(&models.Node{}); err != nil {
 			log.Println(err)
 		} else {

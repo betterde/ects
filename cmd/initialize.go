@@ -11,9 +11,9 @@ import (
 	"github.com/betterde/ects/routes"
 	"github.com/betterde/ects/web"
 	"github.com/coreos/etcd/clientv3"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
-	uuid "github.com/satori/go.uuid"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
+	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 	"log"
@@ -23,7 +23,7 @@ import (
 	"time"
 )
 
-// installCmd represents the install command
+// installCmd represents the installation command
 var (
 	initializeCmd = &cobra.Command{
 		Use:     "init",
@@ -79,18 +79,12 @@ func startInitializeWeb() {
 		ctx.Redirect("/", iris.StatusMovedPermanently)
 	})
 
-	app.RegisterView(iris.HTML("./web/dist", ".html").Binary(web.Asset, web.AssetNames))
-
-	app.Get("/", func(ctx iris.Context) {
-		if err := ctx.View("initialize.html"); err != nil {
-			log.Println(err)
-		}
+	app.HandleDir("/", web.FS, iris.DirOptions{
+		SPA:       true,
+		IndexName: "initialize.html",
 	})
 
 	mvc.Configure(app.Party("/api/initialize"), routes.Initialize)
-
-	assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
-	app.SPA(assetHandler).AddIndexName("initialize.html")
 
 	sg := new(sync.WaitGroup)
 	defer sg.Wait()

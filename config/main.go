@@ -1,7 +1,6 @@
 package config
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -52,23 +51,20 @@ type (
 	}
 )
 
-var (
-	Conf *Config
-	Path string
-)
+var Conf *Config
 
 func Init() *Config {
 	return &Config{}
 }
 
-// 检查配置文件是否存在
+// CheckConfigFile 检查配置文件是否存在
 func CheckConfigFile(path string) (bool, error) {
 	_, err := os.Stat(path)
 	exist := !os.IsNotExist(err)
 	return exist, err
 }
 
-// 创建配置文件目录
+// CreateConfigDir 创建配置文件目录
 func CreateConfigDir(dir string) {
 	_, err := os.Stat(dir)
 
@@ -80,7 +76,7 @@ func CreateConfigDir(dir string) {
 	}
 }
 
-// 检查配置文件目录是否有权限
+// CheckConfigDirPermisson 检查配置文件目录是否有权限
 func CheckConfigDirPermisson(dir string) bool {
 	info, err := os.Stat(dir)
 	if err != nil {
@@ -96,9 +92,9 @@ func CheckConfigDirPermisson(dir string) bool {
 	return false
 }
 
-// 写入配置文件
+// WriteConfigToFile 写入配置文件
 func WriteConfigToFile(file string, content []byte) bool {
-	if err := ioutil.WriteFile(file, content, 0644); err != nil {
+	if err := os.WriteFile(file, content, 0644); err != nil {
 		log.Println(os.IsNotExist(err))
 		log.Println(err)
 	}

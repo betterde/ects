@@ -37,7 +37,7 @@ type Scheduler struct {
 
 var Instance *Scheduler
 
-// 运行调度器
+// Run 运行调度器
 func (scheduler *Scheduler) Run(ctx context.Context) {
 	afterTimer := scheduler.TryExecute(ctx)
 	scheduleTimer := time.NewTimer(afterTimer)
@@ -63,7 +63,7 @@ func (scheduler *Scheduler) Run(ctx context.Context) {
 	}
 }
 
-// 尝试执行Pipeline
+// TryExecute 尝试执行Pipeline
 func (scheduler *Scheduler) TryExecute(ctx context.Context) (after time.Duration) {
 	var nearTime time.Time
 	if len(scheduler.Plan) == 0 {
@@ -104,12 +104,12 @@ func (scheduler *Scheduler) eventHandler(event *Event) {
 	}
 }
 
-// 加入队列
+// DispatchEvent 加入队列
 func (scheduler *Scheduler) DispatchEvent(event *Event) {
 	scheduler.EventsChan <- event
 }
 
-// 创建调度器
+// New 创建调度器
 func New() {
 	Instance = &Scheduler{
 		EventsChan: make(chan *Event, 100),

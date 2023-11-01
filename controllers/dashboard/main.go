@@ -8,7 +8,7 @@ import (
 	"github.com/betterde/ects/models"
 	"github.com/coreos/etcd/clientv3"
 	"github.com/go-xorm/builder"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12/mvc"
 )
 
 type (

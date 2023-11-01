@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 )
 
 func GetUID(ctx iris.Context) string {

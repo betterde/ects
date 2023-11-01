@@ -9,8 +9,8 @@ import (
 
 	"github.com/coreos/etcd/clientv3"
 	"github.com/go-xorm/builder"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 

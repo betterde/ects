@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/betterde/ects/web"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 	"log"
 
 	"github.com/betterde/ects/internal/middleware"
-	"github.com/betterde/ects/web"
 )
 
 func Register(app *iris.Application) {
@@ -20,7 +20,7 @@ func Register(app *iris.Application) {
 
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
 		mvc.Configure(api.Party("/auth"), authentication)
-		api.Use(middleware.JWTHandler.Serve)
+		api.Use(middleware.JWTHandler)
 		mvc.Configure(api.Party("/task"), registerTask)
 		mvc.Configure(api.Party("/node"), registerNode)
 		mvc.Configure(api.Party("/pipeline"), registerPipeline)
@@ -33,15 +33,20 @@ func Register(app *iris.Application) {
 		}))
 	}))
 
-	app.Use(iris.Gzip)
-	app.RegisterView(iris.HTML("./web/dist", ".html").Binary(web.Asset, web.AssetNames))
+	app.Use(iris.Compression)
 
-	app.Get("/", func(ctx iris.Context) {
-		if err := ctx.View("index.html"); err != nil {
-			log.Println(err)
-		}
+	//app.RegisterView(iris.HTML(web.FS, ".html").RootDir("/"))
+	app.HandleDir("/", web.FS, iris.DirOptions{
+		SPA:       true,
+		IndexName: "index.html",
 	})
 
-	assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
-	app.SPA(assetHandler).AddIndexName("index.html")
+	//app.Get("/", func(ctx iris.Context) {
+	//	if err := ctx.View("index.html"); err != nil {
+	//		log.Println(err)
+	//	}
+	//})
+
+	//assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
+	//app.SPA(assetHandler).AddIndexName("index.html")
 }

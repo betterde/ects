@@ -1,29 +1,25 @@
 package middleware
 
 import (
-	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/internal/response"
-	"github.com/dgrijalva/jwt-go"
-	jwtmiddleware "github.com/iris-contrib/middleware/jwt"
-	"github.com/kataras/iris"
-	"log"
+	"github.com/kataras/iris/v12/context"
+	"github.com/kataras/iris/v12/middleware/jwt"
 )
 
+type Claims struct {
+	Foo string `json:"foo"`
+}
+
 var (
-	JWTHandler = jwtmiddleware.New(jwtmiddleware.Config{
-		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
-			return []byte(config.Conf.Auth.Secret), nil
-		},
-		SigningMethod: jwt.SigningMethodHS256,
-		ErrorHandler: func(ctx iris.Context, s string) {
-			ctx.StatusCode(iris.StatusUnauthorized)
-			if _, err := ctx.JSON(response.Response{
-				Code:    iris.StatusUnauthorized,
-				Message: "Unauthenticated.",
-				Data:    make(map[string]interface{}),
-			}); err != nil {
-				log.Println(err)
-			}
-		},
-	})
+	secret = []byte("signature_hmac_secret_shared_key")
+
+	JWTHandler context.Handler
 )
+
+func init() {
+	verifier := jwt.NewVerifier(jwt.HS256, secret)
+	verifier.WithDefaultBlocklist()
+
+	JWTHandler = verifier.Verify(func() interface{} {
+		return new(Claims)
+	})
+}

@@ -5,8 +5,8 @@ import (
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
 )

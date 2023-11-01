@@ -1,8 +1,8 @@
 package response
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 	"reflect"
 )
 
@@ -21,7 +21,7 @@ type (
 	Payload map[string]interface{}
 )
 
-// 发送成功响应
+// Success 发送成功响应
 func Success(message string, payload Payload) mvc.Response {
 	data := payload["data"]
 	meta, ok := payload["meta"]
@@ -47,7 +47,7 @@ func Success(message string, payload Payload) mvc.Response {
 	}
 }
 
-// 认证失败响应
+// UnAuthenticated 认证失败响应
 func UnAuthenticated(message string) mvc.Response {
 	return mvc.Response{
 		Code: iris.StatusUnauthorized,

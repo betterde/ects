@@ -7,8 +7,8 @@ import (
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
 	"github.com/go-xorm/builder"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 	"github.com/satori/go.uuid"
 	"gopkg.in/go-playground/validator.v9"
 	"log"
@@ -31,7 +31,7 @@ var (
 	validate = validator.New()
 )
 
-// 获取任务列表
+// Get 获取任务列表
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
 	var (
 		total int64

@@ -18,7 +18,7 @@ func NewTaskService() TaskInterface {
 type TaskService struct {
 }
 
-// 获取任务列表
+// Tasks 获取任务列表
 func (service *TaskService) Tasks(pipline bool) []models.Task {
 	tasks := make([]models.Task, 0)
 	session := models.Engine.NewSession()
@@ -35,7 +35,7 @@ func (service *TaskService) Tasks(pipline bool) []models.Task {
 	return []models.Task{}
 }
 
-// 获取需要执行的任务
+// NormalTasks 获取需要执行的任务
 func (service *TaskService) NormalTasks() ([]models.Task, error) {
 	tasks := make([]models.Task, 0)
 	err := models.Engine.Where(builder.Eq{"status": "normal"}).Find(&tasks)
