@@ -2,8 +2,8 @@ package account
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/mvc"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
 
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/services"

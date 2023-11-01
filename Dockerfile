@@ -16,11 +16,7 @@ ADD . /go/src/ects
 WORKDIR /go/src/ects
 COPY --from=web /web/dist /go/src/ects/web/dist
 RUN apk update && \
-    apk add --no-cache git && \
-    cd $GOPATH/src && \
-    go get -u github.com/shuLhan/go-bindata/... && \
-    cd $GOPATH/src/ects && \
-    go-bindata -pkg web -o web/bindata.go web/dist/...
+    apk add --no-cache git
 RUN go mod tidy && \
     GOOS=linux go build -ldflags "-s -w" -o "bin/ects_linux" main.go
 

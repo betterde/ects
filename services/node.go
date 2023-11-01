@@ -19,7 +19,7 @@ func NewNodeService() NodeInterface {
 	return &NodeService{}
 }
 
-// Get node by id
+// FindByID Get node by id
 func (service *NodeService) FindByID(id string) (*models.Node, error) {
 	var node models.Node
 	result, err := models.Engine.Id(id).Get(&node)

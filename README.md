@@ -24,12 +24,6 @@ $ cd web && yarn install
 # 打包前端资源
 $ yarn build
 
-# 安装打包静态资源到二进制的工具
-$ cd ../ && go get -u github.com/shuLhan/go-bindata/...
-
-# 打包静态资源
-$ go-bindata -pkg web -o web/bindata.go web/dist/...
-
 # 编译
 $ go build -o ects main.go
 ```
