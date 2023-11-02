@@ -35,18 +35,8 @@ func Register(app *iris.Application) {
 
 	app.Use(iris.Compression)
 
-	//app.RegisterView(iris.HTML(web.FS, ".html").RootDir("/"))
 	app.HandleDir("/", web.FS, iris.DirOptions{
 		SPA:       true,
 		IndexName: "index.html",
 	})
-
-	//app.Get("/", func(ctx iris.Context) {
-	//	if err := ctx.View("index.html"); err != nil {
-	//		log.Println(err)
-	//	}
-	//})
-
-	//assetHandler := iris.StaticEmbeddedHandler("./web/dist", web.Asset, web.AssetNames, false)
-	//app.SPA(assetHandler).AddIndexName("index.html")
 }

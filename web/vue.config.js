@@ -1,5 +1,5 @@
-const fs = require('fs');
-const CompressionPlugin = require("compression-webpack-plugin");
+// const fs = require('fs');
+// const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
   pages: {
