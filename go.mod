@@ -1,6 +1,6 @@
 module github.com/betterde/ects
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/coreos/etcd v3.3.13+incompatible
