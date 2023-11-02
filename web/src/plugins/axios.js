@@ -16,6 +16,8 @@ let config = {
   withCredentials: true, // Check cross-site Access-Control
 };
 
+console.log(config)
+
 const request = axios.create(config);
 
 request.interceptors.request.use(config => {
