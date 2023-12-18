@@ -13,7 +13,7 @@ require (
 	github.com/kataras/iris/v12 v12.2.7
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cobra v0.0.5
-	golang.org/x/crypto v0.14.0
+	golang.org/x/crypto v0.17.0
 	gopkg.in/go-playground/validator.v9 v9.27.0
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gopkg.in/yaml.v2 v2.4.0
@@ -95,8 +95,8 @@ require (
 	go.uber.org/zap v1.10.0 // indirect
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.1 // indirect
