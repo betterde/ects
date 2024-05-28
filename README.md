@@ -50,6 +50,10 @@ $ go build -o ects main.go
 - [x] 项目文档；
 - [] 角色权限管理模块。
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=betterde/ects&type=Date)](https://star-history.com/#betterde/ects&Date)
+
 ## 赞助商
 
 [![jetbrains](web/docs/.vuepress/public/jetbrains.svg)](https://www.jetbrains.com/?from=ects)
