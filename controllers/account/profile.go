@@ -1,8 +1,8 @@
 package account
 
 import (
-	"github.com/dgrijalva/jwt-go"
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/middleware/jwt"
 	"github.com/kataras/iris/v12/mvc"
 
 	"github.com/betterde/ects/internal/response"
@@ -24,10 +24,9 @@ type (
 
 // Get 获取用户信息
 func (instance *Controller) Get(ctx iris.Context) mvc.Result {
-	token := ctx.Values().Get("jwt").(*jwt.Token)
-	claims, _ := token.Claims.(jwt.MapClaims)
-	id := claims["sub"]
-	user, err := instance.Service.FindByID(id.(string))
+	claims := jwt.Get(ctx).(jwt.Claims)
+	id := claims.Subject
+	user, err := instance.Service.FindByID(id)
 	if err != nil {
 		return response.NotFound(err.Error())
 	}

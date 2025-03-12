@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"github.com/betterde/ects/internal/build"
 	"github.com/betterde/ects/routes"
 	"github.com/kataras/iris/v12"
 	"github.com/satori/go.uuid"
@@ -35,7 +36,7 @@ var (
 	master = &service.Instance{
 		Mode:    models.MASTER,
 		Status:  models.ONLINE,
-		Version: rootCmd.Version,
+		Version: build.Version,
 	}
 
 	ctx, cancelFunc = context.WithCancel(context.Background())
@@ -130,7 +131,7 @@ func start() {
 
 	go register()
 
-	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithOptimizations, iris.WithCharset("UTF-8")); err != nil {
+	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithOptimizations, iris.WithCharset("UTF-8"), iris.WithoutBodyConsumptionOnUnmarshal); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -2,12 +2,13 @@ package services
 
 import (
 	"errors"
+	"github.com/betterde/ects/internal/build"
 	"log"
 	"strconv"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/go-xorm/builder"
+	"github.com/kataras/iris/v12/middleware/jwt"
 
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/response"
@@ -163,14 +164,19 @@ func (service *UserService) Destroy(id string, force bool) (err error) {
 
 // IssueToken Issue access token
 func IssueToken(user *models.User) (string, error) {
+	secret := []byte(config.Conf.Auth.Secret)
+	signer := jwt.NewSigner(jwt.HS256, secret, time.Duration(config.Conf.Auth.TTL)*time.Second)
+	claims := jwt.Claims{
+		Issuer:    build.Name,
+		Expiry:    time.Now().Add(time.Second * time.Duration(config.Conf.Auth.TTL)).Unix(),
+		Subject:   user.Id,
+		IssuedAt:  time.Now().Unix(),
+		NotBefore: time.Now().Unix(),
+	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"iss": "ects",
-		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix(),
-		"nbf": time.Now().Unix(),
-		"sub": user.Id,
-	})
-
-	return token.SignedString([]byte(config.Conf.Auth.Secret))
+	bytes, err := signer.Sign(&claims)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/build"
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/pipeline"
 	"github.com/betterde/ects/internal/scheduler"
@@ -32,7 +33,7 @@ var (
 	worker = &service.Instance{
 		Mode:    models.WORKER,
 		Status:  models.ONLINE,
-		Version: rootCmd.Version,
+		Version: build.Version,
 	}
 )
 

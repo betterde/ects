@@ -2,7 +2,7 @@ package utils
 
 import "net"
 
-// Get all network card IP
+// GetIPs Get all network card IP
 func GetIPs() (ips []string) {
 	cards, err := net.Interfaces()
 	if err != nil {

@@ -20,6 +20,7 @@ func Register(app *iris.Application) {
 
 	mvc.Configure(app.PartyFunc("/api", func(api iris.Party) {
 		mvc.Configure(api.Party("/auth"), authentication)
+		middleware.Init()
 		api.Use(middleware.JWTHandler)
 		mvc.Configure(api.Party("/task"), registerTask)
 		mvc.Configure(api.Party("/node"), registerNode)

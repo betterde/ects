@@ -5,9 +5,9 @@ import (
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/services"
+	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
-	"gopkg.in/go-playground/validator.v9"
 	"log"
 )
 
@@ -35,24 +35,22 @@ type (
 	}
 )
 
-// 路由分发
 func (instance *Controller) BeforeActivation(request mvc.BeforeActivation) {
 	request.Handle("POST", "/signin", "SignInHandler")
 	request.Handle("POST", "/signout", "SignOutHandler")
 }
 
-// 用户登录逻辑
 func (instance *Controller) SignInHandler(ctx iris.Context) mvc.Response {
 	var params SignIn
 	validate := validator.New()
 	if err := ctx.ReadJSON(&params); err != nil {
-		// TODO Add logger
+		return response.ValidationError(err.Error())
 	}
 
 	err := validate.Struct(params)
 
 	if err != nil {
-		return response.ValidationError("用户名和密码不能为空")
+		return response.ValidationError(err.Error())
 	}
 
 	token, err := instance.Service.Attempt(params.Username, params.Password)

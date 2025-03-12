@@ -1,25 +1,27 @@
 package middleware
 
 import (
+	"github.com/betterde/ects/config"
 	"github.com/kataras/iris/v12/context"
 	"github.com/kataras/iris/v12/middleware/jwt"
 )
 
-type Claims struct {
-	Foo string `json:"foo"`
-}
-
 var (
-	secret = []byte("signature_hmac_secret_shared_key")
-
 	JWTHandler context.Handler
 )
 
-func init() {
+func Init() context.Handler {
+	secret := []byte(config.Conf.Auth.Secret)
 	verifier := jwt.NewVerifier(jwt.HS256, secret)
 	verifier.WithDefaultBlocklist()
 
+	if JWTHandler != nil {
+		return JWTHandler
+	}
+
 	JWTHandler = verifier.Verify(func() interface{} {
-		return new(Claims)
+		return new(jwt.Claims)
 	})
+
+	return JWTHandler
 }
