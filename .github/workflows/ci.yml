@@ -29,11 +29,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags:
-            - betterde/ects:${{ env.VERSION }}
-            - betterde/ects:latest
+          tags: betterde/ects:latest,betterde/ects:${{ env.VERSION }}
           context: .
-          platforms:
-            - linux/amd64
-            - linux/arm64
+          platforms: linux/amd64,linux/arm64
           build-args: VERSION=${{ env.VERSION }} BUILD_TIME=${{ env.BUILD_TIME }} GIT_COMMIT=${{ env.GIT_COMMIT }}
