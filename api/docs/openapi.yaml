@@ -1,0 +1,464 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: ""
+    version: 0.0.1
+paths:
+    /v1/projects:
+        get:
+            tags:
+                - UserService
+            description: Query the project list based on conditions.
+            operationId: UserService_ListProjects
+            parameters:
+                - name: query.page
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: query.limit
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: sorting.column
+                  in: query
+                  schema:
+                    type: string
+                - name: sorting.direction
+                  in: query
+                  schema:
+                    type: integer
+                    format: enum
+                - name: conditions.name.value
+                  in: query
+                  schema:
+                    type: string
+                - name: conditions.name.operator
+                  in: query
+                  schema:
+                    type: integer
+                    format: enum
+                - name: conditions.owner.value
+                  in: query
+                  schema:
+                    type: string
+                - name: conditions.status.value
+                  in: query
+                  schema:
+                    type: integer
+                    format: enum
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListProjectsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: Create a project.
+            operationId: UserService_CreateProject
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/projects/{id}:
+        get:
+            tags:
+                - UserService
+            description: Get project detail by ID.
+            operationId: UserService_GetProject
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - UserService
+            description: Delete a project.
+            operationId: UserService_DeleteProject
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - UserService
+            description: Update project properties.
+            operationId: UserService_UpdateProject
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateProjectRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateProjectResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/system/version:
+        get:
+            tags:
+                - SystemService
+            operationId: SystemService_GetVersion
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetVersionResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/tasks:
+        post:
+            tags:
+                - UserService
+            description: Create a task.
+            operationId: UserService_CreateTask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateTaskRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateTaskResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/user/{id}:
+        get:
+            tags:
+                - UserService
+            description: Get user detail by ID.
+            operationId: UserService_GetUser
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        CreateProjectRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                icon:
+                    type: string
+                desc:
+                    type: string
+                owner:
+                    type: string
+                status:
+                    type: integer
+                    format: enum
+        CreateProjectResponse:
+            type: object
+            properties:
+                item:
+                    $ref: '#/components/schemas/Project'
+        CreateTaskRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                color:
+                    type: string
+                parent:
+                    type: string
+                project:
+                    type: string
+                description:
+                    type: string
+                participants:
+                    type: array
+                    items:
+                        type: string
+                startAt:
+                    type: string
+                    format: date-time
+                endAt:
+                    type: string
+                    format: date-time
+        CreateTaskResponse:
+            type: object
+            properties:
+                item:
+                    $ref: '#/components/schemas/Task'
+        DeleteProjectResponse:
+            type: object
+            properties:
+                message:
+                    type: string
+        GetProjectResponse:
+            type: object
+            properties:
+                item:
+                    $ref: '#/components/schemas/Project'
+        GetUserResponse:
+            type: object
+            properties:
+                item:
+                    $ref: '#/components/schemas/User'
+        GetVersionResponse:
+            type: object
+            properties:
+                version:
+                    type: string
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ListMeta:
+            type: object
+            properties:
+                page:
+                    type: integer
+                    format: uint32
+                limit:
+                    type: integer
+                    format: uint32
+                total:
+                    type: integer
+                    format: uint32
+        ListProjectsResponse:
+            type: object
+            properties:
+                meta:
+                    $ref: '#/components/schemas/ListMeta'
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Project'
+        Project:
+            type: object
+            properties:
+                timestamps:
+                    $ref: '#/components/schemas/Timestamps'
+                properties:
+                    $ref: '#/components/schemas/ProjectProperty'
+        ProjectProperty:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                icon:
+                    type: string
+                desc:
+                    type: string
+                owner:
+                    type: string
+                status:
+                    type: integer
+                    format: enum
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        Task:
+            type: object
+            properties:
+                timestamps:
+                    $ref: '#/components/schemas/Timestamps'
+                properties:
+                    $ref: '#/components/schemas/TaskProperty'
+        TaskProperty:
+            type: object
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                color:
+                    type: string
+                parent:
+                    type: string
+                board:
+                    type: string
+                project:
+                    type: string
+                description:
+                    type: string
+                participants:
+                    type: array
+                    items:
+                        type: string
+                startAt:
+                    type: string
+                    format: date-time
+                endAt:
+                    type: string
+                    format: date-time
+        Timestamps:
+            type: object
+            properties:
+                created_at:
+                    type: string
+                    format: date-time
+                updated_at:
+                    type: string
+                    format: date-time
+                deleted_at:
+                    type: string
+                    format: date-time
+        UpdateProjectRequest:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                icon:
+                    type: string
+                desc:
+                    type: string
+                owner:
+                    type: string
+                status:
+                    type: integer
+                    format: enum
+        UpdateProjectResponse:
+            type: object
+            properties:
+                item:
+                    $ref: '#/components/schemas/Project'
+        User:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                role:
+                    type: string
+                email:
+                    type: string
+                avatar:
+                    type: string
+                gender:
+                    type: integer
+                    format: enum
+                mobile:
+                    type: string
+                language:
+                    type: string
+tags:
+    - name: SystemService
+    - name: UserService
+      description: buf:lint:ignore RPC_NO_DELETE

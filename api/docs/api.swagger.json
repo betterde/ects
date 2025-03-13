@@ -1,0 +1,824 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "svc/v1/board.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "UserService"
+    },
+    {
+      "name": "SystemService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/projects": {
+      "get": {
+        "summary": "Query the project list based on conditions.",
+        "operationId": "UserService_ListProjects",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListProjectsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "query.page",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "default": "1"
+          },
+          {
+            "name": "query.limit",
+            "description": "Maximum amount of events returned. Default is set to 1000 in documentation.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64",
+            "default": "15"
+          },
+          {
+            "name": "sorting.column",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sorting.direction",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "DIRECTION_UNSPECIFIED",
+              "DIRECTION_ASCENDING",
+              "DIRECTION_DESCENDING"
+            ],
+            "default": "DIRECTION_UNSPECIFIED"
+          },
+          {
+            "name": "conditions.name.value",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "conditions.name.operator",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TEXT_QUERY_OPERATOR_UNSPECIFIED",
+              "TEXT_QUERY_OPERATOR_EQUALS",
+              "TEXT_QUERY_OPERATOR_EQUALS_IGNORE_CASE",
+              "TEXT_QUERY_OPERATOR_STARTS_WITH",
+              "TEXT_QUERY_OPERATOR_STARTS_WITH_IGNORE_CASE",
+              "TEXT_QUERY_OPERATOR_CONTAINS",
+              "TEXT_QUERY_OPERATOR_CONTAINS_IGNORE_CASE",
+              "TEXT_QUERY_OPERATOR_ENDS_WITH",
+              "TEXT_QUERY_OPERATOR_ENDS_WITH_IGNORE_CASE"
+            ],
+            "default": "TEXT_QUERY_OPERATOR_UNSPECIFIED"
+          },
+          {
+            "name": "conditions.owner.value",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "conditions.status.value",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "PROJECT_STATUS_UNSPECIFIED",
+              "PROJECT_STATUS_ACTIVATED",
+              "PROJECT_STATUS_INACTIVATE"
+            ],
+            "default": "PROJECT_STATUS_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "post": {
+        "summary": "Create a project.",
+        "operationId": "UserService_CreateProject",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateProjectResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateProjectRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/projects/{id}": {
+      "get": {
+        "summary": "Get project detail by ID.",
+        "operationId": "UserService_GetProject",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetProjectResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a project.",
+        "operationId": "UserService_DeleteProject",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1DeleteProjectResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "patch": {
+        "summary": "Update project properties.",
+        "operationId": "UserService_UpdateProject",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateProjectResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserServiceUpdateProjectBody"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/system/version": {
+      "get": {
+        "operationId": "SystemService_GetVersion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetVersionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "SystemService"
+        ]
+      }
+    },
+    "/v1/tasks": {
+      "post": {
+        "summary": "Create a task.",
+        "operationId": "UserService_CreateTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateTaskResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateTaskRequest"
+            }
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    },
+    "/v1/user/{id}": {
+      "get": {
+        "summary": "Get user detail by ID.",
+        "operationId": "UserService_GetUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "UserServiceUpdateProjectBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ProjectStatus"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CreateProjectRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ProjectStatus"
+        }
+      }
+    },
+    "v1CreateProjectResponse": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/v1Project"
+        }
+      }
+    },
+    "v1CreateTaskRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "parent": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "startAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The start timestamp of the task."
+        },
+        "endAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The end timestamp of the task."
+        }
+      }
+    },
+    "v1CreateTaskResponse": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/v1Task"
+        }
+      }
+    },
+    "v1DeleteProjectResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "v1Direction": {
+      "type": "string",
+      "enum": [
+        "DIRECTION_UNSPECIFIED",
+        "DIRECTION_ASCENDING",
+        "DIRECTION_DESCENDING"
+      ],
+      "default": "DIRECTION_UNSPECIFIED"
+    },
+    "v1GetProjectResponse": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/v1Project"
+        }
+      }
+    },
+    "v1GetUserResponse": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/v1User"
+        }
+      }
+    },
+    "v1GetVersionResponse": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ListConditions": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "$ref": "#/definitions/v1ProjectNameCondition"
+        },
+        "owner": {
+          "$ref": "#/definitions/v1ProjectOwnerCondition"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ProjectStatusCondition"
+        }
+      }
+    },
+    "v1ListMeta": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "int64",
+          "example": "1"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "example": "10"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "example": "100"
+        }
+      }
+    },
+    "v1ListProjectsResponse": {
+      "type": "object",
+      "properties": {
+        "meta": {
+          "$ref": "#/definitions/v1ListMeta"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Project"
+          }
+        }
+      }
+    },
+    "v1ListQuery": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "int64",
+          "example": "1",
+          "default": "1"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int64",
+          "example": "15",
+          "default": "15",
+          "description": "Maximum amount of events returned. Default is set to 1000 in documentation."
+        }
+      }
+    },
+    "v1ListSorting": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "string",
+          "example": "name"
+        },
+        "direction": {
+          "$ref": "#/definitions/v1Direction",
+          "example": "DIRECTION_ASCENDING"
+        }
+      }
+    },
+    "v1Project": {
+      "type": "object",
+      "properties": {
+        "timestamps": {
+          "$ref": "#/definitions/v1Timestamps"
+        },
+        "properties": {
+          "$ref": "#/definitions/v1ProjectProperty"
+        }
+      }
+    },
+    "v1ProjectNameCondition": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "operator": {
+          "$ref": "#/definitions/v1TextQueryOperator"
+        }
+      }
+    },
+    "v1ProjectOwnerCondition": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ProjectProperty": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "84A7DF46-995D-431C-BFCD-00DA3E21B3F1",
+          "description": "The project id."
+        },
+        "name": {
+          "type": "string",
+          "example": "Focusly",
+          "description": "The project name.",
+          "title": "name"
+        },
+        "icon": {
+          "type": "string",
+          "example": "i-dashboard",
+          "description": "The project icon.",
+          "title": "icon"
+        },
+        "desc": {
+          "type": "string",
+          "example": "The project description",
+          "description": "The project description.",
+          "title": "desc"
+        },
+        "owner": {
+          "type": "string",
+          "example": "84A7DF46-995D-431C-BFCD-00DA3E21B3F1",
+          "description": "The project owner user id.",
+          "title": "owner"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ProjectStatus",
+          "example": "PROJECT_STATUS_ACTIVATED",
+          "description": "The project status.",
+          "title": "status"
+        }
+      }
+    },
+    "v1ProjectStatus": {
+      "type": "string",
+      "enum": [
+        "PROJECT_STATUS_UNSPECIFIED",
+        "PROJECT_STATUS_ACTIVATED",
+        "PROJECT_STATUS_INACTIVATE"
+      ],
+      "default": "PROJECT_STATUS_UNSPECIFIED"
+    },
+    "v1ProjectStatusCondition": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/v1ProjectStatus"
+        }
+      }
+    },
+    "v1Task": {
+      "type": "object",
+      "properties": {
+        "timestamps": {
+          "$ref": "#/definitions/v1Timestamps"
+        },
+        "properties": {
+          "$ref": "#/definitions/v1TaskProperty"
+        }
+      }
+    },
+    "v1TaskProperty": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "EDD5133D-8784-4FED-82D4-11E3C022B331"
+        },
+        "title": {
+          "type": "string",
+          "description": "The task title",
+          "title": "title"
+        },
+        "color": {
+          "type": "string",
+          "example": "#382837",
+          "description": "The color of the task."
+        },
+        "parent": {
+          "type": "string",
+          "description": "The parent id of this task."
+        },
+        "board": {
+          "type": "string",
+          "description": "The ID of the board to which this task belongs."
+        },
+        "project": {
+          "type": "string",
+          "description": "The ID of the project to which this task belongs."
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the task"
+        },
+        "participants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The ID of the participant in this task."
+        },
+        "startAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The start timestamp of the task."
+        },
+        "endAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The end timestamp of the task."
+        }
+      }
+    },
+    "v1TextQueryOperator": {
+      "type": "string",
+      "enum": [
+        "TEXT_QUERY_OPERATOR_UNSPECIFIED",
+        "TEXT_QUERY_OPERATOR_EQUALS",
+        "TEXT_QUERY_OPERATOR_EQUALS_IGNORE_CASE",
+        "TEXT_QUERY_OPERATOR_STARTS_WITH",
+        "TEXT_QUERY_OPERATOR_STARTS_WITH_IGNORE_CASE",
+        "TEXT_QUERY_OPERATOR_CONTAINS",
+        "TEXT_QUERY_OPERATOR_CONTAINS_IGNORE_CASE",
+        "TEXT_QUERY_OPERATOR_ENDS_WITH",
+        "TEXT_QUERY_OPERATOR_ENDS_WITH_IGNORE_CASE"
+      ],
+      "default": "TEXT_QUERY_OPERATOR_UNSPECIFIED"
+    },
+    "v1Timestamps": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The creation timestamp of the object."
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The update timestamp of the object."
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The deletion timestamp of the object."
+        }
+      }
+    },
+    "v1UpdateProjectResponse": {
+      "type": "object",
+      "properties": {
+        "item": {
+          "$ref": "#/definitions/v1Project"
+        }
+      }
+    },
+    "v1User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "84A7DF46-995D-431C-BFCD-00DA3E21B3F1"
+        },
+        "name": {
+          "type": "string",
+          "example": "George King"
+        },
+        "role": {
+          "type": "string",
+          "description": "User role"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "avatar": {
+          "type": "string",
+          "example": "https://focusly.svc.dev/avatar/84A7DF46-995D-431C-BFCD-00DA3E21B3F1.jpg",
+          "description": "The User avatar url"
+        },
+        "gender": {
+          "$ref": "#/definitions/v1UserGender",
+          "example": "USER_GENDER_MALE",
+          "description": "The user gender."
+        },
+        "mobile": {
+          "type": "string",
+          "example": "+8618616882860",
+          "description": "User phone number"
+        },
+        "language": {
+          "type": "string",
+          "example": "zh-CN"
+        }
+      }
+    },
+    "v1UserGender": {
+      "type": "string",
+      "enum": [
+        "USER_GENDER_UNSPECIFIED",
+        "USER_GENDER_MALE",
+        "USER_GENDER_FEMALE"
+      ],
+      "default": "USER_GENDER_UNSPECIFIED"
+    }
+  }
+}

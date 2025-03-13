@@ -6,7 +6,7 @@ import (
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
-	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris/v12/mvc"
 )

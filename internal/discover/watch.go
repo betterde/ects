@@ -1,7 +1,7 @@
 package discover
 
 import (
-	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"log"
 	"time"
 )

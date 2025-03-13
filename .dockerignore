@@ -1,8 +1,8 @@
 .idea/
 out/
 builds/
-web/cert
-web/dist
-web/node_modules
-web/bindata.go
-web/docs
+spa/cert
+spa/dist
+spa/node_modules
+spa/bindata.go
+spa/docs

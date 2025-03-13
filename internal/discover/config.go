@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/betterde/ects/config"
-	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"log"
 )
 

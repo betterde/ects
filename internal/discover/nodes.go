@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/models"
-	"github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/mvcc/mvccpb"
+	"go.etcd.io/etcd/api/v3/mvccpb"
+	"go.etcd.io/etcd/client/v3"
 	"log"
 	"time"
 )
@@ -99,7 +99,7 @@ func seize(ctx context.Context, key, val string) bool {
 		}
 	}(ctx)
 
-	lockey := fmt.Sprintf("%s/%s/", config.Conf.Locker, key)
+	lockey := fmt.Sprintf("%s/%s/", config.Conf.Etcd.Locker, key)
 	txn := Client.Txn(ctx)
 	txn.If(clientv3.Compare(clientv3.CreateRevision(lockey), "=", 0)).
 		Then(clientv3.OpPut(lockey, val, clientv3.WithLease(res.ID))).

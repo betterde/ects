@@ -1,4 +1,4 @@
-![dashboard](web/docs/.vuepress/public/logo.png)
+![dashboard](spa/docs/.vuepress/public/logo.png)
 
 [![Build Status](https://github.com/betterde/ects/actions/workflows/ci.yml/badge.svg)](https://github.com/betterde/ects/actions/workflows/ci.yml/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/betterde/ects)](https://github.com/betterde/ects/issues)
@@ -10,7 +10,7 @@ Elastic Crontab System 是基于 ETCD 实现的分布式定时任务管理系统
 
 ## 架构设计
 
-![dashboard](web/docs/.vuepress/public/architecture.png)
+![dashboard](spa/docs/.vuepress/public/architecture.png)
 
 ## 源码安装
 
@@ -56,5 +56,5 @@ $ go build -o ects main.go
 
 ## 赞助商
 
-[![jetbrains](web/docs/.vuepress/public/jetbrains.svg)](https://www.jetbrains.com/?from=ects)
+[![jetbrains](spa/docs/.vuepress/public/jetbrains.svg)](https://www.jetbrains.com/?from=ects)
 

@@ -9,12 +9,12 @@ import (
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
 	"github.com/betterde/ects/routes"
-	"github.com/betterde/ects/web"
-	"github.com/coreos/etcd/clientv3"
+	"github.com/betterde/ects/spa"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
+	"go.etcd.io/etcd/client/v3"
 	"gopkg.in/yaml.v2"
 	"log"
 	"os"
@@ -79,7 +79,7 @@ func startInitializeWeb() {
 		ctx.Redirect("/", iris.StatusMovedPermanently)
 	})
 
-	app.HandleDir("/", web.FS, iris.DirOptions{
+	app.HandleDir("/", spa.FS, iris.DirOptions{
 		SPA:       true,
 		IndexName: "initialize.html",
 	})

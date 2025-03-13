@@ -7,12 +7,12 @@ import (
 	"log"
 	"sort"
 
-	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"github.com/go-xorm/builder"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/mvc"
 	"github.com/satori/go.uuid"
-	"gopkg.in/go-playground/validator.v9"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"

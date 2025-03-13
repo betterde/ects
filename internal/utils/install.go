@@ -58,7 +58,7 @@ func IsDatabaseExist() bool {
 
 func CreateDatabase() error {
 	Init()
-	statement := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET %s DEFAULT COLLATE %s", config.Conf.Database.Name, config.Conf.Char, "utf8mb4_unicode_ci")
+	statement := fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s DEFAULT CHARACTER SET %s DEFAULT COLLATE %s", config.Conf.Database.Name, "utf8mb4", "utf8mb4_unicode_ci")
 	_, err := DB.Query(statement)
 	return err
 }

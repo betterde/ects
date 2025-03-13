@@ -4,7 +4,7 @@ ARG YARN_VERSION=1.22.19-r0
 ARG NODEJS_VERSION=18.20.1-r0
 RUN apk update && \
     apk add nodejs=${NODEJS_VERSION} yarn=${YARN_VERSION}
-ADD web /web
+ADD spa /web
 WORKDIR /web
 RUN yarn && yarn build
 
@@ -15,7 +15,7 @@ ARG VERSION=0.6.2
 
 ADD . /go/src/ects
 WORKDIR /go/src/ects
-COPY --from=web /web/dist /go/src/ects/web/dist
+COPY --from=web /spa/dist /go/src/ects/web/dist
 RUN apk update && \
     apk add --no-cache git
 RUN go mod tidy && \

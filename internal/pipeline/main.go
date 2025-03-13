@@ -7,8 +7,8 @@ import (
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/scheduler"
 	"github.com/betterde/ects/models"
-	"github.com/coreos/etcd/clientv3"
-	"github.com/coreos/etcd/mvcc/mvccpb"
+	"go.etcd.io/etcd/api/v3/mvccpb"
+	"go.etcd.io/etcd/client/v3"
 	"log"
 	"time"
 )

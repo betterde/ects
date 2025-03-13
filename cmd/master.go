@@ -2,16 +2,17 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"github.com/betterde/ects/internal/build"
-	"github.com/betterde/ects/routes"
-	"github.com/kataras/iris/v12"
+	"github.com/betterde/ects/internal/global"
+	"github.com/betterde/ects/internal/journal"
+	"github.com/betterde/ects/internal/server"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"os/signal"
 	"runtime"
-	"time"
+	"syscall"
 
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/discover"
@@ -23,9 +24,8 @@ import (
 // masterCmd represents the master command
 var (
 	masterCmd = &cobra.Command{
-		Use:   "master",
-		Short: "Run a master node service",
-		Long:  "Run a master node service on this server",
+		Use:   "server",
+		Short: "Run a server node",
 		Run: func(cmd *cobra.Command, args []string) {
 			bootstrap()
 			watch()
@@ -101,37 +101,20 @@ func register() {
 
 func start() {
 	service.Runtime = master
-	addr := fmt.Sprintf("%s:%d", service.Runtime.Host, service.Runtime.Port)
-	app := iris.New()
-	app.Logger().SetLevel("disable")
-
-	routes.Register(app)
-
-	iris.RegisterOnInterrupt(func() {
-		timeout := 5 * time.Second
-		ctx, cancel := context.WithTimeout(context.Background(), timeout)
-		defer cancel()
-
-		// When the master node is shut down, first check whether there are other online master nodes
-		if count, err := models.Engine.Where("mode = ? AND status = ? AND id != ?", "master", "online", service.Runtime.Id).Count(&models.Node{}); err != nil {
-			log.Println(err)
-		} else {
-			if count == 0 {
-				node := &models.Node{
-					Id: service.Runtime.Id,
-				}
-				node.Offline()
-			}
-		}
-		cancelFunc()
-		if err := app.Shutdown(ctx); err != nil {
-			log.Println(err)
-		}
-	})
-
+	server.Instance.Run(verbose)
 	go register()
+	if err := signalHandler(global.CancelFunc); err != nil {
+		journal.Logger.Errorw("Failed to shutdown CDNS server:", err)
+	}
+}
 
-	if err := app.Run(iris.Addr(addr), iris.WithoutInterruptHandler, iris.WithOptimizations, iris.WithCharset("UTF-8"), iris.WithoutBodyConsumptionOnUnmarshal); err != nil {
-		log.Fatal(err)
+func signalHandler(cancel context.CancelFunc) error {
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGHUP, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGKILL)
+
+	select {
+	case <-shutdown:
+		cancel()
+		return server.Instance.Engine.Shutdown()
 	}
 }

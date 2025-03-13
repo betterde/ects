@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/betterde/ects/config"
 	"github.com/betterde/ects/internal/service"
-	"github.com/coreos/etcd/clientv3"
+	"go.etcd.io/etcd/client/v3"
 	"log"
 	"sync"
 	"time"

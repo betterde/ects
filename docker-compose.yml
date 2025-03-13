@@ -1,57 +1,63 @@
+name: ects
 services:
   etcd:
-    image: gcr.io/etcd-development/etcd:v3.5.6
-    ports:
-      - "0.0.0.0:2379:2379"
-      - "0.0.0.0:2380:2380"
-    hostname: etcd
-    container_name: etcd
-    environment:
-      ETCD_NAME: "etcd"
-      ETCD_ADVERTISE_CLIENT_URLS: "http://0.0.0.0:2379"
-      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
-      ETCD_LISTEN_PEER_URLS: "http://0.0.0.0:2380"
-      ETCD_INITIAL_ADVERTISE_PEER_URLS: "http://0.0.0.0:2380"
-      ETCD_INITIAL_CLUSTER: "etcd=http://0.0.0.0:2380"
-      ETCD_INITIAL_CLUSTER_TOKEN: "etcd_cluster"
-      ETCD_INITIAL_CLUSTER_STATE: "new"
+    image: gcr.io/etcd-development/etcd:v3.5.19
+    restart: always
     volumes:
-      - ./data/default.etcd:/default.etcd
+      - etcd-data:/etcd-data
+    hostname: etcd
     networks:
       - ects
+    environment:
+      - ETCD_NAME=etcd
+      - ETCDCTL_API=3
+      - ETCD_INITIAL_CLUSTER=etcd=http://0.0.0.0:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcd_cluster
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://0.0.0.0:2380
+    container_name: etcd
   mysql:
     image: mysql:latest
-    hostname: mysql
-    container_name: mysql
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ects
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
+    hostname: mysql
     networks:
       - ects
+    environment:
+      MYSQL_ROOT_PASSWORD: ects
+    container_name: mysql
   ects:
     image: betterde/ects:latest
+    ports:
+      - "0.0.0.0:9701:9701"
     build:
-      context: .
-      dockerfile: Dockerfile
       args:
         - VERSION=${VERSION}
         - BUILD_TIME=${BUILD_TIME}
         - GIT_COMMIT=${GIT_COMMIT}
         - YARN_VERSION=1.22.19-r0
         - NODEJS_VERSION=18.20.1-r0
-    hostname: ects
-    container_name: ects
+      context: .
+      dockerfile: Dockerfile
     command: ects master --etcd etcd:2379
-    ports:
-      - 9701:9701
-    depends_on:
-      - mysql
-      - etcd
+    hostname: ects
     networks:
       - ects
+    depends_on:
+      - etcd
+      - mysql
+    container_name: ects
+
 networks:
   ects:
     name: ects
+
+volumes:
+  etcd-data:
+    name: etcd-data
+  mysql-data:
+    name: mysql-data
