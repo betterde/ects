@@ -42,7 +42,7 @@ func init() {
 	rootCmd.AddCommand(workerCmd)
 	service.Runtime = &service.Instance{
 		Mode:    models.WORKER,
-		Version: rootCmd.Version,
+		Version: build.Version,
 	}
 	workerCmd.Flags().StringVar(&worker.Name, "name", "", "Set worker node name")
 	workerCmd.Flags().StringSliceVar(&service.EndPoints, "etcd", []string{"127.0.0.1:2379"}, "Set Etcd endpoints")

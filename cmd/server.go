@@ -45,7 +45,6 @@ var (
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	rootCmd.AddCommand(masterCmd)
-	config.Conf = config.Init()
 	service.Initialize()
 	masterCmd.Flags().StringVar(&master.Host, "host", "0.0.0.0", "Set listen on IP")
 	masterCmd.Flags().IntVar(&master.Port, "port", 9701, "Set listen on port")
@@ -58,6 +57,8 @@ func init() {
 
 func bootstrap() {
 	var err error
+	// Init HTTP server
+	server.InitHttpServer(build.Name, build.Version, false)
 	config.Conf.Etcd.EndPoints = service.EndPoints
 	discover.NewClient()
 	discover.GetConf(service.ConfigKey)

@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"errors"
@@ -11,13 +11,12 @@ import (
 	"github.com/kataras/iris/v12/middleware/jwt"
 
 	"github.com/betterde/ects/config"
-	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
 )
 
 type (
 	UserInterface interface {
-		Users(params map[string]string) (*[]models.User, *response.Meta)
+		Users(params map[string]string) *[]models.User
 		FindByID(id string) (*models.User, error)
 		FindByEmail(email string) *models.User
 		Attempt(username, password string) (string, error)
@@ -33,7 +32,7 @@ func NewUserService() UserInterface {
 }
 
 // Users Get users list
-func (service *UserService) Users(params map[string]string) (*[]models.User, *response.Meta) {
+func (service *UserService) Users(params map[string]string) *[]models.User {
 	var (
 		page  = 1
 		limit = 10
@@ -72,14 +71,10 @@ func (service *UserService) Users(params map[string]string) (*[]models.User, *re
 	}
 
 	if err != nil {
-		log.Println(err)
+		log.Println(err, total)
 	}
 
-	return &users, &response.Meta{
-		Limit: limit,
-		Page:  page,
-		Total: int(total),
-	}
+	return &users
 }
 
 // Attempt user credentials

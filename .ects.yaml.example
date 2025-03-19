@@ -1,0 +1,25 @@
+http:
+  listen: 0.0.0.0:9701
+  tlsKey:
+  tlsCert:
+auth:
+  ttl: 86400
+  secret:
+logging:
+  level: INFO
+etcd:
+  config: /ects/config
+  killer: /ects/killer
+  locker: /ects/locker
+  service: /ects/service
+  pipeline: /ects/pipeline
+  timeout: 5
+  endpoints:
+    - localhost:2379
+database:
+  port: 3306
+  name: ects
+  user: root
+  host: mysql
+  pass: password
+  char: utf8mb4

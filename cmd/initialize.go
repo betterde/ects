@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/betterde/ects/config"
+	"github.com/betterde/ects/internal/build"
 	"github.com/betterde/ects/internal/discover"
+	"github.com/betterde/ects/internal/global"
+	"github.com/betterde/ects/internal/journal"
+	"github.com/betterde/ects/internal/server"
 	"github.com/betterde/ects/internal/service"
 	"github.com/betterde/ects/internal/utils"
 	"github.com/betterde/ects/models"
-	"github.com/betterde/ects/routes"
-	"github.com/betterde/ects/spa"
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/mvc"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/cobra"
 	"go.etcd.io/etcd/client/v3"
@@ -19,7 +19,6 @@ import (
 	"log"
 	"os"
 	"runtime"
-	"sync"
 	"time"
 )
 
@@ -60,10 +59,9 @@ var (
 
 func init() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	config.Conf = config.Init()
 	rootCmd.AddCommand(initializeCmd)
 	service.Runtime = &service.Instance{
-		Version: rootCmd.Version,
+		Version: build.Version,
 	}
 	initializeCmd.Flags().StringVarP(&mode, "mode", "m", "web", "Set initialize mode with web ui or json, yaml config file")
 	initializeCmd.Flags().StringVarP(&path, "path", "p", "", "Set config file path")
@@ -73,34 +71,10 @@ func init() {
 }
 
 func startInitializeWeb() {
-	app := iris.New()
-	app.Logger().SetLevel("disable")
-	app.OnErrorCode(404, func(ctx iris.Context) {
-		ctx.Redirect("/", iris.StatusMovedPermanently)
-	})
-
-	app.HandleDir("/", spa.FS, iris.DirOptions{
-		SPA:       true,
-		IndexName: "initialize.html",
-	})
-
-	mvc.Configure(app.Party("/api/initialize"), routes.Initialize)
-
-	sg := new(sync.WaitGroup)
-	defer sg.Wait()
-
-	iris.RegisterOnInterrupt(func() {
-		sg.Add(1)
-		defer sg.Done()
-		sctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-		defer cancel()
-		if err := app.Shutdown(sctx); err != nil {
-			log.Println(err)
-		}
-	})
-
-	if err := app.Run(iris.Addr(":9701"), iris.WithOptimizations, iris.WithCharset("UTF-8"), iris.WithoutInterruptHandler); err != nil {
-		log.Println(err)
+	server.InitHttpServer(build.Name, build.Version, true)
+	server.Instance.Run(false)
+	if err := signalHandler(global.CancelFunc); err != nil {
+		journal.Logger.Errorw("Failed to shutdown ECTS server:", err)
 	}
 }
 

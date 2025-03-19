@@ -161,7 +161,7 @@ func (mailer *Mail) Generator(level string) *Mail {
 }
 
 func (mailer *Mail) Send() error {
-	dialer := gomail.NewDialer(config.Conf.Notification.Host, config.Conf.Notification.Port, config.Conf.Notification.User, config.Conf.Notification.Pass)
+	dialer := gomail.NewDialer(config.Conf.Notification.Host, int(config.Conf.Notification.Port), config.Conf.Notification.User, config.Conf.Notification.Pass)
 	message := gomail.NewMessage()
 	message.SetHeader("From", mailer.From)
 	message.SetHeader("To", mailer.To)

@@ -23,7 +23,7 @@ type HttpServer struct {
 
 var Instance *HttpServer
 
-func InitHttpServer(name, version string) {
+func InitHttpServer(name, version string, init bool) {
 	Instance = &HttpServer{
 		Engine: fiber.New(fiber.Config{
 			AppName:       name,
@@ -54,7 +54,11 @@ func InitHttpServer(name, version string) {
 		}),
 	}
 
-	routes.RegisterRoutes(Instance.Engine)
+	if init == false {
+		routes.RegisterRoutes(Instance.Engine)
+	} else {
+		routes.RegisterInitializeRoutes(Instance.Engine)
+	}
 }
 
 func (s *HttpServer) Run(verbose bool) {

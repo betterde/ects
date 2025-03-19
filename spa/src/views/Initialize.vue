@@ -434,10 +434,11 @@
   #install {
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     display: flex;
+    min-height: 100%;
     text-align: center;
-    background-color: #f0f2f5;
-    justify-content: center;
     align-items: Center;
+    justify-content: center;
+    background-color: #f0f2f5;
 
     .panel {
       min-height: 600px;

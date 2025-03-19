@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"github.com/betterde/ects/internal/journal"
 	"github.com/spf13/viper"
 	"log"
@@ -12,21 +11,21 @@ import (
 
 type (
 	Etcd struct {
-		Killer    string   `json:"killer" yaml:"killer" mapstructure:"" validate:"required"`
-		Locker    string   `json:"locker" yaml:"locker" mapstructure:"" validate:"required"`
-		Service   string   `json:"service" yaml:"service" mapstructure:"" validate:"required"`
-		Pipeline  string   `json:"pipeline" yaml:"pipeline" mapstructure:"" validate:"required"`
-		Config    string   `json:"config" yaml:"config" mapstructure:"" validate:"required"`
-		EndPoints []string `json:"endpoints" yaml:"endpoints" mapstructure:"" validate:"required"`
-		Timeout   int64    `json:"timeout" yaml:"timeout" mapstructure:"" validate:"required"`
+		Config    string   `json:"config" yaml:"config" mapstructure:"config" validate:"required"`
+		Killer    string   `json:"killer" yaml:"killer" mapstructure:"killer" validate:"required"`
+		Locker    string   `json:"locker" yaml:"locker" mapstructure:"locker" validate:"required"`
+		Service   string   `json:"service" yaml:"service" mapstructure:"service" validate:"required"`
+		Pipeline  string   `json:"pipeline" yaml:"pipeline" mapstructure:"pipeline" validate:"required"`
+		Timeout   uint32   `json:"timeout" yaml:"timeout" mapstructure:"timeout" validate:"required"`
+		EndPoints []string `json:"endpoints" yaml:"endpoints" mapstructure:"endpoints" validate:"required"`
 	}
 	Database struct {
-		Host string `json:"host" yaml:"host" mapstructure:"" validate:"required"`
-		Port int    `json:"port" yaml:"port" mapstructure:"" validate:"required"`
-		Name string `json:"name" yaml:"name" mapstructure:"" validate:"required"`
-		User string `json:"user" yaml:"user" mapstructure:"" validate:"required"`
-		Pass string `json:"pass" yaml:"pass" mapstructure:"" validate:"required"`
-		Char string `json:"char" yaml:"char" mapstructure:"" validate:"required"`
+		Host string `json:"host" yaml:"host" mapstructure:"host" validate:"required"`
+		Port uint16 `json:"port" yaml:"port" mapstructure:"port" validate:"required"`
+		Name string `json:"name" yaml:"name" mapstructure:"name" validate:"required"`
+		User string `json:"user" yaml:"user" mapstructure:"user" validate:"required"`
+		Pass string `json:"pass" yaml:"pass" mapstructure:"pass" validate:"required"`
+		Char string `json:"char" yaml:"char" mapstructure:"char" validate:"required"`
 	}
 	User struct {
 		Name    string `json:"name" yaml:"-" mapstructure:"" validate:"required"`
@@ -35,69 +34,41 @@ type (
 		Confirm string `json:"confirm" yaml:"-" mapstructure:"" validate:"required"`
 	}
 	Auth struct {
-		Secret string `json:"secret" yaml:"secret" mapstructure:"" validate:"required"`
-		TTL    int64  `json:"ttl" yaml:"ttl" mapstructure:"" validate:"required"`
+		TTL    uint64 `json:"ttl" yaml:"ttl" mapstructure:"ttl" validate:"required"`
+		Secret string `json:"secret" yaml:"secret" mapstructure:"secret" validate:"required"`
 	}
 	Notification struct {
-		Url        string `json:"url" yaml:"url" mapstructure:"" validate:"required"`
-		Host       string `json:"host" yaml:"host" mapstructure:"" validate:"required"`
-		Port       int    `json:"port" yaml:"port" mapstructure:"" validate:"numeric"`
-		User       string `json:"user" yaml:"user" mapstructure:"" validate:"required"`
-		Pass       string `json:"pass" yaml:"pass" mapstructure:"" validate:"required"`
-		Name       string `json:"name" yaml:"name" mapstructure:"" validate:"required"`
-		Protocol   string `json:"protocol" yaml:"protocol" mapstructure:"" validate:"required"`
-		Encryption string `json:"encryption" yaml:"encryption" mapstructure:"" validate:"required"`
+		Url        string `json:"url" yaml:"url" mapstructure:"url" validate:"required"`
+		Host       string `json:"host" yaml:"host" mapstructure:"host" validate:"required"`
+		Port       uint16 `json:"port" yaml:"port" mapstructure:"port" validate:"numeric"`
+		User       string `json:"user" yaml:"user" mapstructure:"user" validate:"required"`
+		Pass       string `json:"pass" yaml:"pass" mapstructure:"pass" validate:"required"`
+		Name       string `json:"name" yaml:"name" mapstructure:"name" validate:"required"`
+		Protocol   string `json:"protocol" yaml:"protocol" mapstructure:"protocol" validate:"required"`
+		Encryption string `json:"encryption" yaml:"encryption" mapstructure:"encryption" validate:"required"`
 	}
 
 	HTTP struct {
-		Listen  string `yaml:"listen" mapstructure:"LISTEN"`
-		TLSKey  string `yaml:"tlsKey" mapstructure:"TLSKEY"`
-		TLSCert string `yaml:"tlsCert" mapstructure:"TLSCERT"`
-	}
-
-	GRPC struct {
-		Listen  string `yaml:"listen" mapstructure:"LISTEN"`
-		TLSKey  string `yaml:"tlsKey" mapstructure:"TLSKEY"`
-		TLSCert string `yaml:"tlsCert" mapstructure:"TLSCERT"`
+		Listen  string `json:"listen" yaml:"listen" mapstructure:"listen"`
+		TLSKey  string `json:"tlsKey" yaml:"tlsKey" mapstructure:"tlskey"`
+		TLSCert string `json:"tlsCert" yaml:"tlsCert" mapstructure:"tlscert"`
 	}
 
 	Logging struct {
-		Level string `yaml:"level" mapstructure:"LEVEL"`
+		Level string `yaml:"level" mapstructure:"level"`
 	}
 
 	Config struct {
-		Auth         Auth         `json:"auth" yaml:"auth"`
-		Etcd         Etcd         `json:"etcd" yaml:"etcd"`
-		HTTP         HTTP         `json:"http" yaml:"http" mapstructure:"HTTP"`
-		GRPC         GRPC         `json:"grpc" yaml:"grpc" mapstructure:"GRPC"`
-		Logging      Logging      `json:"logging" yaml:"logging" mapstructure:"LOGGING"`
-		Database     Database     `json:"database" yaml:"database" mapstructure:"DATABASE"`
-		Notification Notification `json:"notification" yaml:"notification" mapstructure:"NOTIFICATION"`
+		Auth         Auth         `json:"auth" yaml:"auth" mapstructure:"auth"`
+		Etcd         Etcd         `json:"etcd" yaml:"etcd" mapstructure:"etcd"`
+		HTTP         HTTP         `json:"http" yaml:"http" mapstructure:"http"`
+		Logging      Logging      `json:"logging" yaml:"logging" mapstructure:"logging"`
+		Database     Database     `json:"database" yaml:"database" mapstructure:"database"`
+		Notification Notification `json:"notification" yaml:"notification" mapstructure:"notification"`
 	}
 )
 
-var (
-	keys = []string{
-		"ENV",
-		"HTTP.LISTEN",
-		"HTTP.TLSKEY",
-		"HTTP.TLSCERT",
-		"GRPC.LISTEN",
-		"GRPC.TLSKEY",
-		"GRPC.TLSCERT",
-		"LOGGING.LEVEL",
-		"DATABASE.URL",
-		"DATABASE.DATABASE",
-		"DATABASE.USERNAME",
-		"DATABASE.PASSWORD",
-		"DATABASE.NAMESPACE",
-	}
-	Conf *Config
-)
-
-func Init() *Config {
-	return &Config{}
-}
+var Conf *Config
 
 // CheckConfigFile 检查配置文件是否存在
 func CheckConfigFile(path string) (bool, error) {
@@ -148,29 +119,22 @@ func Parse(file string, envPrefix string) {
 		viper.SetConfigFile(file)
 	} else {
 		viper.AddConfigPath(".")
-		viper.SetConfigName(".focusly")
-		viper.AddConfigPath("/etc/focusly")
+		viper.SetConfigType("yaml")
+		viper.SetConfigName(".ects")
 	}
-
-	replacer := strings.NewReplacer(".", "_")
-
-	// read in environment variables that match
-	viper.SetEnvKeyReplacer(replacer)
-	viper.SetEnvPrefix(envPrefix)
 
 	var notFoundError viper.ConfigFileNotFoundError
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err != nil && errors.As(err, &notFoundError) {
-		for _, key := range keys {
-			if err := viper.BindEnv(key, fmt.Sprintf("%s_%s", envPrefix, replacer.Replace(key))); err != nil {
-				journal.Logger.Error(err)
-			}
-		}
+		journal.Logger.Debugf("Config file not found, using defaults")
 	}
 
 	// read in environment variables that match
 	viper.AutomaticEnv()
+
+	viper.SetEnvPrefix(envPrefix)
+	viper.SetEnvKeyReplacer(strings.NewReplacer("_", "."))
 
 	err := viper.Unmarshal(&Conf)
 	if err != nil {
