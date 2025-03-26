@@ -41,6 +41,10 @@ func RegisterRoutes(app *fiber.App) {
 
 	app.Post("/api/profile", handler.GetProfile)
 
+	app.Get("/api/dashboard/nodes", handler.GetNodes)
+	app.Get("/api/dashboard/pipelines", handler.GetPipelines)
+	app.Get("/api/dashboard/failtures", handler.GetFailtures)
+
 	app.Get("*", filesystem.New(filesystem.Config{
 		Root:               spa.Serve(),
 		Index:              "index.html",

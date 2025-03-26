@@ -1,4 +1,4 @@
-package dashboard
+package handler
 
 import (
 	"context"
@@ -6,20 +6,15 @@ import (
 	"github.com/betterde/ects/internal/discover"
 	"github.com/betterde/ects/internal/response"
 	"github.com/betterde/ects/models"
-	"go.etcd.io/etcd/client/v3"
 	"github.com/go-xorm/builder"
-	"github.com/kataras/iris/v12/mvc"
+	"github.com/gofiber/fiber/v2"
+	"go.etcd.io/etcd/client/v3"
 )
 
-type (
-	Controller struct{}
-)
-
-// 获取节点数据
-func (instance *Controller) GetNodes() mvc.Response {
+func GetNodes(ctx *fiber.Ctx) error {
 	nodes := make([]*models.Node, 0)
 	if err := models.Engine.Where(builder.Eq{"status": "online"}).Find(&nodes); err != nil {
-		return response.InternalServerError("获取节点信息失败", err)
+		return err
 	}
 
 	res := struct {
@@ -41,23 +36,21 @@ func (instance *Controller) GetNodes() mvc.Response {
 		}
 	}
 
-	return response.Success("请求成功", response.Payload{"data": res})
+	return ctx.JSON(response.Success("success", res))
 }
 
-// 获取正在调度的流水线数量
-func (instance *Controller) GetPipelines() mvc.Response {
+func GetPipelines(ctx *fiber.Ctx) error {
 	resp, err := discover.Client.Get(context.TODO(), config.Conf.Etcd.Pipeline, clientv3.WithPrefix())
 	if err != nil {
-		return response.InternalServerError("获取流水线信息失败", err)
+		return err
 	}
-	return response.Success("请求成功", response.Payload{"data": len(resp.Kvs)})
+	return ctx.JSON(response.Success("success", len(resp.Kvs)))
 }
 
-// 获取流水线失败次数
-func (instance *Controller) GetFailtures() mvc.Response {
+func GetFailtures(ctx *fiber.Ctx) error {
 	if count, err := models.Engine.Where(builder.Eq{"status": 0}).Count(&models.PipelineRecords{}); err != nil {
-		return response.InternalServerError("获取流水线执行记录失败", err)
+		return err
 	} else {
-		return response.Success("请求成功", response.Payload{"data": count})
+		return ctx.JSON(response.Success("success", count))
 	}
 }
