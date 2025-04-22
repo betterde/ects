@@ -11,6 +11,15 @@ import (
 	"syscall"
 )
 
+type (
+	Shell struct {
+		User    string
+		Env     []string
+		Dir     string
+		Command string
+	}
+)
+
 // Exec Execute shell tasks
 func (actuator *Shell) Exec(ctx context.Context) *models.TaskRecords {
 	cmd := exec.CommandContext(ctx, "cmd", "/C", actuator.Command)
