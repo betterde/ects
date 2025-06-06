@@ -26,11 +26,11 @@ type (
 )
 
 func GetSystemInfo(ctx *fiber.Ctx) error {
-	return ctx.JSON(response.Success("Success", service.Runtime))
+	return ctx.JSON(response.Success("Success", service.Runtime, nil))
 }
 
 func GenSystemSecret(ctx *fiber.Ctx) error {
-	return ctx.JSON(response.Success("Success", utils.Random(64)))
+	return ctx.JSON(response.Success("Success", utils.Random(64), nil))
 }
 
 func SetSystemDatabase(ctx *fiber.Ctx) error {
@@ -38,7 +38,7 @@ func SetSystemDatabase(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(response.Success("Success", map[string]bool{"exist": utils.IsDatabaseExist()}))
+	return ctx.JSON(response.Success("Success", map[string]bool{"exist": utils.IsDatabaseExist()}, nil))
 }
 
 func InitializationSystem(ctx *fiber.Ctx) error {
@@ -120,5 +120,5 @@ func InitializationSystem(ctx *fiber.Ctx) error {
 		TokenType:   "Bearer",
 		ExpiresIn:   uint64(time.Now().Add(time.Duration(config.Conf.Auth.TTL) * time.Second).Unix()),
 		AccessToken: token,
-	}))
+	}, nil))
 }

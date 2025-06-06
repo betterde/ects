@@ -5,15 +5,22 @@ import (
 )
 
 type (
+	Meta struct {
+		Page  int   `json:"page"`
+		Limit int   `json:"limit"`
+		Total int64 `json:"total"`
+		Start int
+	}
 	Response struct {
 		Code    int         `json:"code"`
 		Message string      `json:"message"`
 		Data    interface{} `json:"data"`
+		Meta    *Meta       `json:"meta,omitempty"`
 	}
 )
 
 // Success Sending a successful response
-func Success(message string, data interface{}) Response {
+func Success(message string, data interface{}, meta *Meta) Response {
 	if data == nil {
 		return Response{
 			Code:    http.StatusOK,
@@ -26,6 +33,7 @@ func Success(message string, data interface{}) Response {
 		Code:    http.StatusOK,
 		Message: message,
 		Data:    data,
+		Meta:    meta,
 	}
 }
 
@@ -65,19 +73,31 @@ func InternalServerError(message string, err error) Response {
 	}
 }
 
-// Send Sending a basic response
-func Send(code int, message string, data interface{}) Response {
-	if data == nil {
-		return Response{
-			Code:    code,
-			Message: message,
-			Data:    struct{}{},
-		}
-	}
+func (r *Response) setMeta(meta Meta) {
+	r.Meta = &meta
+}
 
-	return Response{
-		Code:    code,
-		Message: message,
-		Data:    data,
+func (r *Response) setData(data interface{}) {
+	r.Data = data
+}
+
+func WithMeta(meta Meta) func(*Response) {
+	return func(response *Response) {
+		response.setMeta(meta)
 	}
+}
+
+func WithData(data interface{}) func(*Response) {
+	return func(response *Response) {
+		response.setData(data)
+	}
+}
+
+// Send Sending a basic response
+func Send(options ...func(response *Response)) *Response {
+	response := Response{}
+	for _, option := range options {
+		option(&response)
+	}
+	return &response
 }

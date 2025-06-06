@@ -34,5 +34,5 @@ func GetProfile(ctx *fiber.Ctx) error {
 		Name:    user.Name,
 		Email:   user.Email,
 		Manager: user.Manager,
-	}))
+	}, nil))
 }

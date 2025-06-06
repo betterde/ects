@@ -79,5 +79,5 @@ func SignUpHandler(ctx *fiber.Ctx) error {
 	if err := user.Save(); err != nil {
 		log.Println(err)
 	}
-	return ctx.JSON(response.Success("success", user))
+	return ctx.JSON(response.Success("success", user, nil))
 }

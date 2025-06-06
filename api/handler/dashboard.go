@@ -36,7 +36,7 @@ func GetNodes(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(response.Success("success", res))
+	return ctx.JSON(response.Success("success", res, nil))
 }
 
 func GetPipelines(ctx *fiber.Ctx) error {
@@ -44,13 +44,13 @@ func GetPipelines(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.JSON(response.Success("success", len(resp.Kvs)))
+	return ctx.JSON(response.Success("success", len(resp.Kvs), nil))
 }
 
 func GetFailtures(ctx *fiber.Ctx) error {
 	if count, err := models.Engine.Where(builder.Eq{"status": 0}).Count(&models.PipelineRecords{}); err != nil {
 		return err
 	} else {
-		return ctx.JSON(response.Success("success", count))
+		return ctx.JSON(response.Success("success", count, nil))
 	}
 }

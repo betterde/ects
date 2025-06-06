@@ -14,7 +14,7 @@ import (
 
 func RegisterRoutes(app *fiber.App) {
 	app.Get("/health", func(ctx *fiber.Ctx) error {
-		return ctx.JSON(response.Success("Success", nil))
+		return ctx.JSON(response.Success("Success", nil, response.Meta{}))
 	}).Name("Health check")
 
 	// Swagger API specification file router
@@ -58,6 +58,10 @@ func RegisterInitializeRoutes(app *fiber.App) {
 	app.Post("/api/system/secret", handler.GenSystemSecret)
 	app.Post("/api/system/database", handler.SetSystemDatabase)
 	app.Post("/api/system/initialization", handler.InitializationSystem)
+
+	app.Get("/api/log/user", handler.GetUserLog)
+	app.Get("/api/log/task", handler.GetTaskLog)
+	app.Get("/api/log/pipeline", handler.GetPipelineLog)
 
 	// Initialization SPA route
 	app.Get("*", filesystem.New(filesystem.Config{
